@@ -1,0 +1,19 @@
+name: Sky-Block Warriors
+main: me.kyle.burnett.SkyBlockWarriors.Main
+version: 1.0
+author: Burnett
+description: >
+             Sky block warrior plugin.
+commands:
+    skyblockw:
+        description: Main command.
+        aliases: [sw]
+        usage: /<command> arguments
+permissions:
+    doublejump.*:
+        description: Gives access to all player exp fly actions/commands.
+        children:
+            doublejump.cancelfalldamage: true
+    doublejump.cancelfalldamage:
+        description: Cancels the fall damage after a double jump.
+        default: op
