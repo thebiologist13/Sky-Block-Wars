@@ -11,7 +11,6 @@ import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
 import me.kyle.burnett.SkyBlockWarriors.Utils.API;
 import me.kyle.burnett.SkyBlockWarriors.Utils.ArenaAPI;
-import me.kyle.burnett.SkyBlockWarriors.Utils.ArenaManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.GameAPI;
 import me.kyle.burnett.SkyBlockWarriors.Utils.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
@@ -40,7 +39,6 @@ public class Main extends JavaPlugin{
 	public static InventoryUtil invent;
 	public static API api;
 	public static ArenaAPI arenaAPI;
-	public static ArenaManager arenaManager;
 	public static PlayerAPI playerAPI;
 	public static SchematicLoadSave worldedit;
 	public static SW commands;
