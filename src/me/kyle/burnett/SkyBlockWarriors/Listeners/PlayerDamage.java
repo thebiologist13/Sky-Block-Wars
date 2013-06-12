@@ -17,7 +17,6 @@ public class PlayerDamage implements Listener {
 			if(e.getDamager() instanceof Player){
 				Player pd = (Player) e.getDamager();
 				
-				
 			}
 		}
 	}

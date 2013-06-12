@@ -1,40 +1,20 @@
 package me.kyle.burnett.SkyBlockWarriors.Commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.data.DataException;
-
 public class SW implements CommandExecutor{
-	
-/*	
-    String setlobby = "setlobby";
-    String join = "join";
-	String leave = "leave";
-	String list = "list";
-	String team = "team";
-	String start = "start";
-	String stop = "stop";
-	String rebuild = "rebuild";
-	String board = "board";
-	String vote = "vote";
-	String arenas = "arenas";
 
-*/
 	
 	public HashMap<String, Integer> editing = new HashMap<String, Integer>();
 	
@@ -61,25 +41,17 @@ public class SW implements CommandExecutor{
 				}
 				
 				if(args[0].equalsIgnoreCase("create")){
-					if(Main.arenaAPI.createArena(p)){
-						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + Main.Arena.getInt("Amount") + ChatColor.GREEN + " created successfully.");
-						return true;
-					}
-					p.sendMessage(ChatColor.RED + "You do not have a world edit selection of the arena.");
-					return true;
+					
+
 				}
 				
 				if(args[0].equalsIgnoreCase("leave")){
 					p.teleport(Main.getLobby());
-					Main.playerAPI.removeFromAll(p, ChatColor.RED + "You have left the arena.");
+					//Leave from game.
 				}
 				
 				if(args[0].equalsIgnoreCase("list")){
 					
-					int game = Main.gameAPI.getPlayerGame(p);
-					
-					p.sendMessage(ChatColor.GREEN + "--------Player's In Your Game--------");
-					p.sendMessage(ChatColor.RED + Main.gameManager.games.get(game).toString().replace("[", " ").replace("]", " "));
 				}
 				
 				if(args[0].equalsIgnoreCase("arenas")){
@@ -115,30 +87,6 @@ public class SW implements CommandExecutor{
 				
 				if(args[0].equalsIgnoreCase("join")){
 					
-					if(p.hasPermission("skyblockwars.join")){
-						
-						if(Main.arenaAPI.doesArenaExist(Integer.parseInt(args[1]))){
-							
-							if(Main.arenaAPI.isArenaEnabled(Integer.parseInt(args[1]))){
-								
-									if(!Main.arenaAPI.isArenaInUse(Integer.parseInt(args[1]))){
-										
-										Main.playerAPI.addPlayerToGame(Integer.parseInt(args[1]), p);
-										p.sendMessage(ChatColor.GREEN + "You joined " + ChatColor.GOLD + Integer.parseInt(args[1]) + ".");
-										
-									}else if(Main.arenaAPI.isArenaInUse(Integer.parseInt(args[1]))){
-										
-										p.sendMessage(ChatColor.RED + "This arena has already started.");
-									}
-							}else if(!Main.arenaAPI.isArenaEnabled(Integer.parseInt(args[1]))){
-								
-								p.sendMessage(ChatColor.RED + "This arena has been disabled.");
-							}
-						}else if(!Main.arenaAPI.doesArenaExist(Integer.parseInt(args[1]))){
-							
-							p.sendMessage(ChatColor.RED + "Arena does not exist. Type /sbw arenas - for a list of arenas");
-						}
-					}
 				}
 				
 				if(args[0].equalsIgnoreCase("set")){
@@ -168,139 +116,31 @@ public class SW implements CommandExecutor{
 				
 				if(args[0].equalsIgnoreCase("edit")){
 					
-					if(Main.arenas.containsKey(Integer.parseInt(args[1]))){
-						
-						if(Main.arenas.get(Integer.parseInt(args[1]))){
-							
-							editing.put(p.getName(), Integer.parseInt(args[1]));
-							
-							p.sendMessage(ChatColor.GREEN + "You are now editing arena " + ChatColor.GOLD + args[1]);
-							
-						}else if(!Main.arenas.get(Integer.parseInt(args[1]))){
-							
-							p.sendMessage(ChatColor.RED + "That arena is disabled. Use /sw enable <arena> to edit it.");
-						}
-						
-					}else if(!Main.arenas.containsKey(Integer.parseInt(args[1]))){
-						
-						p.sendMessage(ChatColor.RED + "That arena does not exist.");
-					}
+
 				}
 				
 				if(args[0].equalsIgnoreCase("chest")){
-					
-					if(this.editing.containsKey(p.getName())){
-						
-						if(p.getLocation().getBlock().getType() == Material.CHEST){
-					
-							if(args[1].equalsIgnoreCase("center")){
-								
-								Main.arenaAPI.addChest(Main.playerAPI.arenaPlayerIsEditing(p), "center", p);
-								
-								p.sendMessage(ChatColor.GREEN + "Center chest added for arena " + ChatColor.GOLD + Main.playerAPI.arenaPlayerIsEditing(p));
-								
-							}
-							
-							else if(args[1].equalsIgnoreCase("side")){
-								
-								Main.arenaAPI.addChest(Main.playerAPI.arenaPlayerIsEditing(p), "side", p);
-			
-								p.sendMessage(ChatColor.GREEN + "Side chest added for arena " + ChatColor.GOLD + Main.playerAPI.arenaPlayerIsEditing(p));
-								
-							}
-							
-							else if(args[1].equalsIgnoreCase("start")){
-							
-								Main.arenaAPI.addChest(Main.playerAPI.arenaPlayerIsEditing(p), "start", p);
-								
-								p.sendMessage(ChatColor.GREEN + "Start chest added for arena " + ChatColor.GOLD + Main.playerAPI.arenaPlayerIsEditing(p));
-								
-							}
-							
-							else{
-								p.sendMessage(ChatColor.RED + "That is not a type of chest. Usage: /sw chest [center/side/start]");
-							}
-						}else if(p.getLocation().getBlock().getType() != Material.CHEST){
-							p.sendMessage(ChatColor.RED + "You are not standing on a chest.");
-						}
-					} else if(!Main.playerAPI.playerIsEditing(p)){
-						
-						p.sendMessage(ChatColor.RED + "You are not editing an arena");
-					}
+
 					
 				}
 				
 				if(args[0].equalsIgnoreCase("enable")){
-						
-					if(Main.arenas.containsKey(Integer.parseInt(args[1]))){
-						
-						if(!Main.arenas.get(Integer.parseInt(args[1]))){
-							
-							Main.arenaAPI.setEnabled(Integer.parseInt(args[1]));
-							
-						}else if(!Main.arenas.get(Integer.parseInt(args[1]))){
-							
-							p.sendMessage(ChatColor.RED + "That arena is already enabled.");
-						}
-						
-					}else if(!Main.arenas.containsKey(Integer.parseInt(args[1]))){
-						
-						p.sendMessage(ChatColor.RED + "That arena does not exist.");
-					}
+
 				}
 				
 				if(args[0].equalsIgnoreCase("disable")){
 					
-						if(Main.arenas.containsKey(Integer.parseInt(args[1]))){
-							
-							if(Main.arenas.get(Integer.parseInt(args[1]))){
-								
-								Main.arenaAPI.setDisabled(Integer.parseInt(args[1]));
-								
-							}else if(!Main.arenas.get(Integer.parseInt(args[1]))){
-								
-								p.sendMessage(ChatColor.RED + "That arena is already disabled.");
-							}
-							
-						}else if(!Main.arenas.containsKey(Integer.parseInt(args[1]))){
-							
-							p.sendMessage(ChatColor.RED + "That arena does not exist.");
-						}
+
 				}
 				
 				if(args[0].equalsIgnoreCase("save")){
-					
-					int arena = Integer.parseInt(args[1]);
-					
-					if(Main.arenaAPI.doesArenaExist(arena)){
-						Main.worldedit.saveArena(p, arena);
-						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " saved.");
-					}
+	
 					
 				}
 				
 				if(args[0].equalsIgnoreCase("load")){
 					
-					int arena = Integer.parseInt(args[1]);
-					System.out.println("Loaded 1.");
-					if(Main.arenaAPI.doesArenaExist(arena)){
-						System.out.println("Loaded 2.");
-						try {
-							Main.worldedit.loadIslandSchematic(Bukkit.getWorld(Main.Arena.getString(arena + ".World")), Main.arenaAPI.getArenaFile(arena), arena);
-							System.out.println("Loaded 3.");
-						} catch (MaxChangedBlocksException e) {
-							
-							e.printStackTrace();
-							
-						} catch (DataException e) {
-							
-							e.printStackTrace();
-							
-						} catch (IOException e) {
-							
-							e.printStackTrace();
-						}
-					}
+
 				}
 			
 			}

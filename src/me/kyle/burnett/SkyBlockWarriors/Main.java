@@ -1,7 +1,6 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,124 +8,102 @@ import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
-import me.kyle.burnett.SkyBlockWarriors.Utils.API;
-import me.kyle.burnett.SkyBlockWarriors.Utils.ArenaAPI;
-import me.kyle.burnett.SkyBlockWarriors.Utils.GameAPI;
-import me.kyle.burnett.SkyBlockWarriors.Utils.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
-import me.kyle.burnett.SkyBlockWarriors.Utils.PlayerAPI;
 import me.kyle.burnett.SkyBlockWarriors.Utils.SchematicLoadSave;
-import me.kyle.burnett.SkyBlockWarriors.Utils.TeamAPI;
-import me.kyle.burnett.SkyBlockWarriors.Utils.TeamManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin{
 
-	public static ConfigManager configManager;	
-	public static TeamAPI teamAPI;
-	public static GameAPI gameAPI;
-	public static TeamManager teamManager;
+	// Manages the configs.
+	public static ConfigManager configManager;
+
+	// Manages the games.
 	public static GameManager gameManager;
+
+	// Utility for saving inventorys.
 	public static InventoryUtil invent;
-	public static API api;
-	public static ArenaAPI arenaAPI;
-	public static PlayerAPI playerAPI;
+
+	// Methods to do with world edit.
 	public static SchematicLoadSave worldedit;
-	public static SW commands;
-	
+
+	// Main config.
 	public static File configFile;
 	public static FileConfiguration Config;
-	
+
+	// Arena config.
 	public static File arenaFile;
 	public static FileConfiguration Arena;
-	
+
+	// Inv config.
 	public static File invFile;
 	public static FileConfiguration Inv;
-	
+
+	// Chest config.
 	public static File chestFile;
 	public static FileConfiguration Chest;
-	
-	static PluginManager pm = Bukkit.getServer().getPluginManager();
-	
-	public static HashMap<Integer, Boolean> arenas = new HashMap<Integer, Boolean>();
 
-	boolean Enabled;
-	
+	// Plugin manager
+	public static PluginManager pm = Bukkit.getServer().getPluginManager();
+
 	public static Logger log = Bukkit.getLogger();
-	
+
 	@Override
 	public void onEnable(){
+		
+		// Set accessors
+		Main.configManager = new ConfigManager(this);
+		Main.gameManager = new GameManager();
+		Main.invent = new InventoryUtil();
+		Main.worldedit = new SchematicLoadSave(this);
 
-       Main.configManager = new ConfigManager(this);
-       Main.teamAPI = new TeamAPI();
-       Main.gameAPI = new GameAPI();
-       Main.gameManager = new GameManager();
-       Main.teamManager = new TeamManager();
-       Main.invent = new InventoryUtil();
-       Main.api = new API();
-       Main.playerAPI = new PlayerAPI();
-       Main.arenaAPI = new ArenaAPI(this);
-       Main.worldedit = new SchematicLoadSave(this);
-       Main.commands = new SW();
-       
-       setUpConfigs();
-       
-       Main.configManager.saveYamls();
-       
-       getCommand("skyblockw").setExecutor(new SW());
-       
-       pm.registerEvents(new PlayerDeath(), this);
-       pm.registerEvents(new PlayerLeave(), this);
-       
-       addArenas();
-       
-       System.out.println("DEBUG");
+		// Define files
+		configFile = new File(getDataFolder(), "config.yml");
+		arenaFile = new File(getDataFolder(), "arena.yml");
+		invFile = new File(getDataFolder(), "inventorys.yml");
+		chestFile = new File(getDataFolder(), "chests.yml");
+
+		try {
+			// Try to setup the configs.
+			Main.configManager.firstRun();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		// Load save YAMLS.
+		Main.Config = new YamlConfiguration();
+		Main.Arena = new YamlConfiguration();
+		Main.Inv = new YamlConfiguration();
+		Main.Chest = new YamlConfiguration();
+		Main.configManager.loadYamls();
+		Main.configManager.saveYamls();
+		
+		// Register events.
+		pm.registerEvents(new PlayerDeath(), this);
+		pm.registerEvents(new PlayerLeave(), this);
+
+		// Add commands
+		getCommand("skyblockw").setExecutor(new SW());
        
 	}
 	
 	@Override
 	public void onDisable(){
-		
-		for(Player p : Bukkit.getOnlinePlayers()){
-			if(Main.gameAPI.isInGame(p)){
-				Main.playerAPI.removeFromAll(p, ChatColor.RED + "Server is restarting. You will be teleported to the lobby. Sorry for the inconvenience.");
-			}
-		}
+
 		
 	}    
-	
-	public void setUpConfigs(){
-		configFile = new File(getDataFolder(), "config.yml"); 
-		arenaFile = new File(getDataFolder(), "arena.yml");
-		invFile = new File(getDataFolder(), "inventorys.yml");
-		chestFile = new File(getDataFolder(), "chests.yml");
-        try {
-            Main.configManager.firstRun();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-		Main.Config = new YamlConfiguration();
-		Main.Arena = new YamlConfiguration();
-		Main.Inv = new YamlConfiguration();
-		Main.Chest = new YamlConfiguration();
-        Main.configManager.loadYamls();
-	}
 	
 	public static Location getLobby(){
 		
 		if(Main.Config.contains("Lobby")){
-
-		
 		
 			World world = Bukkit.getServer().getWorld(Main.Config.getString("Lobby.World"));
 			
@@ -143,24 +120,6 @@ public class Main extends JavaPlugin{
 		log.log(Level.SEVERE, "Skyblock Wars lobby not found.");
 		return null;
 		
-	}
-	
-	public void addArenas(){
-		int amount = Main.Arena.getInt("Amount");
-		
-		for(int x = -1; x <amount; x++){
-			
-			
-			if(x != 0){
-				
-				if(Main.Arena.contains(Integer.toString(x))){
-					arenas.put(x, Main.Arena.getBoolean(x + ".Enabled"));
-					System.out.println(x);
-				}
-				
-				
-			}
-		}
 	}
 
 }

@@ -21,7 +21,8 @@ public class PlayerDeath implements Listener{
 		if(ent instanceof Player){
 			Player p = (Player) ent;
 			
-			if(Main.gameAPI.isInGame(p)){
+			//Check if player is in game.
+			
 				Packet205ClientCommand packet = new Packet205ClientCommand();
 				packet.a = 1;
 				((CraftPlayer) e.getEntity()).getHandle().playerConnection.sendPacket(packet);
@@ -41,8 +42,8 @@ public class PlayerDeath implements Listener{
 				
 				p.sendMessage(ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
 				
-				Main.playerAPI.sendDeathMessage(p, ChatColor.BLUE + "Player " + ChatColor.GOLD + p.getName() + ChatColor.BLUE + "has been eliminated.");
-			}
+				//Send death message.
+			
 		}
 	}
 

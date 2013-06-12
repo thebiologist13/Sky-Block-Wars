@@ -15,10 +15,7 @@ public class PlayerLeave implements Listener{
 		
 		Player p = e.getPlayer();
 		
-		if(Main.teamManager.arenaTeams.containsValue(p.getName())){
-			p.teleport(Main.getLobby());
-			Main.playerAPI.removeFromAll(p, " ");
-		}
+		//Leave the game.
 		
 	}
 
