@@ -18,6 +18,7 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 import java.io.File;
 import java.io.IOException;
 
+import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
 import org.bukkit.Bukkit;
@@ -25,11 +26,17 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class SchematicLoadSave {
+public class WorldEditUtility {
 	
 	public static Main plugin;
-	public SchematicLoadSave(Main instance){
+	public WorldEditUtility(Main instance){
 		plugin = instance;
+	}
+	
+	static WorldEditUtility instance = new WorldEditUtility(plugin);
+	
+	public static WorldEditUtility getInstance(){
+		return instance;
 	}
 	
 	WorldEditPlugin we = getWorldEdit();
@@ -65,6 +72,50 @@ public class SchematicLoadSave {
 		
 		System.out.println("Loaded Schematic.");
 
+		return true;
+	}
+	
+	public boolean regenAllIslands(){
+		
+		int amount = GameManager.getInstance().getArenaAmount();
+		
+		for(int x = 0; x < amount; x++){
+			
+			File file = new File(plugin.getDataFolder() + File.separator + "Schematics" + File.separator + x + ".schematic");
+			
+			World world = Bukkit.getServer().getWorld(Main.Arena.getString(x + "World"));
+			
+			if(world == null){
+				return false;
+			}
+			
+			SchematicFormat format = SchematicFormat.getFormat(file);
+			
+			if (format == null) {
+				System.out.println("Null Schematic."); 
+				return false;
+			}
+			
+			EditSession es = new EditSession(new BukkitWorld(world), 999999999);
+			
+			CuboidClipboard cc = null;
+			try {
+				cc = format.load(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (DataException e) {
+				e.printStackTrace();
+			}
+			
+			Vector v = new Vector(Main.Arena.getDouble(x + ".BlockX"), Main.Arena.getDouble(x + ".BlockY"), Main.Arena.getDouble(x + ".BlockZ"));
+			
+			try {
+				cc.paste(es, v, false);
+			} catch (MaxChangedBlocksException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		return true;
 	}
 	  
@@ -147,48 +198,3 @@ public class SchematicLoadSave {
 	}
 
 }
-
-/*public boolean saveArena(Player p, Integer arena){
-	
-	WorldEdit instance = WorldEdit.getInstance();
-	
-	LocalSession session = instance.getSession(p.getName());
-
-	CuboidClipboard clipboard = null;
-	try {
-		clipboard = session.getClipboard();
-		
-	} catch (EmptyClipboardException e1) {
-		
-		e1.printStackTrace();
-		return false;
-	}
-	
-	SchematicFormat f = SchematicFormat.MCEDIT;
-	
-	File filePath = new File(plugin.getDataFolder() + File.separator + "Schematics");
-	File file = new File(plugin.getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
-	
-	
-	if(!file.exists()){
-		filePath.mkdirs();
-		
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-	}
-	
-	try {
-		
-		f.save(clipboard, file);
-		
-	} catch (IOException | DataException e) {
-		
-		e.printStackTrace();
-	}
-	
-	return true;
-}*/

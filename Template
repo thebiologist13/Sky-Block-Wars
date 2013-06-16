@@ -1,0 +1,37 @@
+	public void addChest(Integer arena, String type, Player p){
+			
+		if(type.equalsIgnoreCase("center")){
+			
+			List<String> center = Main.Chest.getStringList(arena + ".Center");
+			
+			center.add(p.getLocation().getBlockX() + "," + p.getLocation().getBlockY() + "," + p.getLocation().getBlockZ());
+			
+			Main.Chest.set(arena + ".Center", center);
+			
+			Main.configManager.saveYamls();
+			
+		}
+		
+		else if(type.equalsIgnoreCase("side")){
+			
+			List<String> side = Main.Chest.getStringList(arena + ".Center");
+			
+			side.add(p.getLocation().getBlockX() + "," + p.getLocation().getBlockY() + "," + p.getLocation().getBlockZ());
+			
+			Main.Chest.set(arena + ".Side", side);
+			
+			Main.configManager.saveYamls();
+		}
+		
+		else if(type.equalsIgnoreCase("start")){
+			
+			List<String> start = Main.Chest.getStringList(arena + ".Center");
+			
+			start.add(p.getLocation().getBlockX() + "," + p.getLocation().getBlockY() + "," + p.getLocation().getBlockZ());
+			
+			Main.Chest.set(arena + ".Start", start);
+			
+			Main.configManager.saveYamls();
+		}
+		
+	}

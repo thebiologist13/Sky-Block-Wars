@@ -9,7 +9,7 @@ import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
-import me.kyle.burnett.SkyBlockWarriors.Utils.SchematicLoadSave;
+import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Main extends JavaPlugin{
 
@@ -31,7 +32,7 @@ public class Main extends JavaPlugin{
 	public static InventoryUtil invent;
 
 	// Methods to do with world edit.
-	public static SchematicLoadSave worldedit;
+	public static WorldEditUtility worldedit;
 
 	// Main config.
 	public static File configFile;
@@ -53,6 +54,12 @@ public class Main extends JavaPlugin{
 	public static PluginManager pm = Bukkit.getServer().getPluginManager();
 
 	public static Logger log = Bukkit.getLogger();
+	
+	Main plugin;
+
+	public Main() {
+		this.plugin = this;
+	}
 
 	@Override
 	public void onEnable(){
@@ -61,14 +68,14 @@ public class Main extends JavaPlugin{
 		Main.configManager = new ConfigManager(this);
 		Main.gameManager = new GameManager();
 		Main.invent = new InventoryUtil();
-		Main.worldedit = new SchematicLoadSave(this);
+		Main.worldedit = new WorldEditUtility(this);
 
 		// Define files
 		configFile = new File(getDataFolder(), "config.yml");
 		arenaFile = new File(getDataFolder(), "arena.yml");
 		invFile = new File(getDataFolder(), "inventorys.yml");
 		chestFile = new File(getDataFolder(), "chests.yml");
-
+		
 		try {
 			// Try to setup the configs.
 			Main.configManager.firstRun();
@@ -92,6 +99,8 @@ public class Main extends JavaPlugin{
 
 		// Add commands
 		getCommand("skyblockw").setExecutor(new SW());
+		
+		setUp();
        
 	}
 	
@@ -119,6 +128,21 @@ public class Main extends JavaPlugin{
 		}
 		log.log(Level.SEVERE, "Skyblock Wars lobby not found.");
 		return null;
+		
+	}
+	
+	public void setUp(){
+		
+		new BukkitRunnable(){
+			
+			  @Override
+			  public void run(){
+				  
+				  GameManager.getInstance().setUp();
+				  WorldEditUtility.getInstance().regenAllIslands();
+		
+			  }
+			}.run();
 		
 	}
 

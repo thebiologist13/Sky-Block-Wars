@@ -14,15 +14,28 @@ public class GameManager {
 		
 		return instance;
 	}
+	
+	public void setUp(){
+		
+	}
 
 	public ArrayList<Game> getGames() {
 		return this.games;
 	}
 	
-	public void getPlayerGame(Player p){
-		for(Game g : games){
+	public int getPlayerGame(Player p){
+		
+		for(Game g : this.games){
 			
+			if(g.getPlayers().contains(p.getName())){
+				return g.getGameID();
+			}
 		}
+		return -1;
+	}
+	
+	public int getArenaAmount(){
+		return Main.Arena.getInt("Amount");
 	}
 
 

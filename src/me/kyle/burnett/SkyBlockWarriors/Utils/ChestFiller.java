@@ -20,7 +20,7 @@ public class ChestFiller {
 	}
 	
 	
-	public void loadChests(Integer arena){
+	public static void loadChests(Integer arena){
 		
 		loadSpawn(arena);
 		loadSide(arena);
@@ -28,7 +28,7 @@ public class ChestFiller {
 
 	}
 	
-	public void loadSpawn(Integer arena){
+	public static void loadSpawn(Integer arena){
 		
 		List<String> chestLocSpawn = Main.Chest.getStringList(arena + ".Spawn");
 		List<String> chestSpawnItems = Main.Config.getStringList("Chests.Start-Chests.ItemID/Amount");
@@ -58,7 +58,7 @@ public class ChestFiller {
 		
 	}
 	
-	public void loadSide(Integer arena){
+	public static void loadSide(Integer arena){
 		
 		List<String> chestLocSide = Main.Chest.getStringList(arena + ".Side");
 		List<String> chestSideItems = Main.Config.getStringList("Chests.Side-Chests.ItemID/Amount");
@@ -88,7 +88,7 @@ public class ChestFiller {
 		
 	}
 	
-	public void loadCenter(Integer arena){
+	public static void loadCenter(Integer arena){
 		
 		List<String> chestLocCenter = Main.Chest.getStringList(arena + ".Center");
 		List<String> chestCenterItems = Main.Config.getStringList("Chests.Middle-Chest.ItemID/Amount");
