@@ -5,16 +5,23 @@ import java.util.HashMap;
 
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 public class Game {
 	
+	
+	ScoreboardManager manager = Bukkit.getScoreboardManager();
+	Scoreboard board = manager.getNewScoreboard();
+	Team blue = board.registerNewTeam("Blue Team");
+	Team red = board.registerNewTeam("Red Team");
+	Team yellow = board.registerNewTeam("Yellow Team");
+	Team green = board.registerNewTeam("Green Team");
 	public ArenaState state = ArenaState.DISABLED;
 	private ArrayList<String> players = new ArrayList<String>();
-	private ArrayList<String> yellow = new ArrayList<String>();
-	private ArrayList<String> red = new ArrayList<String>();
-	private ArrayList<String> green = new ArrayList<String>();
-	private ArrayList<String> blue = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
 	private HashMap<String, String> team = new HashMap<String, String>();
 	private int gameID;
@@ -74,7 +81,7 @@ public class Game {
 		return voted;
 	}
 	
-	public ArrayList<String> getPlayerTeam(Player p){
+	public Team getPlayerTeam(Player p){
 		
 		String team = this.team.get(p.getName());
 		
@@ -103,43 +110,60 @@ public class Game {
 		
 		this.removeFromTeam(p);
 		this.team.put(p.getName(), "red");
-		this.red.add(p.getName());
+		this.red.addPlayer(p);
 	}
 	
 	public void setTeamBlue(Player p){
 		
 		this.removeFromTeam(p);
 		this.team.put(p.getName(), "blue");
-		this.red.add(p.getName());
+		this.red.addPlayer(p);
 	}
 	
 	public void setTeamGreen(Player p){
 		
 		this.removeFromTeam(p);
 		this.team.put(p.getName(), "green");
-		this.red.add(p.getName());
+		this.red.addPlayer(p);
 	}
 	
 	public void setTeamYellow(Player p){
 		
 		this.removeFromTeam(p);
 		this.team.put(p.getName(), "yellow");
-		this.red.add(p.getName());
+		this.red.addPlayer(p);
 	}
 	
 	public void removeFromGame(Player p){
 		
 		this.players.remove(p.getName());
-		this.getPlayerTeam(p).remove(p.getName());
+		if(this.red.hasPlayer(p)){
+			this.red.removePlayer(p);
+		}else if(this.blue.hasPlayer(p)){
+			this.blue.removePlayer(p);
+		}else if(this.green.hasPlayer(p)){
+			this.green.removePlayer(p);
+		}else if(this.yellow.hasPlayer(p)){
+			this.yellow.removePlayer(p);
+		}
 		this.team.remove(p.getName());
 		
 	}
 	
 	public void removeFromTeam(Player p){
 		
-		this.getPlayerTeam(p).remove(p.getName());
+		if(this.red.hasPlayer(p)){
+			this.red.removePlayer(p);
+		}else if(this.blue.hasPlayer(p)){
+			this.blue.removePlayer(p);
+		}else if(this.green.hasPlayer(p)){
+			this.green.removePlayer(p);
+		}else if(this.yellow.hasPlayer(p)){
+			this.yellow.removePlayer(p);
+		}
 		this.team.remove(p.getName());
 	}
+	
 	
 	public enum ArenaState {
 		
