@@ -1,9 +1,7 @@
 package me.kyle.burnett.SkyBlockWarriors.Commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
+import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
 import org.bukkit.ChatColor;
@@ -35,50 +33,29 @@ public class SW implements CommandExecutor{
 			
 			if(args.length == 1){
 				
-				if(args[0].equalsIgnoreCase("finish")){
+				if(args[0].equalsIgnoreCase("join")){
 					
 					
-				}
-				
-				if(args[0].equalsIgnoreCase("create")){
-					
-
 				}
 				
 				if(args[0].equalsIgnoreCase("leave")){
-					p.teleport(Main.getLobby());
-					//Leave from game.
+					
+					
 				}
 				
 				if(args[0].equalsIgnoreCase("list")){
 					
-				}
-				
-				if(args[0].equalsIgnoreCase("arenas")){
-					
-					List<Integer> arena = new ArrayList<Integer>();
-					
-					for(int amount = Main.Arena.getInt("Arenas.Amount"); amount > 0; amount--){
-						
-						arena.add(amount);						
-					}
-					
-					p.sendMessage(ChatColor.GREEN + "--------Arenas--------");
-					p.sendMessage(ChatColor.GOLD + arena.toString().replace("[", " ").replace("]", " "));
 					
 				}
 				
-				if(args[0].equalsIgnoreCase("board")){
+				if(args[0].equalsIgnoreCase("listarenas")){
+					
 					
 				}
 				
 				if(args[0].equalsIgnoreCase("join")){
-					p.teleport(Main.getLobby());
-					p.sendMessage(ChatColor.GREEN + "Teleporting to Sky-Block War's lobby. Use /sw join <arena> to join an arena.");
-				}
-				
-				if(args[0].equalsIgnoreCase("chest")){
-					p.sendMessage(ChatColor.RED + "Usage: /sw chest [center/side/start]");
+					
+					
 				}
 				
 			}
@@ -86,6 +63,18 @@ public class SW implements CommandExecutor{
 			if(args.length == 2){
 				
 				if(args[0].equalsIgnoreCase("join")){
+					
+					if(GameManager.getInstance().getGames().contains(args[1])){
+						
+						GameManager.getInstance().getGames().get(Integer.parseInt(args[1])).addPlayer(p);
+						
+						p.sendMessage(ChatColor.GREEN + "Joining game " + ChatColor.GOLD +args[1] + ChatColor.GREEN + ".");
+						
+						
+					}else if(!GameManager.getInstance().getGames().contains(args[1])){
+						
+						p.sendMessage(ChatColor.RED + "That game does not exist.");
+					}
 					
 				}
 				

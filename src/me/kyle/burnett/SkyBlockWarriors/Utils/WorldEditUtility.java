@@ -52,8 +52,11 @@ public class WorldEditUtility {
 		return (WorldEditPlugin) plugin;
 	}
 
-	public boolean loadIslandSchematic(World world, File file, Integer arena) throws DataException, IOException, MaxChangedBlocksException {
+	public boolean loadIslandSchematic(Integer arena) throws DataException, IOException, MaxChangedBlocksException {
 		
+		File file = new File(plugin.getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
+
+		World world = Bukkit.getServer().getWorld(Main.Arena.getString(arena + ".World"));
 		
 		SchematicFormat format = SchematicFormat.getFormat(file);
 		

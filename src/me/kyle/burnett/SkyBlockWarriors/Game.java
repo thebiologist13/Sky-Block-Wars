@@ -1,15 +1,20 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
+import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.data.DataException;
 
 public class Game {
 	
@@ -20,10 +25,10 @@ public class Game {
 	Team red = board.registerNewTeam("Red Team");
 	Team yellow = board.registerNewTeam("Yellow Team");
 	Team green = board.registerNewTeam("Green Team");
-	public ArenaState state = ArenaState.DISABLED;
+	public ArenaState state = ArenaState.LOADING;
 	private ArrayList<String> players = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
-	private HashMap<String, String> team = new HashMap<String, String>();
+	private HashMap<String, Team> team = new HashMap<String, Team>();
 	private int gameID;
 	private Arena arena;
 	
@@ -39,6 +44,21 @@ public class Game {
 		
 		this.state = ArenaState.LOADING;
 		
+		try {
+			
+			WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
+			
+		} catch (MaxChangedBlocksException e) {
+			
+			e.printStackTrace();
+		} catch (DataException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
 		ChestFiller.loadChests(this.gameID);
 		
 	}
@@ -52,26 +72,27 @@ public class Game {
 	}
 	
 	public Arena getArena(){
+		
 		return this.arena;
 	}
 	
 	
-	public ArrayList<String> getYellowTeam(){
+	public Team getYellowTeam(){
 		
 		return this.yellow;
 	}
 	
-	public ArrayList<String> getGreenTeam(){
+	public Team getGreenTeam(){
 		
 		return this.green;
 	}
 	
-	public ArrayList<String> getBlueTeam(){
+	public Team getBlueTeam(){
 		
 		return this.blue;
 	}
 	
-	public ArrayList<String> getRedTeam(){
+	public Team getRedTeam(){
 		
 		return this.red;
 	}
@@ -83,20 +104,20 @@ public class Game {
 	
 	public Team getPlayerTeam(Player p){
 		
-		String team = this.team.get(p.getName());
+		Team team = this.team.get(p.getName());
 		
-		if(team.equalsIgnoreCase("red")){
+		if(team.equals(this.red)){
 			return this.red;
 		
-		}else if(team.equalsIgnoreCase("green")){
+		}else if(team.equals(this.green)){
 			
 			return this.green;
 			
-		}else if(team.equalsIgnoreCase("blue")){
+		}else if(team.equals(this.blue)){
 			
 			return this.blue;
 		
-		}else if(team.equalsIgnoreCase("yellow")){
+		}else if(team.equals(this.yellow)){
 			
 			return this.yellow;
 		
@@ -109,28 +130,28 @@ public class Game {
 	public void setTeamRed(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), "red");
+		this.team.put(p.getName(), this.red);
 		this.red.addPlayer(p);
 	}
 	
 	public void setTeamBlue(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), "blue");
+		this.team.put(p.getName(), this.blue);
 		this.red.addPlayer(p);
 	}
 	
 	public void setTeamGreen(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), "green");
+		this.team.put(p.getName(), this.green);
 		this.red.addPlayer(p);
 	}
 	
 	public void setTeamYellow(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), "yellow");
+		this.team.put(p.getName(), this.yellow);
 		this.red.addPlayer(p);
 	}
 	
@@ -164,9 +185,31 @@ public class Game {
 		this.team.remove(p.getName());
 	}
 	
+	public ArenaState addPlayer(Player p){
+		
+		if(this.players.size() > Main.Config.getInt("Max-People-In-A-Team") * 4){
+			
+			return ArenaState.FULL;
+		
+		}else if(this.state != ArenaState.WAITING){
+			
+			return this.state;
+		
+		}else if(this.state == ArenaState.WAITING){
+			
+			this.players.add(p.getName());
+			
+		}
+		
+		
+		return ArenaState.OTHER;
+		
+		
+	}
+	
 	
 	public enum ArenaState {
 		
-		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING
+		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING, FULL, OTHER
 	}
 }
