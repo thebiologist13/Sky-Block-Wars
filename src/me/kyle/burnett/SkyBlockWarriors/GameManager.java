@@ -60,6 +60,8 @@ public class GameManager {
 		
 		if(getPlayerGame(p) != -1){
 			
+			
+			games.get(this.getPlayerGame(p)).removeFromGame(p);
 			playerGame.put(p.getName(), null);
 			
 			return true;

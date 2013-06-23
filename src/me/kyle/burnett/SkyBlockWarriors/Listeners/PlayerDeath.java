@@ -31,7 +31,7 @@ public class PlayerDeath implements Listener{
 				packet.a = 1;
 				((CraftPlayer) e.getEntity()).getHandle().playerConnection.sendPacket(packet);
 				p.teleport(Main.getInstance().getLobby());
-				
+				GameManager.getInstance().leaveGame(p);
 				Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
 				Inventory armor = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Armor"));
 				
@@ -45,6 +45,7 @@ public class PlayerDeath implements Listener{
 				}
 				
 				p.sendMessage(ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
+				
 				
 				//Send game death message.
 			}

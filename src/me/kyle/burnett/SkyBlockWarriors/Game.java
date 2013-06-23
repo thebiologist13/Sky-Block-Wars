@@ -158,30 +158,19 @@ public class Game {
 	public void removeFromGame(Player p){
 		
 		this.players.remove(p.getName());
-		if(this.red.hasPlayer(p)){
-			this.red.removePlayer(p);
-		}else if(this.blue.hasPlayer(p)){
-			this.blue.removePlayer(p);
-		}else if(this.green.hasPlayer(p)){
-			this.green.removePlayer(p);
-		}else if(this.yellow.hasPlayer(p)){
-			this.yellow.removePlayer(p);
+		
+		if(this.voted.contains(p.getName())){
+			
+			this.voted.remove(p.getName());
 		}
-		this.team.remove(p.getName());
+		
+		this.removeFromTeam(p);
 		
 	}
 	
 	public void removeFromTeam(Player p){
 		
-		if(this.red.hasPlayer(p)){
-			this.red.removePlayer(p);
-		}else if(this.blue.hasPlayer(p)){
-			this.blue.removePlayer(p);
-		}else if(this.green.hasPlayer(p)){
-			this.green.removePlayer(p);
-		}else if(this.yellow.hasPlayer(p)){
-			this.yellow.removePlayer(p);
-		}
+		this.team.get(p.getName()).removePlayer(p);
 		this.team.remove(p.getName());
 	}
 	
