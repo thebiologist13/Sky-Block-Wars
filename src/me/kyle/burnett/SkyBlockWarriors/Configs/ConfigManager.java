@@ -10,31 +10,32 @@ import me.kyle.burnett.SkyBlockWarriors.Main;
 
 public class ConfigManager {
 
-	public static Main plugin;
-	public ConfigManager(Main instance){
-		plugin = instance;
+	static ConfigManager instance = new ConfigManager();
+	
+	public static ConfigManager getInstance(){
+		return instance;
 	}
 	
 	public void firstRun() throws Exception {
 
-        if(!Main.configFile.exists()){
-            Main.configFile.getParentFile().mkdirs();
-            copy(plugin.getResource("config.yml"), Main.configFile);
+        if(!Main.getInstance().configFile.exists()){
+           Main.getInstance().configFile.getParentFile().mkdirs();
+            copy(Main.getInstance().getResource("config.yml"),Main.getInstance().configFile);
         }
         
-        if(!Main.arenaFile.exists()){
-            Main.arenaFile.getParentFile().mkdirs();
-            copy(plugin.getResource("arenas.yml"), Main.arenaFile);
+        if(!Main.getInstance().arenaFile.exists()){
+           Main.getInstance().arenaFile.getParentFile().mkdirs();
+            copy(Main.getInstance().getResource("arenas.yml"),Main.getInstance().arenaFile);
         }
         
-        if(!Main.invFile.exists()){
-            Main.invFile.getParentFile().mkdirs();
-            copy(plugin.getResource("inventorys.yml"), Main.invFile);
+        if(!Main.getInstance().invFile.exists()){
+           Main.getInstance().invFile.getParentFile().mkdirs();
+            copy(Main.getInstance().getResource("inventorys.yml"),Main.getInstance().invFile);
         }
         
-        if(!Main.chestFile.exists()){
-            Main.chestFile.getParentFile().mkdirs();
-            copy(plugin.getResource("chests.yml"), Main.chestFile);
+        if(!Main.getInstance().chestFile.exists()){
+           Main.getInstance().chestFile.getParentFile().mkdirs();
+            copy(Main.getInstance().getResource("chests.yml"),Main.getInstance().chestFile);
         }
    
 	}
@@ -56,10 +57,10 @@ public class ConfigManager {
  
 	public void loadYamls() {
         try {
-            Main.Config.load(Main.configFile);
-            Main.Arena.load(Main.arenaFile);
-            Main.Inv.load(Main.invFile);
-            Main.Chest.load(Main.chestFile);
+           Main.getInstance().Config.load(Main.getInstance().configFile);
+           Main.getInstance().Arena.load(Main.getInstance().arenaFile);
+           Main.getInstance().Inv.load(Main.getInstance().invFile);
+           Main.getInstance().Chest.load(Main.getInstance().chestFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,10 +69,10 @@ public class ConfigManager {
  
 	public void saveYamls() {
         try {
-	          Main.Config.save(Main.configFile);  
-	          Main.Arena.save(Main.arenaFile);
-	          Main.Inv.save(Main.invFile);
-	          Main.Chest.save(Main.chestFile);
+	         Main.getInstance().Config.save(Main.getInstance().configFile);  
+	         Main.getInstance().Arena.save(Main.getInstance().arenaFile);
+	         Main.getInstance().Inv.save(Main.getInstance().invFile);
+	         Main.getInstance().Chest.save(Main.getInstance().chestFile);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }

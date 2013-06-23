@@ -5,8 +5,6 @@
 	<classpathentry kind="lib" path="D:/Minecraft/Plugins/worldedit-5.5.6.jar"/>
 	<classpathentry kind="lib" path="D:/Minecraft/Plugins/Essentials.jar"/>
 	<classpathentry kind="lib" path="D:/Minecraft/Plugins/bukkit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Sam/Dropbox/Craftbukkit build beta/craftbukkit-1.5.2-R0.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Sam/Dropbox/Craftbukkit build beta/WorldEdit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Sam/Dropbox/Craftbukkit build beta/Essentials/Essentials.jar"/>
+	<classpathentry kind="lib" path="D:/Minecraft/Plugins/craftbukkit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

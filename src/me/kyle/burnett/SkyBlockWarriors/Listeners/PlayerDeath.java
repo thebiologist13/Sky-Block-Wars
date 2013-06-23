@@ -1,6 +1,7 @@
 package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
 import me.kyle.burnett.SkyBlockWarriors.Main;
+import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
 import net.minecraft.server.v1_5_R3.Packet205ClientCommand;
 
 import org.bukkit.ChatColor;
@@ -26,10 +27,10 @@ public class PlayerDeath implements Listener{
 				Packet205ClientCommand packet = new Packet205ClientCommand();
 				packet.a = 1;
 				((CraftPlayer) e.getEntity()).getHandle().playerConnection.sendPacket(packet);
-				p.teleport(Main.getLobby());
+				p.teleport(Main.getInstance().getLobby());
 				
-				Inventory main = Main.invent.fromBase64(Main.Inv.getString(p.getName() + ".Main"));
-				Inventory armor = Main.invent.fromBase64(Main.Inv.getString(p.getName() + ".Armor"));
+				Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
+				Inventory armor = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Armor"));
 				
 				if(main != null){
 					p.getInventory().setContents(main.getContents());

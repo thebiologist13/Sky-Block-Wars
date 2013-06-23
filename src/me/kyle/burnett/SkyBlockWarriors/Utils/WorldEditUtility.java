@@ -56,7 +56,7 @@ public class WorldEditUtility {
 		
 		File file = new File(plugin.getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
 
-		World world = Bukkit.getServer().getWorld(Main.Arena.getString(arena + ".World"));
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString(arena + ".World"));
 		
 		SchematicFormat format = SchematicFormat.getFormat(file);
 		
@@ -69,7 +69,7 @@ public class WorldEditUtility {
 		
 		CuboidClipboard cc = format.load(file);
 		
-		Vector v = new Vector(Main.Arena.getDouble(arena + ".BlockX"), Main.Arena.getDouble(arena + ".BlockY"), Main.Arena.getDouble(arena + ".BlockZ"));
+		Vector v = new Vector(Main.getInstance().Arena.getDouble(arena + ".BlockX"), Main.getInstance().Arena.getDouble(arena + ".BlockY"), Main.getInstance().Arena.getDouble(arena + ".BlockZ"));
 		
 		cc.paste(es, v, false);
 		
@@ -86,7 +86,7 @@ public class WorldEditUtility {
 			
 			File file = new File(plugin.getDataFolder() + File.separator + "Schematics" + File.separator + x + ".schematic");
 			
-			World world = Bukkit.getServer().getWorld(Main.Arena.getString(x + "World"));
+			World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString(x + "World"));
 			
 			if(world == null){
 				return false;
@@ -110,7 +110,7 @@ public class WorldEditUtility {
 				e.printStackTrace();
 			}
 			
-			Vector v = new Vector(Main.Arena.getDouble(x + ".BlockX"), Main.Arena.getDouble(x + ".BlockY"), Main.Arena.getDouble(x + ".BlockZ"));
+			Vector v = new Vector(Main.getInstance().Arena.getDouble(x + ".BlockX"), Main.getInstance().Arena.getDouble(x + ".BlockY"), Main.getInstance().Arena.getDouble(x + ".BlockZ"));
 			
 			try {
 				cc.paste(es, v, false);

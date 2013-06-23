@@ -8,7 +8,6 @@ import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
-import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
@@ -16,59 +15,44 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Main extends JavaPlugin{
-
-	// Manages the configs.
-	public static ConfigManager configManager;
-
-	// Manages the games.
-	public static GameManager gameManager;
-
-	// Utility for saving inventorys.
-	public static InventoryUtil invent;
-
-	// Methods to do with world edit.
-	public static WorldEditUtility worldedit;
+	
+	private static Main instance;
 
 	// Main config.
-	public static File configFile;
-	public static FileConfiguration Config;
+	public File configFile;
+	public FileConfiguration Config;
 
 	// Arena config.
-	public static File arenaFile;
-	public static FileConfiguration Arena;
+	public File arenaFile;
+	public FileConfiguration Arena;
 
 	// Inv config.
-	public static File invFile;
-	public static FileConfiguration Inv;
+	public File invFile;
+	public FileConfiguration Inv;
 
 	// Chest config.
-	public static File chestFile;
-	public static FileConfiguration Chest;
+	public File chestFile;
+	public FileConfiguration Chest;
 
 	// Plugin manager
-	public static PluginManager pm = Bukkit.getServer().getPluginManager();
+	private PluginManager pm = Bukkit.getServer().getPluginManager();
 
-	public static Logger log = Bukkit.getLogger();
+	private Logger log = Bukkit.getLogger();
 	
-	Main plugin;
-
-	public Main() {
-		this.plugin = this;
+	public static Main getInstance(){
+		return instance;
 	}
 
 	@Override
 	public void onEnable(){
 		
-		// Set accessors
-		Main.configManager = new ConfigManager(this);
-		Main.gameManager = new GameManager();
-		Main.invent = new InventoryUtil();
-		Main.worldedit = new WorldEditUtility(this);
+		instance = this;
 
 		// Define files
 		configFile = new File(getDataFolder(), "config.yml");
@@ -78,7 +62,7 @@ public class Main extends JavaPlugin{
 		
 		try {
 			// Try to setup the configs.
-			Main.configManager.firstRun();
+			ConfigManager.getInstance().firstRun();
 
 		} catch (Exception e) {
 
@@ -86,12 +70,12 @@ public class Main extends JavaPlugin{
 		}
 
 		// Load save YAMLS.
-		Main.Config = new YamlConfiguration();
-		Main.Arena = new YamlConfiguration();
-		Main.Inv = new YamlConfiguration();
-		Main.Chest = new YamlConfiguration();
-		Main.configManager.loadYamls();
-		Main.configManager.saveYamls();
+		this.Config = new YamlConfiguration();
+		this.Arena = new YamlConfiguration();
+		this.Inv = new YamlConfiguration();
+		this.Chest = new YamlConfiguration();
+		ConfigManager.getInstance().loadYamls();
+		ConfigManager.getInstance().saveYamls();
 		
 		// Register events.
 		pm.registerEvents(new PlayerDeath(), this);
@@ -110,17 +94,17 @@ public class Main extends JavaPlugin{
 		
 	}    
 	
-	public static Location getLobby(){
+	public Location getLobby(){
 		
-		if(Main.Config.contains("Lobby")){
+		if(this.Config.contains("Lobby")){
 		
-			World world = Bukkit.getServer().getWorld(Main.Config.getString("Lobby.World"));
+			World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.World"));
 			
-			int X = Main.Config.getInt("Lobby.X");
-			int Y = Main.Config.getInt("Lobby.Y");
-			int Z = Main.Config.getInt("Lobby.Z");
-			float Yaw = Main.Config.getLong("Lobby.Yaw");
-			float Pitch = Main.Config.getLong("Lobby.Pitch");
+			int X = this.Config.getInt("Lobby.X");
+			int Y = this.Config.getInt("Lobby.Y");
+			int Z = this.Config.getInt("Lobby.Z");
+			float Yaw = this.Config.getLong("Lobby.Yaw");
+			float Pitch = this.Config.getLong("Lobby.Pitch");
 			
 			Location lobby = new Location(world, X, Y, Z, Yaw, Pitch);
 			
@@ -144,6 +128,37 @@ public class Main extends JavaPlugin{
 			  }
 			}.run();
 		
+	}
+	
+	public void setLobby(Player p){
+		
+		this.Config.set("Lobby.X", p.getLocation().getBlockX());
+		
+		this.Config.set("Lobby.Y", p.getLocation().getBlockY());
+
+		this.Config.set("Lobby.Z", p.getLocation().getBlockZ());
+
+		this.Config.set("Lobby.YAW", p.getLocation().getPitch());
+
+		this.Config.set("Lobby.PITCH", p.getLocation().getYaw());
+
+		this.Config.set("Lobby.WORLD", p.getLocation().getWorld().getName());
+
+		ConfigManager.getInstance().saveYamls();
+		
+	}
+	
+	public boolean teleportToLobby(Player p){
+		
+		if(!this.Config.contains("Lobby")){
+			return false;
+		}
+	
+		Location location = new Location(Bukkit.getServer().getWorld(Main.getInstance().Config.getString("Lobby.WORLD")), Main.getInstance().Config.getDouble("Lobby.X"), Main.getInstance().Config.getDouble("Lobby.Y"), Main.getInstance().Config.getDouble("Lobby.Z"), Main.getInstance().Config.getLong("Lobby.YAW"), Main.getInstance().Config.getLong("Lobby.YAW"));
+		
+		p.teleport(location);
+		
+		return true;
 	}
 
 }

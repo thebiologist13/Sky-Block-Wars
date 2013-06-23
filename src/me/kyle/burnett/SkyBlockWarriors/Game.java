@@ -29,6 +29,7 @@ public class Game {
 	private ArrayList<String> players = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
 	private HashMap<String, Team> team = new HashMap<String, Team>();
+	private ArrayList<String> editing = new ArrayList<String>();
 	private int gameID;
 	private Arena arena;
 	
@@ -75,7 +76,6 @@ public class Game {
 		
 		return this.arena;
 	}
-	
 	
 	public Team getYellowTeam(){
 		
@@ -187,7 +187,7 @@ public class Game {
 	
 	public ArenaState addPlayer(Player p){
 		
-		if(this.players.size() > Main.Config.getInt("Max-People-In-A-Team") * 4){
+		if(this.players.size() > Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4){
 			
 			return ArenaState.FULL;
 		
@@ -201,14 +201,27 @@ public class Game {
 			
 		}
 		
-		
 		return ArenaState.OTHER;
-		
-		
 	}
 	
+	public ArrayList<String> getEditors(){
+		
+		return this.editing;
+	}
 	
-	public enum ArenaState {
+	public ArenaState getState(){
+		return this.state;
+	}
+	
+	public void setState(ArenaState state){
+		this.state = state;
+	}
+	
+	public void addEditer(Player p){
+		this.editing.add(p.getName());
+	}
+	
+	public static enum ArenaState {
 		
 		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING, FULL, OTHER
 	}

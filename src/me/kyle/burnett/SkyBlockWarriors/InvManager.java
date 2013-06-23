@@ -1,5 +1,6 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
+import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
 
 import org.bukkit.entity.Player;
@@ -18,16 +19,16 @@ public class InvManager {
 		Inventory main = InventoryUtil.getInstance().getContentInventory(p.getInventory());
 		Inventory armor = InventoryUtil.getInstance().getArmorInventory(p.getInventory());
 		
-		Main.Inv.set(p.getName() +  ".Main", InventoryUtil.getInstance().toBase64(main));
-		Main.Inv.set(p.getName() + ".Armor", InventoryUtil.getInstance().toBase64(armor));
+		Main.getInstance().Inv.set(p.getName() +  ".Main", InventoryUtil.getInstance().toBase64(main));
+		Main.getInstance().Inv.set(p.getName() + ".Armor", InventoryUtil.getInstance().toBase64(armor));
 		
-		Main.configManager.saveYamls();
+		ConfigManager.getInstance().saveYamls();
 	}
 	
 	public void restoreInv(Player p){
 		
-		Inventory inv = InventoryUtil.getInstance().fromBase64(Main.Inv.getString(p.getName() + ".Main"));
-		Inventory armor = InventoryUtil.getInstance().fromBase64(Main.Inv.getString(p.getName() + ".Armor"));
+		Inventory inv = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
+		Inventory armor = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Armor"));
 
 		p.getInventory().clear();
 		p.getInventory().setContents(inv.getContents());

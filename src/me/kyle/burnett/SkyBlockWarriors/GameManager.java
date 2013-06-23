@@ -1,6 +1,7 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,7 @@ public class GameManager {
 	static GameManager instance = new GameManager();
 
 	private ArrayList<Game> games = new ArrayList<Game>();
+	private HashMap<String, Integer> playerGame = new HashMap<String, Integer>();
 	
 	public static GameManager getInstance() {
 		
@@ -16,6 +18,7 @@ public class GameManager {
 	}
 	
 	public void setUp(){
+		
 		
 	}
 
@@ -25,18 +28,30 @@ public class GameManager {
 	
 	public int getPlayerGame(Player p){
 		
-		for(Game g : this.games){
+		if(playerGame.get(p.getName()) != null){
 			
-			if(g.getPlayers().contains(p.getName())){
-				return g.getGameID();
-			}
+			return playerGame.get(p.getName());
 		}
+		
 		return -1;
 	}
 	
-	public int getArenaAmount(){
-		return Main.Arena.getInt("Amount");
+	public void setPlayerGame(Player p, Game g){
+		
+		playerGame.put(p.getName(), g.getGameID());
 	}
-
-
+	
+	public int getArenaAmount(){
+		return Main.getInstance().Arena.getInt("Amount");
+	}
+	
+	public boolean leaveGame(Player p){
+		
+		if(getPlayerGame(p) != -1){
+			
+			playerGame.put(p.getName(), null);
+		}
+		
+		return false;
+	}
 }

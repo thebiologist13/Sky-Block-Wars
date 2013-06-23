@@ -30,8 +30,8 @@ public class ChestFiller {
 	
 	public static void loadSpawn(Integer arena){
 		
-		List<String> chestLocSpawn = Main.Chest.getStringList(arena + ".Spawn");
-		List<String> chestSpawnItems = Main.Config.getStringList("Chests.Start-Chests.ItemID/Amount");
+		List<String> chestLocSpawn = Main.getInstance().Chest.getStringList(arena + ".Spawn");
+		List<String> chestSpawnItems = Main.getInstance().Config.getStringList("Chests.Start-Chests.ItemID/Amount");
 		
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		ArrayList<Block> chests = new ArrayList<Block>();
@@ -60,8 +60,8 @@ public class ChestFiller {
 	
 	public static void loadSide(Integer arena){
 		
-		List<String> chestLocSide = Main.Chest.getStringList(arena + ".Side");
-		List<String> chestSideItems = Main.Config.getStringList("Chests.Side-Chests.ItemID/Amount");
+		List<String> chestLocSide = Main.getInstance().Chest.getStringList(arena + ".Side");
+		List<String> chestSideItems = Main.getInstance().Config.getStringList("Chests.Side-Chests.ItemID/Amount");
 		
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		ArrayList<Block> chests = new ArrayList<Block>();
@@ -90,8 +90,8 @@ public class ChestFiller {
 	
 	public static void loadCenter(Integer arena){
 		
-		List<String> chestLocCenter = Main.Chest.getStringList(arena + ".Center");
-		List<String> chestCenterItems = Main.Config.getStringList("Chests.Middle-Chest.ItemID/Amount");
+		List<String> chestLocCenter = Main.getInstance().Chest.getStringList(arena + ".Center");
+		List<String> chestCenterItems = Main.getInstance().Config.getStringList("Chests.Middle-Chest.ItemID/Amount");
 		
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		ArrayList<Block> chests = new ArrayList<Block>();
