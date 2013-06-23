@@ -1,5 +1,6 @@
 package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
+import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
 import net.minecraft.server.v1_5_R3.Packet205ClientCommand;
@@ -17,12 +18,14 @@ public class PlayerDeath implements Listener{
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e){
+		
 		Entity ent = e.getEntity();
 		
 		if(ent instanceof Player){
+			
 			Player p = (Player) ent;
 			
-			//Check if player is in game.
+			if(GameManager.getInstance().isPlayerInGame(p)){
 			
 				Packet205ClientCommand packet = new Packet205ClientCommand();
 				packet.a = 1;
@@ -43,8 +46,8 @@ public class PlayerDeath implements Listener{
 				
 				p.sendMessage(ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
 				
-				//Send death message.
-			
+				//Send game death message.
+			}
 		}
 	}
 

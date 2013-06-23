@@ -18,8 +18,7 @@ public class GameManager {
 	}
 	
 	public void setUp(){
-		
-		
+		//Get games from config and make a new game with its ID.
 	}
 
 	public ArrayList<Game> getGames() {
@@ -36,6 +35,18 @@ public class GameManager {
 		return -1;
 	}
 	
+	public boolean isPlayerInGame(Player p){
+		
+		if(this.playerGame.containsKey(p.getName())){
+			
+			if(this.playerGame.get(p.getName()) != null){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public void setPlayerGame(Player p, Game g){
 		
 		playerGame.put(p.getName(), g.getGameID());
@@ -50,6 +61,8 @@ public class GameManager {
 		if(getPlayerGame(p) != -1){
 			
 			playerGame.put(p.getName(), null);
+			
+			return true;
 		}
 		
 		return false;
