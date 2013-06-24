@@ -29,9 +29,13 @@ public class PlayerDeath implements Listener{
 			
 				Packet205ClientCommand packet = new Packet205ClientCommand();
 				packet.a = 1;
+				
 				((CraftPlayer) e.getEntity()).getHandle().playerConnection.sendPacket(packet);
+				
 				p.teleport(Main.getInstance().getLobby());
+				
 				GameManager.getInstance().leaveGame(p);
+				
 				Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
 				Inventory armor = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Armor"));
 				
