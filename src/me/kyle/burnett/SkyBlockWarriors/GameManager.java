@@ -11,6 +11,7 @@ public class GameManager {
 
 	private ArrayList<Game> games = new ArrayList<Game>();
 	private HashMap<String, Integer> playerGame = new HashMap<String, Integer>();
+	public HashMap<String, Integer> confirm = new HashMap<String, Integer>();
 	
 	public static GameManager getInstance() {
 		
@@ -19,8 +20,28 @@ public class GameManager {
 	
 	public void setUp(){
 		this.games.clear();
+		
+		for(int x = 0; x < getArenaAmount(); x++){
+			
+			if(Main.getInstance().Arena.contains(Integer.toString(x))){
+				
+				if(Main.getInstance().Arena.getBoolean(Integer.toString(x) + ".Enabled")){
+					
+					games.add(new Game(x));
+				}
+			}
+		}
 	}
 
+	public int createGame(){
+		
+		int amount = this.getArenaAmount();
+		
+		
+		
+		return 0;
+	}
+	
 	public ArrayList<Game> getGames() {
 		return this.games;
 	}
@@ -68,5 +89,30 @@ public class GameManager {
 		}
 		
 		return false;
+	}
+	
+	public void listGames(){
+		
+	}
+	
+	public void disableGame(int game){
+
+	}
+	
+	public void enableGame(int game){
+		
+		
+		
+	}
+	
+	public boolean isInteger(String s) {
+	    try { 
+	    	
+	        Integer.parseInt(s);
+	        
+	    } catch(NumberFormatException e) { 
+	        return false;
+	    }
+	    return true;
 	}
 }

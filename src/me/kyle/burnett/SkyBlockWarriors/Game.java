@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.kyle.burnett.SkyBlockWarriors.Commands.SW.ArenaState;
+import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -21,10 +24,10 @@ public class Game {
 	
 	ScoreboardManager manager = Bukkit.getScoreboardManager();
 	Scoreboard board = manager.getNewScoreboard();
-	Team blue = board.registerNewTeam("Blue Team");
-	Team red = board.registerNewTeam("Red Team");
-	Team yellow = board.registerNewTeam("Yellow Team");
-	Team green = board.registerNewTeam("Green Team");
+	Team BLUE = board.registerNewTeam("Blue Team");
+	Team RED = board.registerNewTeam("Red Team");
+	Team YELLOW = board.registerNewTeam("Yellow Team");
+	Team GREEN = board.registerNewTeam("Green Team");
 	public ArenaState state = ArenaState.LOADING;
 	private ArrayList<String> players = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
@@ -62,6 +65,8 @@ public class Game {
 		
 		ChestFiller.loadChests(this.gameID);
 		
+		this.state = ArenaState.WAITING;
+		
 	}
 	
 	public ArrayList<String> getPlayers(){
@@ -79,22 +84,22 @@ public class Game {
 	
 	public Team getYellowTeam(){
 		
-		return this.yellow;
+		return this.YELLOW;
 	}
 	
 	public Team getGreenTeam(){
 		
-		return this.green;
+		return this.GREEN;
 	}
 	
 	public Team getBlueTeam(){
 		
-		return this.blue;
+		return this.BLUE;
 	}
 	
 	public Team getRedTeam(){
 		
-		return this.red;
+		return this.RED;
 	}
 	
 	public ArrayList<String> getVoted(){
@@ -106,20 +111,20 @@ public class Game {
 		
 		Team team = this.team.get(p.getName());
 		
-		if(team.equals(this.red)){
-			return this.red;
+		if(team.equals(this.RED)){
+			return this.RED;
 		
-		}else if(team.equals(this.green)){
+		}else if(team.equals(this.GREEN)){
 			
-			return this.green;
+			return this.GREEN;
 			
-		}else if(team.equals(this.blue)){
+		}else if(team.equals(this.BLUE)){
 			
-			return this.blue;
+			return this.BLUE;
 		
-		}else if(team.equals(this.yellow)){
+		}else if(team.equals(this.YELLOW)){
 			
-			return this.yellow;
+			return this.YELLOW;
 		
 		}else{
 			return null;
@@ -130,29 +135,29 @@ public class Game {
 	public void setTeamRed(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), this.red);
-		this.red.addPlayer(p);
+		this.team.put(p.getName(), this.RED);
+		this.RED.addPlayer(p);
 	}
 	
 	public void setTeamBlue(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), this.blue);
-		this.red.addPlayer(p);
+		this.team.put(p.getName(), this.BLUE);
+		this.RED.addPlayer(p);
 	}
 	
 	public void setTeamGreen(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), this.green);
-		this.red.addPlayer(p);
+		this.team.put(p.getName(), this.GREEN);
+		this.RED.addPlayer(p);
 	}
 	
 	public void setTeamYellow(Player p){
 		
 		this.removeFromTeam(p);
-		this.team.put(p.getName(), this.yellow);
-		this.red.addPlayer(p);
+		this.team.put(p.getName(), this.YELLOW);
+		this.RED.addPlayer(p);
 	}
 	
 	public void removeFromGame(Player p){
@@ -207,11 +212,130 @@ public class Game {
 	}
 	
 	public void addEditer(Player p){
+		
 		this.editing.add(p.getName());
 	}
 	
-	public static enum ArenaState {
+	public void broadCastGame(String s){
 		
-		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING, FULL, OTHER
+		for(int x = 0; x < players.size(); x++){
+			
+			Player p = Bukkit.getServer().getPlayer(players.get(x));
+			
+			p.sendMessage(s);
+			
+		}
+		
+	}
+	
+	
+	public void broadCastServer(String s){
+		
+		for(Player p : Bukkit.getServer().getOnlinePlayers()){
+			
+			p.sendMessage(s);
+			
+		}
+		
+	}
+	
+	public ChatColor getTeamColor(Player p){
+		
+		Team team = this.getPlayerTeam(p);
+		
+		if(team.equals(this.RED)){
+			
+			return ChatColor.RED;
+		
+		}else if(team.equals(this.GREEN)){
+			
+			return ChatColor.GREEN;
+		
+		}else if(team.equals(this.BLUE)){
+			
+			return ChatColor.BLUE;
+		
+		}if(team.equals(this.YELLOW)){
+			
+			return ChatColor.YELLOW;
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unused")
+	public String getPlayersAsList(){
+		
+		ArrayList<String> playersColor = new ArrayList<String>();
+		
+		for(int x = 0; x < this.getPlayers().size(); x++){
+			
+			Player p = Bukkit.getServer().getPlayer(this.getPlayers().get(x));
+			
+			//Get the players add them to a list with there colors to send to the player.
+		}
+		
+		return this.getPlayers().toString().replace("[", " ").replace("]", " ");
+	}
+	
+	public void addChest(ChestType chest, Player p){
+		
+		if(chest.equals(ChestType.SPAWN)){
+			
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Spawn");
+			
+			int x, y, z;
+			
+			x = p.getLocation().getBlockX();
+			
+			y = p.getLocation().getBlockY();
+			
+			z = p.getLocation().getBlockZ();
+			
+			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
+			
+			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Spawn", spawnChests);
+			
+			ConfigManager.getInstance().saveYamls();
+			
+		}else if(chest.equals(ChestType.SIDE)){
+			
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Side");
+			
+			int x, y, z;
+			
+			x = p.getLocation().getBlockX();
+			
+			y = p.getLocation().getBlockY();
+			
+			z = p.getLocation().getBlockZ();
+			
+			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
+			
+			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Side", spawnChests);
+			
+			ConfigManager.getInstance().saveYamls();
+			
+			
+		}else if(chest.equals(ChestType.CENTER)){
+			
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Center");
+			
+			int x, y, z;
+			
+			x = p.getLocation().getBlockX();
+			
+			y = p.getLocation().getBlockY();
+			
+			z = p.getLocation().getBlockZ();
+			
+			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
+			
+			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Center", spawnChests);
+			
+			ConfigManager.getInstance().saveYamls();
+			
+		}
+		
 	}
 }

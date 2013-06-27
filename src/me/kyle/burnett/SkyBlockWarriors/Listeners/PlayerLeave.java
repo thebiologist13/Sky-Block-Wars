@@ -3,6 +3,8 @@ package me.kyle.burnett.SkyBlockWarriors.Listeners;
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Utils.InventoryUtil;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,6 +23,8 @@ public class PlayerLeave implements Listener{
 			
 			p.teleport(Main.getInstance().getLobby());
 			
+			int game = GameManager.getInstance().getPlayerGame(p);
+			
 			GameManager.getInstance().leaveGame(p);
 			
 			Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
@@ -37,7 +41,7 @@ public class PlayerLeave implements Listener{
 				p.getInventory().setArmorContents(armor.getContents());
 			}
 		
-			//Send game leave message.
+			GameManager.getInstance().getGames().get(game).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getGames().get(game).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
 		}
 		
 	}

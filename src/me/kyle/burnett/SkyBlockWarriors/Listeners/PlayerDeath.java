@@ -34,6 +34,8 @@ public class PlayerDeath implements Listener{
 				
 				p.teleport(Main.getInstance().getLobby());
 				
+				int game = GameManager.getInstance().getPlayerGame(p);
+				
 				GameManager.getInstance().leaveGame(p);
 				
 				Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
@@ -51,7 +53,8 @@ public class PlayerDeath implements Listener{
 				p.sendMessage(ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
 				
 				
-				//Send game death message.
+				GameManager.getInstance().getGames().get(game).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getGames().get(game).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
+
 			}
 		}
 	}
