@@ -99,7 +99,7 @@ public class Tasks {
 				
 				if(count == 0){
 					getPlayer().sendMessage(ChatColor.GREEN + "0");
-					GameManager.getInstance().confirm.remove(p.getName());
+					GameManager.getInstance().getConfirming().remove(p.getName());
 					cancel();
 				}
 				

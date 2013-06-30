@@ -22,9 +22,7 @@ public class PlayerLeave implements Listener{
 		if(GameManager.getInstance().isPlayerInGame(p)){
 			
 			p.teleport(Main.getInstance().getLobby());
-			
-			int game = GameManager.getInstance().getPlayerGame(p);
-			
+						
 			GameManager.getInstance().leaveGame(p);
 			
 			Inventory main = InventoryUtil.getInstance().fromBase64(Main.getInstance().Inv.getString(p.getName() + ".Main"));
@@ -41,11 +39,8 @@ public class PlayerLeave implements Listener{
 				p.getInventory().setArmorContents(armor.getContents());
 			}
 		
-			GameManager.getInstance().getGames().get(game).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getGames().get(game).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
+			GameManager.getInstance().getPlayerGame(p).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getPlayerGame(p).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
 		}
 		
 	}
-
-	
-
 }

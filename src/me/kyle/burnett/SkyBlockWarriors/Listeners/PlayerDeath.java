@@ -25,6 +25,7 @@ public class PlayerDeath implements Listener{
 			
 			Player p = (Player) ent;
 			
+			
 			if(GameManager.getInstance().isPlayerInGame(p)){
 			
 				Packet205ClientCommand packet = new Packet205ClientCommand();
@@ -33,8 +34,6 @@ public class PlayerDeath implements Listener{
 				((CraftPlayer) e.getEntity()).getHandle().playerConnection.sendPacket(packet);
 				
 				p.teleport(Main.getInstance().getLobby());
-				
-				int game = GameManager.getInstance().getPlayerGame(p);
 				
 				GameManager.getInstance().leaveGame(p);
 				
@@ -53,7 +52,7 @@ public class PlayerDeath implements Listener{
 				p.sendMessage(ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
 				
 				
-				GameManager.getInstance().getGames().get(game).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getGames().get(game).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
+				GameManager.getInstance().getPlayerGame(p).broadCastGame(ChatColor.GOLD +"Player " + GameManager.getInstance().getPlayerGame(p).getTeamColor(p) + p.getName() + ChatColor.GOLD + " has left the game.");
 
 			}
 		}

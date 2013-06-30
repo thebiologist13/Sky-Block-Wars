@@ -11,7 +11,8 @@ public class GameManager {
 
 	private ArrayList<Game> games = new ArrayList<Game>();
 	private HashMap<String, Integer> playerGame = new HashMap<String, Integer>();
-	public HashMap<String, Integer> confirm = new HashMap<String, Integer>();
+	private HashMap<String, Integer> confirm = new HashMap<String, Integer>();
+	private HashMap<String, Integer> editing = new HashMap<String, Integer>();
 	
 	public static GameManager getInstance() {
 		
@@ -19,6 +20,7 @@ public class GameManager {
 	}
 	
 	public void setUp(){
+		
 		this.games.clear();
 		
 		for(int x = 0; x < getArenaAmount(); x++){
@@ -37,6 +39,8 @@ public class GameManager {
 		
 		int amount = this.getArenaAmount();
 		
+		int newGame = amount + 1;
+		
 		
 		
 		return 0;
@@ -46,14 +50,14 @@ public class GameManager {
 		return this.games;
 	}
 	
-	public int getPlayerGame(Player p){
+	public Game getPlayerGame(Player p){
 		
 		if(playerGame.get(p.getName()) != null){
 			
-			return playerGame.get(p.getName());
+			return this.getGames().get(playerGame.get(p.getName()));
 		}
 		
-		return -1;
+		return null;
 	}
 	
 	public boolean isPlayerInGame(Player p){
@@ -79,10 +83,9 @@ public class GameManager {
 	
 	public boolean leaveGame(Player p){
 		
-		if(getPlayerGame(p) != -1){
+		if(isPlayerInGame(p)){
 			
-			
-			this.games.get(this.getPlayerGame(p)).removeFromGame(p);
+			getPlayerGame(p).removeFromGame(p);
 			playerGame.put(p.getName(), null);
 			
 			return true;
@@ -102,9 +105,34 @@ public class GameManager {
 	public void enableGame(int game){
 		
 		
-		
 	}
 	
+	public HashMap<String, Integer> getConfirming(){
+		return this.confirm;
+	}
+	
+	public HashMap<String, Integer> getEditing(){
+		return this.editing;
+	}
+	
+	public int getPlayerEditing(Player p){
+		return getEditing().get(p.getName());
+	}
+	
+	public void addEditor(Player p, Integer game){
+		getEditing().put(p.getName(), game);
+	}
+	
+	public boolean isEditing(Player p){
+		if(getEditing().get(p.getName()) != null){
+			return true;
+		}
+		return false;
+	}
+	
+	public void removeEditor(Player p){
+		getEditing().put(p.getName(), null);
+	}
 	public boolean isInteger(String s) {
 	    try { 
 	    	

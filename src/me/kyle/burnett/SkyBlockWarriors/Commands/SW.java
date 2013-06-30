@@ -1,10 +1,12 @@
 package me.kyle.burnett.SkyBlockWarriors.Commands;
 
+import me.kyle.burnett.SkyBlockWarriors.ChestType;
 import me.kyle.burnett.SkyBlockWarriors.Game;
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -49,7 +51,7 @@ public class SW implements CommandExecutor{
 					
 					if(GameManager.getInstance().isPlayerInGame(p)){
 						
-						int game = GameManager.getInstance().getPlayerGame(p);
+						int game = GameManager.getInstance().getPlayerGame(p).getGameID();
 						
 						GameManager.getInstance().leaveGame(p);
 						
@@ -69,7 +71,7 @@ public class SW implements CommandExecutor{
 						
 					if(GameManager.getInstance().isPlayerInGame(p)){
 						
-						GameManager.getInstance().getGames().get(GameManager.getInstance().getPlayerGame(p)).getPlayersAsList();
+						GameManager.getInstance().getPlayerGame(p).getPlayersAsList();
 					
 					}else if(!GameManager.getInstance().isPlayerInGame(p)){
 						p.sendMessage(ChatColor.RED + "You are not in a game.");
@@ -88,10 +90,10 @@ public class SW implements CommandExecutor{
 				
 				if(args[0].equalsIgnoreCase("confirm")){
 					
-					if(GameManager.getInstance().confirm.containsKey(p.getName())){
+					if(GameManager.getInstance().getConfirming().containsKey(p.getName())){
 						
 						
-					}else if(!GameManager.getInstance().confirm.containsKey(p.getName())){
+					}else if(!GameManager.getInstance().getConfirming().containsKey(p.getName())){
 						
 						p.sendMessage(ChatColor.RED + "You are not waiting to confirm anything.");
 					}
@@ -112,7 +114,7 @@ public class SW implements CommandExecutor{
 							
 							p.sendMessage(ChatColor.RED + "You are away to override a previous arena. Do '/sw confirm' to confirm this action.");
 							
-							GameManager.getInstance().confirm.put(p.getName(), id);
+							GameManager.getInstance().getConfirming().put(p.getName(), id);
 							
 						
 						}else if(id > GameManager.getInstance().getArenaAmount()){
@@ -136,7 +138,7 @@ public class SW implements CommandExecutor{
 								
 								p.sendMessage(ChatColor.GREEN + "Joined game " + ChatColor.GOLD +args[1] + ChatColor.GREEN + ".");
 								
-								GameManager.getInstance().getGames().get(GameManager.getInstance().getPlayerGame(p)).broadCastGame(ChatColor.GOLD +"Player " + ChatColor.LIGHT_PURPLE + p.getName() + ChatColor.GOLD + " has joined the game.");
+								GameManager.getInstance().getPlayerGame(p).broadCastGame(ChatColor.GOLD +"Player " + ChatColor.LIGHT_PURPLE + p.getName() + ChatColor.GOLD + " has joined the game.");
 								
 								
 							}else if(game.state != ArenaState.WAITING){
@@ -165,7 +167,8 @@ public class SW implements CommandExecutor{
 					
 					if(GameManager.getInstance().getGames().contains(args[1])){
 						
-						GameManager.getInstance().getGames().get(Integer.parseInt(args[1])).addEditer(p);
+						GameManager.getInstance().addEditor(p, Integer.parseInt(args[1]));
+						
 						GameManager.getInstance().getGames().get(Integer.parseInt(args[1])).setState(ArenaState.EDITING);
 						
 						p.sendMessage(ChatColor.GREEN + "Now editing arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
@@ -179,7 +182,29 @@ public class SW implements CommandExecutor{
 				}
 				
 				if(args[0].equalsIgnoreCase("chest")){
-
+					
+					if(GameManager.getInstance().isEditing(p)){
+						
+						if(p.getLocation().getBlock().getType().equals(Material.CHEST)){
+						
+							if(args[1].equalsIgnoreCase("side")){
+								
+								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SIDE, p);
+							
+							}else if(args[1].equalsIgnoreCase("center")){
+								
+								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.CENTER, p);
+								
+							}else if(args[1].equalsIgnoreCase("spawn")){
+							
+								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SPAWN, p);
+								
+							}
+							
+						}
+					}else if(!GameManager.getInstance().isEditing(p)){
+						p.sendMessage(ChatColor.RED  + "You are not editing an arena.");
+					}
 					
 				}
 				
@@ -220,4 +245,5 @@ public class SW implements CommandExecutor{
 		
 		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING, FULL, OTHER
 	}
+	
 }

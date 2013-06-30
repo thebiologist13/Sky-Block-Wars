@@ -32,7 +32,6 @@ public class Game {
 	private ArrayList<String> players = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
 	private HashMap<String, Team> team = new HashMap<String, Team>();
-	private ArrayList<String> editing = new ArrayList<String>();
 	private int gameID;
 	private Arena arena;
 	
@@ -198,22 +197,12 @@ public class Game {
 		return ArenaState.OTHER;
 	}
 	
-	public ArrayList<String> getEditors(){
-		
-		return this.editing;
-	}
-	
 	public ArenaState getState(){
 		return this.state;
 	}
 	
 	public void setState(ArenaState state){
 		this.state = state;
-	}
-	
-	public void addEditer(Player p){
-		
-		this.editing.add(p.getName());
 	}
 	
 	public void broadCastGame(String s){
