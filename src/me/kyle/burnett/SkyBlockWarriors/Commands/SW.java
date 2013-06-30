@@ -1,16 +1,23 @@
 package me.kyle.burnett.SkyBlockWarriors.Commands;
 
+import java.io.IOException;
+
+import me.kyle.burnett.SkyBlockWarriors.ArenaState;
 import me.kyle.burnett.SkyBlockWarriors.ChestType;
 import me.kyle.burnett.SkyBlockWarriors.Game;
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
+import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.data.DataException;
 
 public class SW implements CommandExecutor{
 
@@ -85,13 +92,22 @@ public class SW implements CommandExecutor{
 				
 				if(args[0].equalsIgnoreCase("create")){
 					
-					p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + GameManager.getInstance().createGame() + ChatColor.GREEN + " has been created.");
+					if(WorldEditUtility.getInstance().doesSelectionExist(p)){
+						
+						GameManager.getInstance().createGame(p);
+					
+					}else if(!WorldEditUtility.getInstance().doesSelectionExist(p)){
+						p.sendMessage(ChatColor.RED + "Please make a selection of the arena first.");
+					}
+				
+					//p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + GameManager.getInstance().createGame() + ChatColor.GREEN + " has been created.");
 				}
 				
 				if(args[0].equalsIgnoreCase("confirm")){
 					
 					if(GameManager.getInstance().getConfirming().containsKey(p.getName())){
 						
+						GameManager.getInstance().overrideArena(p, GameManager.getInstance().getConfirming().get(p.getName()));
 						
 					}else if(!GameManager.getInstance().getConfirming().containsKey(p.getName())){
 						
@@ -122,8 +138,7 @@ public class SW implements CommandExecutor{
 							p.sendMessage(ChatColor.RED + "That number is bigger than your amount of arenas. Use '/sw create' to add arenas.");
 						}
 					}
-					
-					p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + GameManager.getInstance().createGame() + ChatColor.GREEN + " has been created.");
+				
 				}
 				
 				if(args[0].equalsIgnoreCase("join")){
@@ -185,23 +200,42 @@ public class SW implements CommandExecutor{
 					
 					if(GameManager.getInstance().isEditing(p)){
 						
-						if(p.getLocation().getBlock().getType().equals(Material.CHEST)){
+						if(WorldEditUtility.getInstance().doesSelectionExist(p)){
 						
-							if(args[1].equalsIgnoreCase("side")){
+							if(WorldEditUtility.getInstance().isChest(p)){
 								
-								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SIDE, p);
+								Location loc = WorldEditUtility.getInstance().getChestLocation(p);
 							
-							}else if(args[1].equalsIgnoreCase("center")){
+								if(args[1].equalsIgnoreCase("side")){
+									
+									GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SIDE, loc);
 								
-								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.CENTER, p);
+									p.sendMessage(ChatColor.GREEN + "You have added a " + ChatColor.GOLD + "side " + ChatColor.GREEN + "chest to arena " + ChatColor.GOLD + GameManager.getInstance().getPlayerEditing(p));
+									
+								}else if(args[1].equalsIgnoreCase("center")){
+									
+									GameManager.getInstance().getPlayerGame(p).addChest(ChestType.CENTER, loc);
+									
+									p.sendMessage(ChatColor.GREEN + "You have added a " + ChatColor.GOLD + "center " + ChatColor.GREEN + "chest to arena " + ChatColor.GOLD + GameManager.getInstance().getPlayerEditing(p));
+									
+								}else if(args[1].equalsIgnoreCase("spawn")){
 								
-							}else if(args[1].equalsIgnoreCase("spawn")){
-							
-								GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SPAWN, p);
+									GameManager.getInstance().getPlayerGame(p).addChest(ChestType.SPAWN, loc);
+									
+									p.sendMessage(ChatColor.GREEN + "You have added a " + ChatColor.GOLD + "spawn " + ChatColor.GREEN + "chest to arena " + ChatColor.GOLD + GameManager.getInstance().getPlayerEditing(p));
+									
+								}
 								
+							}else if(!WorldEditUtility.getInstance().isChest(p)){
+								
+								p.sendMessage(ChatColor.RED + "Your selection is either more than one block or is not a chest.");
 							}
 							
+						}else if(!WorldEditUtility.getInstance().doesSelectionExist(p)){
+							
+							p.sendMessage(ChatColor.RED + "You do not have a selection of a chest.");
 						}
+						
 					}else if(!GameManager.getInstance().isEditing(p)){
 						p.sendMessage(ChatColor.RED  + "You are not editing an arena.");
 					}
@@ -210,21 +244,74 @@ public class SW implements CommandExecutor{
 				
 				if(args[0].equalsIgnoreCase("enable")){
 					
+					if(GameManager.getInstance().getGames().contains(args[1])){
+						
+						if(!GameManager.getInstance().isEnabled(Integer.parseInt(args[1]))){
+							
+							GameManager.getInstance().enableGame(Integer.parseInt(args[1]));
+							
+							p.sendMessage(ChatColor.GREEN + "You enabled arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
+							
+						}else if(GameManager.getInstance().isEnabled(Integer.parseInt(args[1]))){
+							
+							p.sendMessage(ChatColor.RED + "Arena is already enabled.");
+						}
+					
+					}else if(!GameManager.getInstance().getGames().contains(args[1])){
+						
+						p.sendMessage(ChatColor.RED +"That is not an arena.");
+					}
 
 				}
 				
 				if(args[0].equalsIgnoreCase("disable")){
 					
-
+					if(GameManager.getInstance().getGames().contains(args[1])){
+						
+						if(GameManager.getInstance().isEnabled(Integer.parseInt(args[1]))){
+							
+							GameManager.getInstance().disableGame(Integer.parseInt(args[1]));
+							
+							p.sendMessage(ChatColor.GREEN + "You disabled arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
+							
+						}else if(!GameManager.getInstance().isEnabled(Integer.parseInt(args[1]))){
+							
+							p.sendMessage(ChatColor.RED + "Arena is already disabled.");
+						}
+					
+					}else if(!GameManager.getInstance().getGames().contains(args[1])){
+						
+						p.sendMessage(ChatColor.RED +"That is not an arena.");
+					}
+					
 				}
 				
 				if(args[0].equalsIgnoreCase("save")){
 	
+					if(GameManager.getInstance().getGames().contains(args[1])){
+						
+					WorldEditUtility.getInstance().resaveArena(Integer.parseInt(args[1]), p);
 					
+					}else if(!GameManager.getInstance().getGames().contains(args[1])){
+						p.sendMessage(ChatColor.RED + "That arena does not exist.");
+					}
 				}
 				
 				if(args[0].equalsIgnoreCase("load")){
 					
+					if(GameManager.getInstance().getGames().contains(args[1])){
+						
+						try {
+							
+							WorldEditUtility.getInstance().loadIslandSchematic(Integer.parseInt(args[1]));
+						
+						} catch (NumberFormatException| MaxChangedBlocksException | DataException| IOException e) {
+							e.printStackTrace();
+						}
+						
+					}else if(!GameManager.getInstance().getGames().contains(args[1])){
+						p.sendMessage(ChatColor.RED + "That arena does not exist.");
+					}
 
 				}
 			
@@ -239,11 +326,6 @@ public class SW implements CommandExecutor{
 			return true;
 		}
 		return false;
-	}
-	
-	public static enum ArenaState {
-		
-		DISABLED, INGAME, STARTING, RESETING, WAITING, FINISHING, EDITING, LOADING, FULL, OTHER
 	}
 	
 }

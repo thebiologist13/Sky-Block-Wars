@@ -9,11 +9,4 @@ commands:
         description: Main command.
         aliases: [sw]
         usage: /<command> arguments
-permissions:
-    doublejump.*:
-        description: Gives access to all player exp fly actions/commands.
-        children:
-            doublejump.cancelfalldamage: true
-    doublejump.cancelfalldamage:
-        description: Cancels the fall damage after a double jump.
-        default: op
+permissions: []

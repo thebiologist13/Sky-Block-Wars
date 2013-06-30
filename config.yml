@@ -5,7 +5,7 @@ Block-Commands: false
 Auto-Start-Players: 4
 Auto-Start-Time: 60
 Chests:
-  Start-Chests:
+  Spawn-Chests:
       ItemID/Amount:
         - 270,1
         - 79, 2

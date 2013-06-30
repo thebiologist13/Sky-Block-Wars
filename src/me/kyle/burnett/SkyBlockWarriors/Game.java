@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import me.kyle.burnett.SkyBlockWarriors.Commands.SW.ArenaState;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -267,7 +267,7 @@ public class Game {
 		return this.getPlayers().toString().replace("[", " ").replace("]", " ");
 	}
 	
-	public void addChest(ChestType chest, Player p){
+	public void addChest(ChestType chest, Location loc){
 		
 		if(chest.equals(ChestType.SPAWN)){
 			
@@ -275,11 +275,11 @@ public class Game {
 			
 			int x, y, z;
 			
-			x = p.getLocation().getBlockX();
+			x = loc.getBlockX();
 			
-			y = p.getLocation().getBlockY();
+			y = loc.getBlockY();
 			
-			z = p.getLocation().getBlockZ();
+			z = loc.getBlockZ();
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			
@@ -293,11 +293,11 @@ public class Game {
 			
 			int x, y, z;
 			
-			x = p.getLocation().getBlockX();
+			x = loc.getBlockX();
 			
-			y = p.getLocation().getBlockY();
+			y = loc.getBlockY();
 			
-			z = p.getLocation().getBlockZ();
+			z = loc.getBlockZ();
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			
@@ -312,11 +312,11 @@ public class Game {
 			
 			int x, y, z;
 			
-			x = p.getLocation().getBlockX();
+			x = loc.getBlockX();
 			
-			y = p.getLocation().getBlockY();
+			y = loc.getBlockY();
 			
-			z = p.getLocation().getBlockZ();
+			z = loc.getBlockZ();
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			

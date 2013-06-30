@@ -3,6 +3,8 @@ package me.kyle.burnett.SkyBlockWarriors;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
+
 import org.bukkit.entity.Player;
 
 public class GameManager {
@@ -35,11 +37,25 @@ public class GameManager {
 		}
 	}
 
-	public int createGame(){
+	public int createGame(Player p){
 		
 		int amount = this.getArenaAmount();
 		
 		int newGame = amount + 1;
+		
+		WorldEditUtility.getInstance().saveArena(p, newGame);
+		
+		Main.getInstance().Arena.set(newGame + ".Enabled", true);
+		
+		return 0;
+	}
+	
+	public int overrideArena(Player p, Integer arena){
+		
+		
+		Main.getInstance().Arena.set(Integer.toString(arena), null);
+		
+		WorldEditUtility.getInstance().overrideSave(p, arena);
 		
 		
 		
@@ -104,7 +120,15 @@ public class GameManager {
 	
 	public void enableGame(int game){
 		
+	}
+	
+	public boolean isEnabled(int game){
+
+		if(Main.getInstance().Arena.getBoolean(game + ".Enabled")){
+			return true;
+		}
 		
+		return false;
 	}
 	
 	public HashMap<String, Integer> getConfirming(){

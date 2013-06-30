@@ -1,3 +1,4 @@
 Amount: 0
-Arena: []
-    
+Arena:
+  1:
+    Enabled: true
