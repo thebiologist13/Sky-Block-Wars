@@ -1,25 +1,23 @@
 package me.kyle.burnett.SkyBlockWarriors.Utils;
 
-import me.kyle.burnett.SkyBlockWarriors.GameManager;
+import me.kyle.burnett.SkyBlockWarriors.Game;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 
 public class Tasks {
 	
 	private int id;
-	private int initial;
-	private int after;
-	private Player p;
+	private long initial;
+	private long after;
+	private Game g;
 	
-	public Tasks(int id, int initial, int after, Player p, boolean start){
+	public Tasks(int id, long initial, long after, Game g, boolean start){
 		this.id = id;
 		this.initial = initial;
 		this.after = after;
-		this.p = p;
+		this.g = g;
 		
 		if(start){
 			run();
@@ -34,74 +32,23 @@ public class Tasks {
 		Bukkit.getServer().getScheduler().cancelTask(this.id);
 	}
 	
-	public Player getPlayer(){
+	public Game getGame(){
 		
-		return this.p;
+		return this.g;
 	}
 	public void run(){
 		
 		this.id = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable(){
 			
-			int count = 10;
+			int count = Main.getInstance().Config.getInt("Auto-Start-Time");
+			int currentCount = count;
 			@Override
 			public void run() {
 				
-				if(count == 10){
-					getPlayer().sendMessage(ChatColor.GREEN + "10");
-					
-				}
-				
-				if(count == 9){
-					getPlayer().sendMessage(ChatColor.GREEN + "9");
-					
-				}
-				
-				if(count == 8){
-					getPlayer().sendMessage(ChatColor.GREEN + "8");
-					
-				}
-				
-				if(count == 7){
-					getPlayer().sendMessage(ChatColor.GREEN + "7");
-					
-				}
-				
-				if(count == 6){
-					getPlayer().sendMessage(ChatColor.GREEN + "6");
-					
-				}
-				
-				if(count == 5){
-					getPlayer().sendMessage(ChatColor.GREEN + "5");
-					
-				}
-				
-				if(count == 4){
-					getPlayer().sendMessage(ChatColor.GREEN + "4");
-					
-				}
-				
-				if(count == 3){
-					getPlayer().sendMessage(ChatColor.GREEN + "3");
-					
-				}
-				
-				if(count == 2){
-					getPlayer().sendMessage(ChatColor.GREEN + "2");
-					
-				}
-				
-				if(count == 1){
-					getPlayer().sendMessage(ChatColor.GREEN + "1");
-					
-				}
+			//Need a timer to say at intervals of the specified countdown. Then when it reaches ten do 10 9 8 7 6 5 4 3 2 1 Started.
 				
 				
-				if(count == 0){
-					getPlayer().sendMessage(ChatColor.GREEN + "0");
-					GameManager.getInstance().getConfirming().remove(p.getName());
-					cancel();
-				}
+			
 				
 				
 			}

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
+import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
@@ -33,38 +35,55 @@ public class Game {
 	private ArrayList<String> voted = new ArrayList<String>();
 	private HashMap<String, Team> team = new HashMap<String, Team>();
 	private int gameID;
-	private Arena arena;
 	
 	public Game(int gameID){
 		
 		this.gameID = gameID;
 		
-		prepareArena();
+		prepareArena(false);
 		
 	}
 	
-	public void prepareArena(){
+	public Game(int gameID, boolean just){
+		
+		this.gameID = gameID;
+		
+		prepareArena(just);
+		
+	}
+	
+	
+	public void prepareArena(boolean just){
 		
 		this.state = ArenaState.LOADING;
+		this.voted.clear();
+		this.players.clear();
+		this.team.clear();
 		
-		try {
+		if(!just){
+		
+			try {
+				
+				WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
+				
+			} catch (MaxChangedBlocksException e) {
+				
+				e.printStackTrace();
+			} catch (DataException e) {
+				
+				e.printStackTrace();
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
+		
+			ChestFiller.loadChests(this.gameID);
 			
-			WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
-			
-		} catch (MaxChangedBlocksException e) {
-			
-			e.printStackTrace();
-		} catch (DataException e) {
-			
-			e.printStackTrace();
-		} catch (IOException e) {
-			
-			e.printStackTrace();
+			this.state = ArenaState.WAITING;
+			return;
 		}
 		
-		ChestFiller.loadChests(this.gameID);
-		
-		this.state = ArenaState.WAITING;
+		this.state = ArenaState.IN_SETUP;
 		
 	}
 	
@@ -74,11 +93,6 @@ public class Game {
 	
 	public int getGameID(){
 		return this.gameID;
-	}
-	
-	public Arena getArena(){
-		
-		return this.arena;
 	}
 	
 	public Team getYellowTeam(){
@@ -161,14 +175,14 @@ public class Game {
 	
 	public void removeFromGame(Player p){
 		
+		PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		
 		this.players.remove(p.getName());
 		
-		if(this.voted.contains(p.getName())){
-			
-			this.voted.remove(p.getName());
-		}
-		
 		this.removeFromTeam(p);
+		
+		this.broadCastGame(ChatColor.GOLD + p.getDisplayName() + ChatColor.GREEN + "has left the arena.");
 		
 	}
 	
@@ -192,9 +206,18 @@ public class Game {
 			
 			this.players.add(p.getName());
 			
+			PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			
+			this.broadCastGame(ChatColor.GOLD + p.getDisplayName() + ChatColor.GREEN + "has joined the arena.");
+			
+			int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
+			
+			p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + "players.");
+			this.checkStart();
 		}
 		
-		return ArenaState.OTHER;
+		return ArenaState.OTHER_REASON;
 	}
 	
 	public ArenaState getState(){
@@ -326,5 +349,20 @@ public class Game {
 			
 		}
 		
+	}
+	
+	public void checkStart(){
+		
+		if(getPlayers().size() > Main.getInstance().Config.getInt("Auto-Start-Players")){
+			
+		}
+		
+	}
+	
+	public void endGame(){
+		//Announce winner or reason of end.
+		//Remove players.
+		//Register stats.
+		//Unregister teams or clear them.
 	}
 }

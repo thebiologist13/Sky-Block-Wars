@@ -24,23 +24,18 @@ public class Main extends JavaPlugin{
 	
 	private static Main instance;
 
-	// Main config.
 	public File configFile;
 	public FileConfiguration Config;
 
-	// Arena config.
 	public File arenaFile;
 	public FileConfiguration Arena;
 
-	// Inv config.
 	public File invFile;
 	public FileConfiguration Inv;
 
-	// Chest config.
 	public File chestFile;
 	public FileConfiguration Chest;
 
-	// Plugin manager
 	private PluginManager pm = Bukkit.getServer().getPluginManager();
 
 	private Logger log = Bukkit.getLogger();
@@ -54,22 +49,20 @@ public class Main extends JavaPlugin{
 		
 		instance = this;
 
-		// Define files
 		configFile = new File(getDataFolder(), "config.yml");
 		arenaFile = new File(getDataFolder(), "arena.yml");
 		invFile = new File(getDataFolder(), "inventorys.yml");
 		chestFile = new File(getDataFolder(), "chests.yml");
 		
 		try {
-			// Try to setup the configs.
+			
 			ConfigManager.getInstance().firstRun();
 
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
-
-		// Load save YAMLS.
+		
 		this.Config = new YamlConfiguration();
 		this.Arena = new YamlConfiguration();
 		this.Inv = new YamlConfiguration();
@@ -77,11 +70,9 @@ public class Main extends JavaPlugin{
 		ConfigManager.getInstance().loadYamls();
 		ConfigManager.getInstance().saveYamls();
 		
-		// Register events.
 		pm.registerEvents(new PlayerDeath(), this);
 		pm.registerEvents(new PlayerLeave(), this);
 
-		// Add commands
 		getCommand("skyblockw").setExecutor(new SW());
 		
 		setUp();
@@ -124,7 +115,7 @@ public class Main extends JavaPlugin{
 				  
 				  GameManager.getInstance().setUp();
 				  WorldEditUtility.getInstance().regenAllIslands();
-		
+				  
 			  }
 			}.run();
 		

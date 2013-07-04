@@ -2,7 +2,9 @@ package me.kyle.burnett.SkyBlockWarriors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.entity.Player;
@@ -25,7 +27,7 @@ public class GameManager {
 		
 		this.games.clear();
 		
-		for(int x = 0; x < getArenaAmount(); x++){
+		for(int x = -1; x < getArenaAmount(); x++){
 			
 			if(Main.getInstance().Arena.contains(Integer.toString(x))){
 				
@@ -45,21 +47,26 @@ public class GameManager {
 		
 		WorldEditUtility.getInstance().saveArena(p, newGame);
 		
-		Main.getInstance().Arena.set(newGame + ".Enabled", true);
+		Main.getInstance().Arena.set("Arena." + newGame + ".Enabled", true);
 		
-		return 0;
+		Main.getInstance().Arena.set("Amount", newGame);
+		
+		ConfigManager.getInstance().saveYamls();
+		
+		games.add(new Game(newGame, true));
+		
+		return newGame;
 	}
 	
-	public int overrideArena(Player p, Integer arena){
-		
+	public void overrideArena(Player p, Integer arena){
 		
 		Main.getInstance().Arena.set(Integer.toString(arena), null);
+		Main.getInstance().Chest.set(Integer.toString(arena), null);
+		Main.getInstance().Arena.set("Arena." + arena + ".Enabled", true);
+		ConfigManager.getInstance().saveYamls();
 		
 		WorldEditUtility.getInstance().overrideSave(p, arena);
-		
-		
-		
-		return 0;
+
 	}
 	
 	public ArrayList<Game> getGames() {
@@ -110,8 +117,18 @@ public class GameManager {
 		return false;
 	}
 	
-	public void listGames(){
+	public String listGames(){
 		
+		List<String> strings = new ArrayList<String>();
+		
+		for(int x = 0; x < games.size(); x++){
+			
+			String s = Integer.toString(games.get(x).getGameID());
+			
+			strings.add(s);
+		}
+	
+		return strings.toString().replace("[", "").replace("]", "");
 	}
 	
 	public void disableGame(int game){
@@ -157,6 +174,7 @@ public class GameManager {
 	public void removeEditor(Player p){
 		getEditing().put(p.getName(), null);
 	}
+	
 	public boolean isInteger(String s) {
 	    try { 
 	    	
@@ -166,5 +184,27 @@ public class GameManager {
 	        return false;
 	    }
 	    return true;
+	}
+	
+	public boolean checkGameByID(int id){
+		
+		for(Game g : getGames()){
+			
+			if(g.getGameID() == id){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Game getGameByID(int id){
+
+		for(Game g : getGames()){
+			
+			if(g.getGameID() == id){
+				return g;
+			}
+		}
+		return null;
 	}
 }

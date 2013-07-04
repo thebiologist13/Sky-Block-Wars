@@ -9,4 +9,3 @@ commands:
         description: Main command.
         aliases: [sw]
         usage: /<command> arguments
-permissions: []

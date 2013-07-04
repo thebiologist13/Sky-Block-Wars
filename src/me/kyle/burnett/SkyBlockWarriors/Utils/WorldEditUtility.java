@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
+import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,7 +54,7 @@ public class WorldEditUtility {
 		
 		File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
 
-		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString(arena + ".World"));
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 		
 		SchematicFormat format = SchematicFormat.getFormat(file);
 		
@@ -81,40 +82,42 @@ public class WorldEditUtility {
 		
 		for(int x = 0; x < amount; x++){
 			
-			File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + x + ".schematic");
+			if(Main.getInstance().Arena.contains("Arena." + x)){
 			
-			World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString(x + "World"));
-			
-			if(world == null){
-				return false;
+				File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + x + ".schematic");
+				
+				World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + x + ".World"));
+				
+				if(world == null){
+					return false;
+				}
+				
+				SchematicFormat format = SchematicFormat.getFormat(file);
+				
+				if (format == null) {
+					System.out.println("Null Schematic."); 
+					return false;
+				}
+				
+				EditSession es = new EditSession(new BukkitWorld(world), 999999999);
+				
+				CuboidClipboard cc = null;
+				try {
+					cc = format.load(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (DataException e) {
+					e.printStackTrace();
+				}
+				
+				Vector v = new Vector(Main.getInstance().Arena.getDouble(x + ".OriginX"), Main.getInstance().Arena.getDouble(x + ".OriginY"), Main.getInstance().Arena.getDouble(x + ".OriginZ"));
+				
+				try {
+					cc.paste(es, v, false);
+				} catch (MaxChangedBlocksException e) {
+					e.printStackTrace();
+				}
 			}
-			
-			SchematicFormat format = SchematicFormat.getFormat(file);
-			
-			if (format == null) {
-				System.out.println("Null Schematic."); 
-				return false;
-			}
-			
-			EditSession es = new EditSession(new BukkitWorld(world), 999999999);
-			
-			CuboidClipboard cc = null;
-			try {
-				cc = format.load(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (DataException e) {
-				e.printStackTrace();
-			}
-			
-			Vector v = new Vector(Main.getInstance().Arena.getDouble(x + ".OriginX"), Main.getInstance().Arena.getDouble(x + ".OriginY"), Main.getInstance().Arena.getDouble(x + ".OriginZ"));
-			
-			try {
-				cc.paste(es, v, false);
-			} catch (MaxChangedBlocksException e) {
-				e.printStackTrace();
-			}
-			
 		}
 		return true;
 	}
@@ -168,16 +171,18 @@ public class WorldEditUtility {
 		} catch (IOException | DataException e) {
 			e.printStackTrace();
 		}
-		Main.getInstance().Arena.set(arena + ".OriginX", p.getLocation().getBlockX());
-		Main.getInstance().Arena.set(arena + ".OriginY", p.getLocation().getBlockY());
-		Main.getInstance().Arena.set(arena + ".OriginZ", p.getLocation().getBlockZ());
-		Main.getInstance().Arena.set(arena + ".MaxX", min.getBlockX());
-		Main.getInstance().Arena.set(arena + ".MaxY", min.getBlockY());
-		Main.getInstance().Arena.set(arena + ".MaxZ", min.getBlockZ());
-		Main.getInstance().Arena.set(arena + ".MinX", min.getBlockX());
-		Main.getInstance().Arena.set(arena + ".MinY", min.getBlockY());
-		Main.getInstance().Arena.set(arena + ".MinZ", min.getBlockZ());
-		Main.getInstance().Arena.set(arena + ".World", p.getWorld().getName());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginX", p.getLocation().getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginY", p.getLocation().getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginZ", p.getLocation().getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxX", max.getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxY", max.getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxZ", max.getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinX", min.getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinY", min.getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinZ", min.getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".World", p.getWorld().getName());
+		
+		ConfigManager.getInstance().saveYamls();
 
 		return true;
 	}
@@ -231,23 +236,25 @@ public class WorldEditUtility {
 		} catch (IOException | DataException e) {
 			e.printStackTrace();
 		}
-		Main.getInstance().Arena.set(arena + ".OriginX", p.getLocation().getBlockX());
-		Main.getInstance().Arena.set(arena + ".OriginY", p.getLocation().getBlockY());
-		Main.getInstance().Arena.set(arena + ".OriginZ", p.getLocation().getBlockZ());
-		Main.getInstance().Arena.set(arena + ".MaxX", min.getBlockX());
-		Main.getInstance().Arena.set(arena + ".MaxY", min.getBlockY());
-		Main.getInstance().Arena.set(arena + ".MaxZ", min.getBlockZ());
-		Main.getInstance().Arena.set(arena + ".MinX", min.getBlockX());
-		Main.getInstance().Arena.set(arena + ".MinY", min.getBlockY());
-		Main.getInstance().Arena.set(arena + ".MinZ", min.getBlockZ());
-		Main.getInstance().Arena.set(arena + ".World", p.getWorld().getName());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginX", p.getLocation().getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginY", p.getLocation().getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".OriginZ", p.getLocation().getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxX", max.getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxY", max.getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".MaxZ", max.getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinX", min.getBlockX());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinY", min.getBlockY());
+		Main.getInstance().Arena.set("Arena." + arena + ".MinZ", min.getBlockZ());
+		Main.getInstance().Arena.set("Arena." + arena + ".World", p.getWorld().getName());
+		
+		ConfigManager.getInstance().saveYamls();
 
 		return true;
 	}
 	
 	public void resaveArena(Integer arena, Player p){
 		
-		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString(arena + ".World"));
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 		
 		int maxX = Main.getInstance().Arena.getInt(arena + ".MaxX");
 		int maxY = Main.getInstance().Arena.getInt(arena + ".MaxY");
