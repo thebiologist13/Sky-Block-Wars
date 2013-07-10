@@ -67,7 +67,7 @@ public class WorldEditUtility {
 		
 		CuboidClipboard cc = format.load(file);
 		
-		Vector v = new Vector(Main.getInstance().Arena.getDouble(arena + ".OriginX"), Main.getInstance().Arena.getDouble(arena + ".OriginY"), Main.getInstance().Arena.getDouble(arena + ".OriginZ"));
+		Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginZ"));
 		
 		cc.paste(es, v, false);
 		
@@ -110,7 +110,7 @@ public class WorldEditUtility {
 					e.printStackTrace();
 				}
 				
-				Vector v = new Vector(Main.getInstance().Arena.getDouble(x + ".OriginX"), Main.getInstance().Arena.getDouble(x + ".OriginY"), Main.getInstance().Arena.getDouble(x + ".OriginZ"));
+				Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + x + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + x + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + x + ".OriginZ"));
 				
 				try {
 					cc.paste(es, v, false);
@@ -256,20 +256,20 @@ public class WorldEditUtility {
 		
 		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 		
-		int maxX = Main.getInstance().Arena.getInt(arena + ".MaxX");
-		int maxY = Main.getInstance().Arena.getInt(arena + ".MaxY");
-		int maxZ = Main.getInstance().Arena.getInt(arena + ".MaxZ");
-		int minX = Main.getInstance().Arena.getInt(arena + ".MinX");
-		int minY = Main.getInstance().Arena.getInt(arena + ".MinY");
-		int minZ = Main.getInstance().Arena.getInt(arena + ".MinZ");
+		int maxX = Main.getInstance().Arena.getInt("Arena." + arena + ".MaxX");
+		int maxY = Main.getInstance().Arena.getInt("Arena." + arena + ".MaxY");
+		int maxZ = Main.getInstance().Arena.getInt("Arena." + arena + ".MaxZ");
+		int minX = Main.getInstance().Arena.getInt("Arena." + arena + ".MinX");
+		int minY = Main.getInstance().Arena.getInt("Arena." + arena + ".MinY");
+		int minZ = Main.getInstance().Arena.getInt("Arena." + arena + ".MinZ");
 		int x,y,z;
 		
-		x = Main.getInstance().Arena.getInt(arena + ".OriginX");
-		y = Main.getInstance().Arena.getInt(arena + ".OriginY");
-		z = Main.getInstance().Arena.getInt(arena + ".OriginZ");
+		x = Main.getInstance().Arena.getInt("Arena." + arena + ".OriginX");
+		y = Main.getInstance().Arena.getInt("Arena." + arena + ".OriginY");
+		z = Main.getInstance().Arena.getInt("Arena." + arena + ".OriginZ");
 		
-	    Vector min = new Vector(maxX, maxY, maxZ);
-	    Vector max = new Vector(minX, minY, minZ);
+	    Vector min = new Vector(minX, minY, minZ);
+	    Vector max = new Vector(maxX, maxY, maxZ);
 	    Vector pos = new Vector(x, y, z);
 	    
 	    EditSession es = new EditSession(new BukkitWorld(world), 999999999);
@@ -321,9 +321,10 @@ public class WorldEditUtility {
 		
 		Selection sel = we.getSelection(p);
 		
-		if(!(sel.getArea() > 1)){
-						
-			if(sel.getMaximumPoint().getBlock().equals(Material.CHEST)){
+		if(sel.getMaximumPoint().equals(sel.getMinimumPoint())){
+			
+			if(sel.getMaximumPoint().getBlock().getType().equals(Material.CHEST)){
+				
 				return true;
 			}
 		}
@@ -334,14 +335,8 @@ public class WorldEditUtility {
 	public Location getChestLocation(Player p){
 		
 		Selection sel = we.getSelection(p);
-		
-		if(!(sel.getArea() > 1)){
-						
-			if(sel.getMaximumPoint().getBlock().equals(Material.CHEST)){
-				return new Location(sel.getWorld(), sel.getMaximumPoint().getBlockX(), sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ());
-			}
-		}
-		
-		return null;
+			
+		return new Location(sel.getWorld(), sel.getMaximumPoint().getBlockX(), sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ());
+
 	}
 }

@@ -27,11 +27,11 @@ public class GameManager {
 		
 		this.games.clear();
 		
-		for(int x = -1; x < getArenaAmount(); x++){
+		for(int x = 0; x <= getArenaAmount(); x++){
 			
-			if(Main.getInstance().Arena.contains(Integer.toString(x))){
+			if(Main.getInstance().Arena.contains("Arena." + x)){
 				
-				if(Main.getInstance().Arena.getBoolean(Integer.toString(x) + ".Enabled")){
+				if(Main.getInstance().Arena.getBoolean("Arena." + x + ".Enabled")){
 					
 					games.add(new Game(x));
 				}
@@ -44,6 +44,7 @@ public class GameManager {
 		int amount = this.getArenaAmount();
 		
 		int newGame = amount + 1;
+		Integer.toString(1);
 		
 		WorldEditUtility.getInstance().saveArena(p, newGame);
 		
@@ -60,8 +61,9 @@ public class GameManager {
 	
 	public void overrideArena(Player p, Integer arena){
 		
-		Main.getInstance().Arena.set(Integer.toString(arena), null);
-		Main.getInstance().Chest.set(Integer.toString(arena), null);
+		
+		Main.getInstance().Arena.set("Arena" + arena, null);
+		Main.getInstance().Chest.set("Chest." + arena, null);
 		Main.getInstance().Arena.set("Arena." + arena + ".Enabled", true);
 		ConfigManager.getInstance().saveYamls();
 		
@@ -77,7 +79,7 @@ public class GameManager {
 		
 		if(playerGame.get(p.getName()) != null){
 			
-			return this.getGames().get(playerGame.get(p.getName()));
+			return this.getGameByID(playerGame.get(p.getName()));
 		}
 		
 		return null;
@@ -141,7 +143,7 @@ public class GameManager {
 	
 	public boolean isEnabled(int game){
 
-		if(Main.getInstance().Arena.getBoolean(game + ".Enabled")){
+		if(Main.getInstance().Arena.getBoolean("Arena." + Integer.toString(game) + ".Enabled")){
 			return true;
 		}
 		
@@ -153,7 +155,15 @@ public class GameManager {
 	}
 	
 	public HashMap<String, Integer> getEditing(){
+		
 		return this.editing;
+	}
+	
+	public Game getGameEditing(Player p){
+		
+		int game = this.getEditing().get(p.getName());
+		
+		return this.getGameByID(game);
 	}
 	
 	public int getPlayerEditing(Player p){
@@ -162,6 +172,7 @@ public class GameManager {
 	
 	public void addEditor(Player p, Integer game){
 		getEditing().put(p.getName(), game);
+		getGameByID(game).addEditor(p);
 	}
 	
 	public boolean isEditing(Player p){
@@ -172,6 +183,13 @@ public class GameManager {
 	}
 	
 	public void removeEditor(Player p){
+		
+		if(getGameEditing(p).getEditorsSize() == 1){
+			getGameEditing(p).setState(ArenaState.WAITING);
+		}
+		
+		getGameEditing(p).removeEditor(p);
+		
 		getEditing().put(p.getName(), null);
 	}
 	

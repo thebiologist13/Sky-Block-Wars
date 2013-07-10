@@ -41,6 +41,7 @@ public class Tasks {
 		this.id = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable(){
 			
 			int count = Main.getInstance().Config.getInt("Auto-Start-Time");
+			@SuppressWarnings("unused")
 			int currentCount = count;
 			@Override
 			public void run() {

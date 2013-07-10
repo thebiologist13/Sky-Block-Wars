@@ -34,6 +34,7 @@ public class Game {
 	private ArrayList<String> players = new ArrayList<String>();
 	private ArrayList<String> voted = new ArrayList<String>();
 	private HashMap<String, Team> team = new HashMap<String, Team>();
+	private ArrayList<String> editors = new ArrayList<String>();
 	private int gameID;
 	
 	public Game(int gameID){
@@ -124,6 +125,10 @@ public class Game {
 		
 		Team team = this.team.get(p.getName());
 		
+		if(team == null){
+			return null;
+		}
+		
 		if(team.equals(this.RED)){
 			return this.RED;
 		
@@ -182,14 +187,15 @@ public class Game {
 		
 		this.removeFromTeam(p);
 		
-		this.broadCastGame(ChatColor.GOLD + p.getDisplayName() + ChatColor.GREEN + "has left the arena.");
+		this.broadCastGame(ChatColor.GOLD + p.getName() + ChatColor.GREEN + "has left the arena.");
 		
 	}
 	
 	public void removeFromTeam(Player p){
-		
-		this.team.get(p.getName()).removePlayer(p);
-		this.team.remove(p.getName());
+		if(this.team.containsKey(p.getName())){
+			this.team.get(p.getName()).removePlayer(p);
+			this.team.remove(p.getName());
+		}
 	}
 	
 	public ArenaState addPlayer(Player p){
@@ -209,11 +215,11 @@ public class Game {
 			PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			
-			this.broadCastGame(ChatColor.GOLD + p.getDisplayName() + ChatColor.GREEN + "has joined the arena.");
+			this.broadCastGame(p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
 			
 			int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
 			
-			p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + "players.");
+			p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
 			this.checkStart();
 		}
 		
@@ -255,6 +261,10 @@ public class Game {
 		
 		Team team = this.getPlayerTeam(p);
 		
+		if(team == null){
+			return null;
+		}
+		
 		if(team.equals(this.RED)){
 			
 			return ChatColor.RED;
@@ -294,7 +304,7 @@ public class Game {
 		
 		if(chest.equals(ChestType.SPAWN)){
 			
-			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Spawn");
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.getGameID() + ".Spawn");
 			
 			int x, y, z;
 			
@@ -306,13 +316,13 @@ public class Game {
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			
-			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Spawn", spawnChests);
+			Main.getInstance().Chest.set("Chest." + this.getGameID() + ".Spawn", spawnChests);
 			
 			ConfigManager.getInstance().saveYamls();
 			
 		}else if(chest.equals(ChestType.SIDE)){
 			
-			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Side");
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.getGameID() + ".Side");
 			
 			int x, y, z;
 			
@@ -324,14 +334,14 @@ public class Game {
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			
-			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Side", spawnChests);
+			Main.getInstance().Chest.set("Chest." + this.getGameID() + ".Side", spawnChests);
 			
 			ConfigManager.getInstance().saveYamls();
 			
 			
 		}else if(chest.equals(ChestType.CENTER)){
 			
-			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList(this.getGameID() + "Center");
+			ArrayList<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.getGameID() + ".Center");
 			
 			int x, y, z;
 			
@@ -343,12 +353,32 @@ public class Game {
 			
 			spawnChests.add(Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z));
 			
-			Main.getInstance().Chest.set(Integer.toString(this.getGameID()) + "Center", spawnChests);
+			Main.getInstance().Chest.set("Chest." + this.getGameID() + ".Center", spawnChests);
 			
 			ConfigManager.getInstance().saveYamls();
 			
 		}
 		
+	}
+	
+	public ArrayList<String> getEditors(){
+		
+		return editors;
+	}
+	
+	public int getEditorsSize(){
+		
+		return getEditors().size();
+	}
+	
+	public void addEditor(Player p){
+		editors.add(p.getName());
+	}
+	
+	public void removeEditor(Player p){
+		if(editors.contains(p.getName())){
+			editors.remove(p.getName());
+		}
 	}
 	
 	public void checkStart(){
