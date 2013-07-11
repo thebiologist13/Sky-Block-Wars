@@ -3,6 +3,7 @@ package me.kyle.burnett.SkyBlockWarriors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
@@ -25,7 +26,6 @@ import com.sk89q.worldedit.data.DataException;
 
 public class Game {
 	
-	
 	ScoreboardManager manager = Bukkit.getScoreboardManager();
 	Scoreboard board = manager.getNewScoreboard();
 	Team BLUE = board.registerNewTeam("Blue Team");
@@ -33,10 +33,11 @@ public class Game {
 	Team YELLOW = board.registerNewTeam("Yellow Team");
 	Team GREEN = board.registerNewTeam("Green Team");
 	public ArenaState state = ArenaState.LOADING;
-	private ArrayList<String> players = new ArrayList<String>();
-	private ArrayList<String> voted = new ArrayList<String>();
+	private List<String> unteamed = new ArrayList<String>();
+	private List<String> players = new ArrayList<String>();
+	private List<String> voted = new ArrayList<String>();
 	private HashMap<String, Team> team = new HashMap<String, Team>();
-	private ArrayList<String> editors = new ArrayList<String>();
+	private List<String> editors = new ArrayList<String>();
 	private int gameID;
 	
 	public Game(int gameID){
@@ -54,7 +55,6 @@ public class Game {
 		prepareArena(just);
 		
 	}
-	
 	
 	public void prepareArena(boolean just){
 		
@@ -90,7 +90,7 @@ public class Game {
 		
 	}
 	
-	public ArrayList<String> getPlayers(){
+	public List<String> getPlayers(){
 		return players;
 	}
 	
@@ -118,7 +118,7 @@ public class Game {
 		return this.RED;
 	}
 	
-	public ArrayList<String> getVoted(){
+	public List<String> getVoted(){
 		
 		return voted;
 	}
@@ -227,6 +227,7 @@ public class Game {
 			if(!((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) >= this.players.size())){
 				
 				this.players.add(p.getName());
+				this.unteamed.add(p.getName());
 				
 				PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
 				Bukkit.getServer().getPluginManager().callEvent(event);
@@ -385,7 +386,7 @@ public class Game {
 		
 	}
 	
-	public ArrayList<String> getEditors(){
+	public List<String> getEditors(){
 		
 		return editors;
 	}
@@ -474,13 +475,17 @@ public class Game {
 		return new Location(world,x,y,z);
 	}
 	
+	public List<String> getUnteamed(){
+		return this.unteamed;
+	}
+	
 	public void checkStart(){
 		
 		if(getPlayers().size() > Main.getInstance().Config.getInt("Auto-Start-Players")){
 			start();
-		
-		}else if(this.voted.size() * 100 / this.players.size() > 60){
 			
+		}else if(this.voted.size() * 100 / this.players.size() > 60){
+			start();
 		}
 		
 	}
@@ -495,8 +500,161 @@ public class Game {
 	
 	public void addPlayersToTeams(){
 		
+		for(int y = 0; y < players.size(); y++){
 
-		
+			Team team = null;
+			
+			int red = this.RED.getPlayers().size();
+			int blue = this.BLUE.getPlayers().size();
+			int yellow = this.YELLOW.getPlayers().size();
+			int green = this.GREEN.getPlayers().size();
+
+			if (red < blue && red < yellow && red < green) {
+				team = this.RED;
+			}
+
+			else if (blue < red && blue < yellow && blue < green) {
+				team = this.BLUE;
+			}
+
+			else if (yellow < blue && yellow < red && yellow < green) {
+				team = this.YELLOW;
+			}
+
+			else if (green < red && green < yellow && green < blue) {
+				team = this.GREEN;
+
+			}
+
+			else if (red == blue && red == green && red == yellow) {
+				team = chooseTeam();
+			}
+
+			else if (red == blue && red < green && red < yellow) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.BLUE;
+				}
+				team = this.RED;
+			}
+
+			else if (red == green && red < blue && red < yellow) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.GREEN;
+				}
+				team = this.RED;
+			}
+
+			else if (red == yellow && red < blue && red < green) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.YELLOW;
+				}
+				team = this.RED;
+			}
+
+			else if (blue == green && blue < red && blue < yellow) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.GREEN;
+				}
+				team = this.RED;
+			}
+
+			else if (blue == yellow && blue < red && blue < green) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.GREEN;
+				}
+				team = this.RED;
+			}
+
+			else if (yellow == green && yellow < red && yellow < blue) {
+
+				Random r = new Random();
+				int x = r.nextInt(1);
+
+				if (x == 1) {
+					team = this.GREEN;
+				}
+				team = this.RED;
+			}
+
+			else if (blue == green && green == red && red < yellow) {
+
+				Random r = new Random();
+				int x = r.nextInt(2);
+
+				if (x == 0) {
+					team = this.GREEN;
+				} else if (x == 1) {
+					team = this.RED;
+				} else if (x == 2) {
+					team = this.BLUE;
+				}
+			}
+
+			else if (blue == green && green == yellow && yellow < red) {
+
+				Random r = new Random();
+				int x = r.nextInt(2);
+
+				if (x == 0) {
+					team = this.YELLOW;
+				} else if (x == 1) {
+					team = this.GREEN;
+				} else if (x == 2) {
+					team = this.BLUE;
+				}
+			}
+
+			else if (blue == red && red == yellow && yellow < green) {
+
+				Random r = new Random();
+				int x = r.nextInt(2);
+
+				if (x == 0) {
+					team = this.YELLOW;
+				} else if (x == 1) {
+					team = this.RED;
+				} else if (x == 2) {
+					team = this.BLUE;
+				}
+			}
+
+			else if (green == red && red == yellow && yellow < blue) {
+
+				Random r = new Random();
+				int x = r.nextInt(2);
+
+				if (x == 0) {
+					team = this.YELLOW;
+				} else if (x == 1) {
+					team = this.RED;
+				} else if (x == 2) {
+					team = this.GREEN;
+				}
+			}	
+			
+			team.addPlayer(Bukkit.getServer().getPlayer(players.get(y)));
+			this.unteamed.remove(players.get(y));
+		}
 	}
 	
 	public Team chooseTeam(){
@@ -532,5 +690,177 @@ public class Game {
 		//Remove players.
 		//Register stats.
 		//Unregister teams or clear them.
+	}
+	
+	public boolean isRedAvailable(){
+		
+		int red = this.RED.getPlayers().size();
+		int blue = this.BLUE.getPlayers().size();
+		int yellow = this.YELLOW.getPlayers().size();
+		int green = this.GREEN.getPlayers().size();
+
+		if (red < blue && red < yellow && red < green) {
+			return true;
+		}
+
+		else if (red == blue && red == green && red == yellow) {
+			return true;
+		}
+
+		else if (red == blue && red < green && red < yellow) {
+			return true;
+		}
+
+		else if (red == green && red < blue && red < yellow) {
+			return true;
+		}
+
+		else if (red == yellow && red < blue && red < green) {
+			return true;
+		}
+
+		else if (blue == green && green == red && red < yellow) {
+			return true;
+		}
+
+		else if (blue == red && red == yellow && yellow < green) {
+			return true;
+		}
+
+		else if (green == red && red == yellow && yellow < blue) {
+			return true;
+		}
+		else{
+			return false;
+		}	
+	}
+	
+	public boolean isGreenAvailable(){
+		
+		int red = this.RED.getPlayers().size();
+		int blue = this.BLUE.getPlayers().size();
+		int yellow = this.YELLOW.getPlayers().size();
+		int green = this.GREEN.getPlayers().size();
+
+		if (green < blue && green < yellow && green < red) {
+			return true;
+		}
+
+		else if (green == blue && green == red && green == yellow) {
+			return true;
+		}
+
+		else if (green == blue && green < red && green < yellow) {
+			return true;
+		}
+
+		else if (green == red && green < blue && green < yellow) {
+			return true;
+		}
+
+		else if (green == yellow && green < blue && green < red) {
+			return true;
+		}
+
+		else if (blue == green && green == red && red < yellow) {
+			return true;
+		}
+
+		else if (blue == green && green == yellow && yellow < red) {
+			return true;
+		}
+
+		else if (green == red && red == yellow && yellow < blue) {
+			return true;
+		}
+		else{
+			return false;
+		}	
+	}
+	
+	public boolean isBlueAvailable(){
+		
+		int red = this.RED.getPlayers().size();
+		int blue = this.BLUE.getPlayers().size();
+		int yellow = this.YELLOW.getPlayers().size();
+		int green = this.GREEN.getPlayers().size();
+
+		if (blue < green && blue < yellow && blue < red) {
+			return true;
+		}
+
+		else if (blue == green && blue == red && blue == yellow) {
+			return true;
+		}
+
+		else if (blue == green && blue < red && blue < yellow) {
+			return true;
+		}
+
+		else if (blue == red && blue < green && blue < yellow) {
+			return true;
+		}
+
+		else if (blue == yellow && blue < green && blue < red) {
+			return true;
+		}
+
+		else if (blue == green && green == red && red < yellow) {
+			return true;
+		}
+
+		else if (blue == green && green == yellow && yellow < red) {
+			return true;
+		}
+
+		else if (blue == red && red == yellow && yellow < green) {
+			return true;
+		}
+		else{
+			return false;
+		}	
+	}
+	
+	public boolean isYellowAvailable(){
+		
+		int red = this.RED.getPlayers().size();
+		int blue = this.BLUE.getPlayers().size();
+		int yellow = this.YELLOW.getPlayers().size();
+		int green = this.GREEN.getPlayers().size();
+
+		if (yellow < green && yellow < blue && yellow < red) {
+			return true;
+		}
+
+		else if (yellow == green && yellow == red && yellow == blue) {
+			return true;
+		}
+
+		else if (yellow == green && yellow < red && yellow < blue) {
+			return true;
+		}
+
+		else if (yellow == red && yellow < green && yellow < blue) {
+			return true;
+		}
+
+		else if (yellow == blue && yellow < green && yellow < red) {
+			return true;
+		}
+
+		else if (yellow == green && green == red && red < yellow) {
+			return true;
+		}
+
+		else if (yellow == red && red == blue && yellow < green) {
+			return true;
+		}
+
+		else if (yellow == blue && blue == green && yellow < red) {
+			return true;
+		}
+		else{
+			return false;
+		}	
 	}
 }

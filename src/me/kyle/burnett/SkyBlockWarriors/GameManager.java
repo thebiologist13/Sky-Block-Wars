@@ -13,7 +13,7 @@ public class GameManager {
 
 	static GameManager instance = new GameManager();
 
-	private ArrayList<Game> games = new ArrayList<Game>();
+	private List<Game> games = new ArrayList<Game>();
 	private HashMap<String, Integer> playerGame = new HashMap<String, Integer>();
 	private HashMap<String, Integer> confirm = new HashMap<String, Integer>();
 	private HashMap<String, Integer> editing = new HashMap<String, Integer>();
@@ -76,7 +76,7 @@ public class GameManager {
 
 	}
 	
-	public ArrayList<Game> getGames() {
+	public List<Game> getGames() {
 		return this.games;
 	}
 	

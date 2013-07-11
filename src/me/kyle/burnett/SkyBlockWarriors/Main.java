@@ -108,7 +108,6 @@ public class Main extends JavaPlugin{
 		}
 		log.log(Level.SEVERE, "Skyblock Wars lobby not found.");
 		return null;
-		
 	}
 	
 	public void setUp(){
@@ -119,29 +118,20 @@ public class Main extends JavaPlugin{
 			  public void run(){
 				  
 				  GameManager.getInstance().setUp();
-				  WorldEditUtility.getInstance().regenAllIslands();
-				  
+				  WorldEditUtility.getInstance().regenAllIslands(); 
 			  }
 			}.run();
-		
 	}
 	
 	public void setLobby(Player p){
 		
 		this.Config.set("Lobby.X", p.getLocation().getBlockX());
-		
 		this.Config.set("Lobby.Y", p.getLocation().getBlockY());
-
 		this.Config.set("Lobby.Z", p.getLocation().getBlockZ());
-
 		this.Config.set("Lobby.YAW", p.getLocation().getPitch());
-
 		this.Config.set("Lobby.PITCH", p.getLocation().getYaw());
-
 		this.Config.set("Lobby.WORLD", p.getLocation().getWorld().getName());
-
 		ConfigManager.getInstance().saveYamls();
-		
 	}
 	
 	public boolean teleportToLobby(Player p){

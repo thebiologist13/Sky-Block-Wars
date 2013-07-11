@@ -430,6 +430,67 @@ public class SW implements CommandExecutor{
 					}
 					
 				}
+				
+				if(args[0].equalsIgnoreCase("team")){
+					
+					if(gm.isPlayerInGame(p)){
+						
+						Game g = gm.getPlayerGame(p);
+						
+						if(g.getState().equals(ArenaState.WAITING)){
+							
+							if(args[1].equalsIgnoreCase("red")){
+								
+								if(g.isRedAvailable()){
+									
+									g.setTeamRed(p);
+									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.RED + "red" + ChatColor.GREEN + ".");
+								
+								}else if(!g.isRedAvailable()){
+									p.sendMessage(ChatColor.RED + "You can not join red, try joining another team or waiting for the teams to even out.");
+								}
+							
+							}else if(args[1].equalsIgnoreCase("blue")){
+								
+								if(g.isBlueAvailable()){
+									
+									g.setTeamRed(p);
+									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.BLUE + "blue" + ChatColor.GREEN + ".");
+									
+								}else if(!g.isBlueAvailable()){
+									p.sendMessage(ChatColor.RED + "You can not join" + ChatColor.BLUE +" blue" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
+								}
+							
+							}else if(args[1].equalsIgnoreCase("green")){
+								
+								if(g.isGreenAvailable()){
+									
+									g.setTeamRed(p);
+									p.sendMessage(ChatColor.GREEN + "Joined team green.");
+									
+								}else if(!g.isGreenAvailable()){
+									p.sendMessage(ChatColor.RED + "You can not join" + ChatColor.GREEN +" green" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
+								}
+							
+							}else if(args[1].equalsIgnoreCase("yellow")){
+								
+								if(g.isYellowAvailable()){
+									
+									g.setTeamRed(p);
+									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + ".");
+									
+								}else if(!g.isYellowAvailable()){
+									p.sendMessage(ChatColor.RED + "You can not join" + ChatColor.YELLOW +" yellow" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
+								}
+							}
+						}else if(!g.getState().equals(ArenaState.WAITING)){
+							p.sendMessage(ChatColor.RED + "You can not change team when the game is starting or has already started.");
+						}
+						
+					}else if(!gm.isPlayerInGame(p)){
+						p.sendMessage(ChatColor.RED + "You are not in a game.");
+					}
+				}
 			
 				return true;
 			}
