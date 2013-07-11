@@ -6,12 +6,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.math.BigInteger;
 
-import net.minecraft.server.v1_6_R1.NBTBase;
-import net.minecraft.server.v1_6_R1.NBTTagCompound;
-import net.minecraft.server.v1_6_R1.NBTTagList;
+import net.minecraft.server.v1_6_R2.NBTBase;
+import net.minecraft.server.v1_6_R2.NBTTagCompound;
+import net.minecraft.server.v1_6_R2.NBTTagList;
 
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftInventoryCustom;
-import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -54,7 +54,7 @@ public class InventoryUtil {
 
 		for (int i = 0; i < inventory.getSize(); i++) {
 			NBTTagCompound outputObject = new NBTTagCompound();
-			net.minecraft.server.v1_6_R1.ItemStack craft = getCraftVersion(inventory
+			net.minecraft.server.v1_6_R2.ItemStack craft = getCraftVersion(inventory
 					.getItem(i));
 
 			if (craft != null)
@@ -80,7 +80,7 @@ public class InventoryUtil {
 
 			if (!inputObject.isEmpty()) {
 				inventory.setItem(i, CraftItemStack
-						.asBukkitCopy(net.minecraft.server.v1_6_R1.ItemStack
+						.asBukkitCopy(net.minecraft.server.v1_6_R2.ItemStack
 								.createStack(inputObject)));
 			}
 		}
@@ -88,7 +88,7 @@ public class InventoryUtil {
 		return inventory;
 	}
 
-	private net.minecraft.server.v1_6_R1.ItemStack getCraftVersion(
+	private net.minecraft.server.v1_6_R2.ItemStack getCraftVersion(
 			ItemStack stack) {
 		if (stack != null)
 			return CraftItemStack.asNMSCopy(stack);

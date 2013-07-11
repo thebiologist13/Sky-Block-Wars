@@ -148,17 +148,75 @@ public class SW implements CommandExecutor{
 					
 				}
 				
+				if(args[0].equalsIgnoreCase("vote")){
+					
+					if(gm.isPlayerInGame(p)){
+						
+						if(!gm.getPlayerGame(p).hasVoted(p)){
+						
+							if(gm.getPlayerGame(p).getState() == ArenaState.WAITING){
+								
+								gm.getPlayerGame(p).addVoted(p);
+								p.sendMessage(ChatColor.GREEN + "Voted!");
+								gm.getPlayerGame(p).broadCastGame(p.getDisplayName() +  ChatColor.GREEN + "Has voted to start.");
+							}
+						}else if(gm.getPlayerGame(p).hasVoted(p)){
+							
+							p.sendMessage(ChatColor.RED + "You have already voted.");
+						}
+						
+					}else if(!gm.isPlayerInGame(p)){
+						p.sendMessage(ChatColor.RED + "You are not in an arena.");
+					}
+				}
+				
 				return true;
 			}
 			
 			if(args.length == 2){
 				
-/*				if(args[0].equalsIgnoreCase("fill")){
+				if(args[0].equalsIgnoreCase("setspawn")){
 					
-					ChestFiller.loadChests(Integer.parseInt(args[1]));
-					p.sendMessage("Filled");
+					if(gm.isEditing(p)){
 					
-				}*/
+						if(args[1].equalsIgnoreCase("red")){
+							
+							Game g = gm.getGameEditing(p);
+							
+							g.addRedSpawn(p);
+							
+							p.sendMessage(ChatColor.RED  + "Red " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							
+						}else if(args[1].equalsIgnoreCase("blue")){
+							
+							Game g = gm.getGameEditing(p);
+							
+							g.addBlueSpawn(p);
+							
+							p.sendMessage(ChatColor.BLUE  + "Blue " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							
+						}else if(args[1].equalsIgnoreCase("green")){
+							
+							Game g = gm.getGameEditing(p);
+							
+							g.addGreenSpawn(p);
+							
+							p.sendMessage(ChatColor.GREEN  + "Green team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							
+						}else if(args[1].equalsIgnoreCase("yellow")){
+							
+							Game g = gm.getGameEditing(p);
+							
+							g.addYellowSpawn(p);
+							
+							p.sendMessage(ChatColor.YELLOW  + "Yellow " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+						
+						}
+					}else if(!gm.isEditing(p)){
+						
+						p.sendMessage(ChatColor.RED +"You are not editing an arena.");
+					}
+				}
 					
 				if(args[0].equalsIgnoreCase("create")){
 					

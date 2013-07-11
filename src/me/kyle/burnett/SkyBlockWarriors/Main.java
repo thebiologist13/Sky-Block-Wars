@@ -35,6 +35,9 @@ public class Main extends JavaPlugin{
 
 	public File chestFile;
 	public FileConfiguration Chest;
+	
+	public File spawnFile;
+	public FileConfiguration Spawns;
 
 	private PluginManager pm = Bukkit.getServer().getPluginManager();
 
@@ -53,6 +56,7 @@ public class Main extends JavaPlugin{
 		arenaFile = new File(getDataFolder(), "arena.yml");
 		invFile = new File(getDataFolder(), "inventorys.yml");
 		chestFile = new File(getDataFolder(), "chests.yml");
+		spawnFile = new File(getDataFolder(), "spawns.yml");
 		
 		try {
 			
@@ -67,6 +71,7 @@ public class Main extends JavaPlugin{
 		this.Arena = new YamlConfiguration();
 		this.Inv = new YamlConfiguration();
 		this.Chest = new YamlConfiguration();
+		this.Spawns = new YamlConfiguration();
 		ConfigManager.getInstance().loadYamls();
 		ConfigManager.getInstance().saveYamls();
 		

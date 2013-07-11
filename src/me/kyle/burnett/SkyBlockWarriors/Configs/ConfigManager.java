@@ -37,6 +37,11 @@ public class ConfigManager {
            Main.getInstance().chestFile.getParentFile().mkdirs();
             copy(Main.getInstance().getResource("chests.yml"),Main.getInstance().chestFile);
         }
+        
+        if(!Main.getInstance().spawnFile.exists()){
+            Main.getInstance().spawnFile.getParentFile().mkdirs();
+             copy(Main.getInstance().getResource("spawns.yml"),Main.getInstance().spawnFile);
+         }
    
 	}
  
@@ -61,6 +66,7 @@ public class ConfigManager {
            Main.getInstance().Arena.load(Main.getInstance().arenaFile);
            Main.getInstance().Inv.load(Main.getInstance().invFile);
            Main.getInstance().Chest.load(Main.getInstance().chestFile);
+           Main.getInstance().Spawns.load(Main.getInstance().spawnFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,6 +79,7 @@ public class ConfigManager {
 	         Main.getInstance().Arena.save(Main.getInstance().arenaFile);
 	         Main.getInstance().Inv.save(Main.getInstance().invFile);
 	         Main.getInstance().Chest.save(Main.getInstance().chestFile);
+	         Main.getInstance().Spawns.save(Main.getInstance().spawnFile);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }

@@ -44,7 +44,6 @@ public class GameManager {
 		int amount = this.getArenaAmount();
 		
 		int newGame = amount + 1;
-		Integer.toString(1);
 		
 		WorldEditUtility.getInstance().saveArena(p, newGame);
 		
@@ -68,6 +67,12 @@ public class GameManager {
 		ConfigManager.getInstance().saveYamls();
 		
 		WorldEditUtility.getInstance().overrideSave(p, arena);
+		
+		Game g = getGameByID(arena);
+		
+		getGames().remove(g);
+		
+		games.add(new Game(arena, true));
 
 	}
 	

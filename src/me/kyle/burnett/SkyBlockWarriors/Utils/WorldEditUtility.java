@@ -17,7 +17,6 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;
 import java.io.IOException;
-
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
@@ -339,4 +338,90 @@ public class WorldEditUtility {
 		return new Location(sel.getWorld(), sel.getMaximumPoint().getBlockX(), sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ());
 
 	}
+	
+/*	public void copyIsland(Player p){
+		
+		WorldEdit instance = WorldEdit.getInstance();
+		
+		LocalSession session = instance.getSession(p.getName());
+		
+		EditSession es = new EditSession(new BukkitWorld(p.getWorld()), 999999999);
+		
+		File file = new File(Main.getInstance().getDataFolder() + File.separator + "SkyBlockTemplate.schematic");
+		
+		SchematicFormat format = SchematicFormat.getFormat(file);
+		
+		if (format == null) {
+			System.out.println("Null Schematic."); 
+			return;
+		}
+		
+		CuboidClipboard cc = null;
+		
+		try {
+			
+			cc = format.load(file);
+			
+		} catch (IOException | DataException e) {
+			
+			e.printStackTrace();
+		}
+		Location loc = p.getLocation();
+		Vector v = new Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		try {
+			cc.paste(es, v, false);
+		} catch (MaxChangedBlocksException e) {
+			e.printStackTrace();
+		}
+		
+		
+		p.sendMessage(ChatColor.GREEN + "Loaded Schematic. Use '" + ChatColor.GOLD + "/sw undo" + ChatColor.GREEN + "' if you want to undo. If it needs rotated '" + ChatColor.GOLD + "/sw undo" + ChatColor.GREEN + "' then use '" + ChatColor.GOLD + "/sw rotate 90/180/270/360"+ ChatColor.GREEN + "'.");
+
+		return;
+	}
+	
+	public void makeLocalSchematic() {
+
+		File file = new File(Main.getInstance().getDataFolder() + File.separator + "SkyBlockTemplate.schematic");
+		
+		if(file.exists()){
+			return;
+		}
+		
+		if(!file.exists()){
+			try {
+				file.createNewFile();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("SkyBlockTemplate.schematic");		
+		OutputStream outputStream = null;
+		
+		try {
+			outputStream = new FileOutputStream(file);
+			
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			IOUtils.copy(stream, outputStream);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			outputStream.close();
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+	}*/
 }

@@ -3,6 +3,7 @@ package me.kyle.burnett.SkyBlockWarriors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
@@ -13,6 +14,7 @@ import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -121,6 +123,18 @@ public class Game {
 		return voted;
 	}
 	
+	public void addVoted(Player p){
+		this.voted.add(p.getName());
+	}
+	
+	public boolean hasVoted(Player p){
+		if(this.voted.contains(p.getName())){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public Team getPlayerTeam(Player p){
 		
 		Team team = this.team.get(p.getName());
@@ -210,17 +224,27 @@ public class Game {
 		
 		}else if(this.state == ArenaState.WAITING){
 			
-			this.players.add(p.getName());
+			if(!((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) >= this.players.size())){
+				
+				this.players.add(p.getName());
+				
+				PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
+				Bukkit.getServer().getPluginManager().callEvent(event);
+				
+				this.broadCastGame(p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
+				
+				int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
+				int max = Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4;
+				
+				p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
+				p.sendMessage(ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + "players in the game.");
+				 
+				this.checkStart();
 			
-			PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			
-			this.broadCastGame(p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
-			
-			int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
-			
-			p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
-			this.checkStart();
+			}else if((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) >= this.players.size()){
+				
+				p.sendMessage(ChatColor.RED + "That arena is full.");
+			}
 		}
 		
 		return ArenaState.OTHER_REASON;
@@ -381,12 +405,126 @@ public class Game {
 		}
 	}
 	
+	public void addRedSpawn(Player p){
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.X", p.getLocation().getBlockX());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Y", p.getLocation().getBlockY());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Z", p.getLocation().getBlockZ());
+	}
+	
+	public void addBlueSpawn(Player p){
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.X", p.getLocation().getBlockX());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Y", p.getLocation().getBlockY());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Z", p.getLocation().getBlockZ());
+	}
+	
+	public void addYellowSpawn(Player p){
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.X", p.getLocation().getBlockX());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Y", p.getLocation().getBlockY());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Z", p.getLocation().getBlockZ());
+	}
+	
+	public void addGreenSpawn(Player p){
+		
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.X", p.getLocation().getBlockX());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.Y", p.getLocation().getBlockY());
+		Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.Z", p.getLocation().getBlockZ());
+	}
+	
+	public Location getSpawnRed(){
+		
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
+		
+		int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.X");
+		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Y");
+		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
+		
+		return new Location(world,x,y,z);
+	}
+	
+	public Location getSpawnBlue(){
+		
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
+		
+		int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.X");
+		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Y");
+		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Z");
+		
+		return new Location(world,x,y,z);
+	}
+	
+	public Location getSpawnYellow(){
+		
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
+		
+		int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.X");
+		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Y");
+		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Z");
+		
+		return new Location(world,x,y,z);
+	}
+	
+	public Location getSpawnGreen(){
+		
+		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
+		
+		int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.X");
+		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Y");
+		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Z");
+		
+		return new Location(world,x,y,z);
+	}
+	
 	public void checkStart(){
 		
 		if(getPlayers().size() > Main.getInstance().Config.getInt("Auto-Start-Players")){
+			start();
+		
+		}else if(this.voted.size() * 100 / this.players.size() > 60){
 			
 		}
 		
+	}
+	
+	public void start(){
+		
+		this.setState(ArenaState.STARTING);
+		
+		this.addPlayersToTeams();
+		
+	}
+	
+	public void addPlayersToTeams(){
+		
+
+		
+	}
+	
+	public Team chooseTeam(){
+		
+		Random r = new Random();
+		
+		int x = r.nextInt(4) + 1;
+		
+		Team team = null;
+		
+		switch (x){
+		
+		case 1:
+			team = this.RED;
+			break;
+		case 2:
+			team = this.GREEN;
+			break;
+		case 3:
+			team = this.YELLOW;
+			break;
+		case 4:
+			team = this.BLUE;
+			break;
+		default: team = this.RED;
+			break;
+		}
+		return team;
 	}
 	
 	public void endGame(){
