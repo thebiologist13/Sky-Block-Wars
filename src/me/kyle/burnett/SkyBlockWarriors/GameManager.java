@@ -48,6 +48,8 @@ public class GameManager {
 		WorldEditUtility.getInstance().saveArena(p, newGame);
 		
 		Main.getInstance().Arena.set("Arena." + newGame + ".Enabled", true);
+		Main.getInstance().Arena.set("Arena." + newGame + ".Active", false);
+
 		
 		Main.getInstance().Arena.set("Amount", newGame);
 		
@@ -139,16 +141,35 @@ public class GameManager {
 	}
 	
 	public void disableGame(int game){
-
+		Main.getInstance().Arena.set("Arena." + game + ".Enabled", false);
+		ConfigManager.getInstance().saveYamls();
 	}
 	
 	public void enableGame(int game){
-		
+		Main.getInstance().Arena.set("Arena." + game + ".Enabled", true);
+		ConfigManager.getInstance().saveYamls();
+	}
+	
+	public void activate(int game){
+		Main.getInstance().Arena.set("Arena." + game + ".Active", true);
+		ConfigManager.getInstance().saveYamls();
+	}
+	
+	public void deactivate(int game){
+		Main.getInstance().Arena.set("Arena." + game + ".Active", false);
+		ConfigManager.getInstance().saveYamls();
+	}
+	
+	public boolean isActive(int game){
+		if(Main.getInstance().Arena.getBoolean("Arena." + game + ".Active")){
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean isEnabled(int game){
 
-		if(Main.getInstance().Arena.getBoolean("Arena." + Integer.toString(game) + ".Enabled")){
+		if(Main.getInstance().Arena.getBoolean("Arena." + game + ".Enabled")){
 			return true;
 		}
 		

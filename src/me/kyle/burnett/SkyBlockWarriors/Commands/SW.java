@@ -8,7 +8,6 @@ import me.kyle.burnett.SkyBlockWarriors.Game;
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
-import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
@@ -59,7 +58,7 @@ public class SW implements CommandExecutor{
 					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("leave")){
+				else if(args[0].equalsIgnoreCase("leave")){
 					
 					if(gm.isPlayerInGame(p)){
 						
@@ -83,7 +82,7 @@ public class SW implements CommandExecutor{
 					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("list")){
+				else if(args[0].equalsIgnoreCase("list")){
 						
 					if(gm.isPlayerInGame(p)){
 						
@@ -92,29 +91,32 @@ public class SW implements CommandExecutor{
 					}else if(!gm.isPlayerInGame(p)){
 						p.sendMessage(ChatColor.RED + "You are not in a game.");
 					}
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("listgames")){
+				else if(args[0].equalsIgnoreCase("listgames")){
 					
 					String arenas = gm.listGames();
 					
 					p.sendMessage(ChatColor.GOLD + "Arena List:");
 					p.sendMessage(ChatColor.GRAY + arenas);
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("create")){
+				else if(args[0].equalsIgnoreCase("create")){
 					
 					if(WorldEditUtility.getInstance().doesSelectionExist(p)){
 						
 						int arena = gm.createGame(p);
-						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " created.");
-					
+						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " created. Once you have edited it use '" + ChatColor.GOLD + "/sw activate arena" + ChatColor.GREEN + "' to allow people to join.");
+						
 					}else if(!WorldEditUtility.getInstance().doesSelectionExist(p)){
 						p.sendMessage(ChatColor.RED + "Please make a selection of the arena first.");
 					}
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("confirm")){
+				else if(args[0].equalsIgnoreCase("confirm")){
 					
 					if(gm.getConfirming().containsKey(p.getName())){
 						
@@ -124,31 +126,32 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED + "You are not waiting to confirm anything.");
 					}
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("setlobby")){
+				else if(args[0].equalsIgnoreCase("setlobby")){
 					
 					Main.getInstance().setLobby(p);
 					p.sendMessage(ChatColor.GREEN + "Lobby set succesfully.");
-					
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("finish")){
+				else if(args[0].equalsIgnoreCase("finish")){
 					
 					if(gm.isEditing(p)){
 						
-						p.sendMessage(ChatColor.GREEN + "Finished editing arena " + ChatColor.GOLD + gm.getEditing().get(p.getName()) + ChatColor.GREEN + ". Remember to '/sw save arena' if you edited the blocks.");
-						 
+						p.sendMessage(ChatColor.GREEN + "Finished editing arena " + ChatColor.GOLD + gm.getEditing().get(p.getName()) + ChatColor.GREEN + ".");
+						WorldEditUtility.getInstance().resaveArena(gm.getPlayerEditing(p));
 						gm.removeEditor(p);
 						
 					}else if(!gm.isEditing(p)){
 						
 						p.sendMessage(ChatColor.RED + "You are not editing an arena.");
 					}
-					
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("vote")){
+				else if(args[0].equalsIgnoreCase("vote")){
 					
 					if(gm.isPlayerInGame(p)){
 						
@@ -158,7 +161,7 @@ public class SW implements CommandExecutor{
 								
 								gm.getPlayerGame(p).addVoted(p);
 								p.sendMessage(ChatColor.GREEN + "Voted!");
-								gm.getPlayerGame(p).broadCastGame(p.getDisplayName() +  ChatColor.GREEN + "Has voted to start.");
+								gm.getPlayerGame(p).broadCastGame(p.getDisplayName() +  ChatColor.GREEN + " has voted to start.");
 							}
 						}else if(gm.getPlayerGame(p).hasVoted(p)){
 							
@@ -168,7 +171,10 @@ public class SW implements CommandExecutor{
 					}else if(!gm.isPlayerInGame(p)){
 						p.sendMessage(ChatColor.RED + "You are not in an arena.");
 					}
+					return true;
 				}
+				
+				p.sendMessage(ChatColor.RED + "Unknown command. Use '/sw help' for a list of commands.");
 				
 				return true;
 			}
@@ -185,7 +191,7 @@ public class SW implements CommandExecutor{
 							
 							g.addRedSpawn(p);
 							
-							p.sendMessage(ChatColor.RED  + "Red " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							p.sendMessage(ChatColor.RED  + "Red " + ChatColor.GREEN + "team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
 							
 						}else if(args[1].equalsIgnoreCase("blue")){
 							
@@ -193,7 +199,7 @@ public class SW implements CommandExecutor{
 							
 							g.addBlueSpawn(p);
 							
-							p.sendMessage(ChatColor.BLUE  + "Blue " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							p.sendMessage(ChatColor.BLUE  + "Blue " + ChatColor.GREEN + "team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
 							
 						}else if(args[1].equalsIgnoreCase("green")){
 							
@@ -201,7 +207,7 @@ public class SW implements CommandExecutor{
 							
 							g.addGreenSpawn(p);
 							
-							p.sendMessage(ChatColor.GREEN  + "Green team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							p.sendMessage(ChatColor.GREEN  + "Green team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
 							
 						}else if(args[1].equalsIgnoreCase("yellow")){
 							
@@ -209,16 +215,17 @@ public class SW implements CommandExecutor{
 							
 							g.addYellowSpawn(p);
 							
-							p.sendMessage(ChatColor.YELLOW  + "Yellow " + ChatColor.GREEN + "team spawn add for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+							p.sendMessage(ChatColor.YELLOW  + "Yellow " + ChatColor.GREEN + "team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
 						
 						}
 					}else if(!gm.isEditing(p)){
 						
 						p.sendMessage(ChatColor.RED +"You are not editing an arena.");
 					}
+					return true;
 				}
 					
-				if(args[0].equalsIgnoreCase("create")){
+				else if(args[0].equalsIgnoreCase("create")){
 					
 					if(gm.isInteger(args[1])){
 						
@@ -236,15 +243,17 @@ public class SW implements CommandExecutor{
 							p.sendMessage(ChatColor.RED + "That number is bigger than your amount of arenas. Use '/sw create' to add arenas.");
 						}
 					}
-				
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("join")){
+				else if(args[0].equalsIgnoreCase("join")){
 					
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
-						Game game = gm.getGameByID(Integer.parseInt(args[1]));
-						
+						if(gm.isActive(Integer.parseInt(args[1]))){
+							
+							Game game = gm.getGameByID(Integer.parseInt(args[1]));
+							
 							if(game.state.equals(ArenaState.WAITING)){
 								
 								game.addPlayer(p);
@@ -254,6 +263,9 @@ public class SW implements CommandExecutor{
 								
 								p.sendMessage(ChatColor.RED + "Can not join the arena because it is " + game.getState().toString() + ".");
 							}
+						}else if(!gm.isActive(Integer.parseInt(args[1]))){
+							p.sendMessage(ChatColor.RED + "That arena is disabled.");
+						}
 	
 					}else if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
@@ -262,7 +274,7 @@ public class SW implements CommandExecutor{
 					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("edit")){
+				else if(args[0].equalsIgnoreCase("edit")){
 					
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
@@ -276,11 +288,10 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED + "That arena does not exist.");
 					}
-					
-
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("addchest")){
+				else if(args[0].equalsIgnoreCase("addchest")){
 					
 					if(gm.isEditing(p)){
 						
@@ -330,10 +341,10 @@ public class SW implements CommandExecutor{
 					}else if(!gm.isEditing(p)){
 						p.sendMessage(ChatColor.RED  + "You are not editing an arena.");
 					}
-					
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("enable")){
+				else if(args[0].equalsIgnoreCase("enable")){
 					
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
@@ -352,10 +363,10 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED +"That is not an arena.");
 					}
-
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("disable")){
+				else if(args[0].equalsIgnoreCase("disable")){
 					
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
@@ -374,14 +385,40 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED +"That is not an arena.");
 					}
-					
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("save")){
+				else if(args[0].equalsIgnoreCase("activate")){
+					
+					if(gm.checkGameByID(Integer.parseInt(args[1]))){
+						
+						gm.activate(Integer.parseInt(args[1]));
+						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been activated.");
+						
+					}else if(gm.checkGameByID(Integer.parseInt(args[1]))){
+						p.sendMessage(ChatColor.RED + "That arena does not exist.");
+					}
+					return true;
+				}
+				
+				if(args[0].equalsIgnoreCase("deactivate")){
+					
+					if(gm.checkGameByID(Integer.parseInt(args[1]))){
+						
+						gm.deactivate(Integer.parseInt(args[1]));
+						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been deactivated.");
+						
+					}else if(gm.checkGameByID(Integer.parseInt(args[1]))){
+						p.sendMessage(ChatColor.RED + "That arena does not exist.");
+					}
+					return true;
+				}
+				
+				else if(args[0].equalsIgnoreCase("save")){
 	
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){	
 						
-						WorldEditUtility.getInstance().resaveArena(Integer.parseInt(args[1]), p);
+						WorldEditUtility.getInstance().resaveArena(Integer.parseInt(args[1]));
 						
 						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been saved.");
 
@@ -390,9 +427,10 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED + "That arena does not exist.");
 					}
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("load")){
+				else if(args[0].equalsIgnoreCase("load")){
 					
 					if(gm.checkGameByID(Integer.parseInt(args[1]))){
 						
@@ -411,27 +449,10 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.RED + "That arena does not exist.");
 					}
-
+					return true;
 				}
 				
-				if(args[0].equalsIgnoreCase("ready")){
-					
-					if(gm.isEditing(p)){
-						
-						gm.getGameEditing(p).setState(ArenaState.WAITING);
-						
-						p.sendMessage(ChatColor.GREEN + "Arena " + ChatColor.GOLD + gm.getEditing().get(p.getName() + ChatColor.GREEN + " is ready to use."));
-						
-						ChestFiller.loadChests(gm.getEditing().get(p.getName()));
-						
-					}else if(!gm.isEditing(p)){
-						
-						p.sendMessage(ChatColor.RED  + "You are not editing an arena.");
-					}
-					
-				}
-				
-				if(args[0].equalsIgnoreCase("team")){
+				else if(args[0].equalsIgnoreCase("team")){
 					
 					if(gm.isPlayerInGame(p)){
 						
@@ -442,6 +463,10 @@ public class SW implements CommandExecutor{
 							if(args[1].equalsIgnoreCase("red")){
 								
 								if(g.isRedAvailable()){
+									
+									if(g.isPlayerInTeam(p)){
+										g.removeFromTeam(p);
+									}
 									
 									g.setTeamRed(p);
 									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.RED + "red" + ChatColor.GREEN + ".");
@@ -454,6 +479,10 @@ public class SW implements CommandExecutor{
 								
 								if(g.isBlueAvailable()){
 									
+									if(g.isPlayerInTeam(p)){
+										g.removeFromTeam(p);
+									}
+									
 									g.setTeamRed(p);
 									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.BLUE + "blue" + ChatColor.GREEN + ".");
 									
@@ -465,6 +494,10 @@ public class SW implements CommandExecutor{
 								
 								if(g.isGreenAvailable()){
 									
+									if(g.isPlayerInTeam(p)){
+										g.removeFromTeam(p);
+									}
+									
 									g.setTeamRed(p);
 									p.sendMessage(ChatColor.GREEN + "Joined team green.");
 									
@@ -475,6 +508,10 @@ public class SW implements CommandExecutor{
 							}else if(args[1].equalsIgnoreCase("yellow")){
 								
 								if(g.isYellowAvailable()){
+									
+									if(g.isPlayerInTeam(p)){
+										g.removeFromTeam(p);
+									}
 									
 									g.setTeamRed(p);
 									p.sendMessage(ChatColor.GREEN + "Joined team " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + ".");
@@ -490,13 +527,14 @@ public class SW implements CommandExecutor{
 					}else if(!gm.isPlayerInGame(p)){
 						p.sendMessage(ChatColor.RED + "You are not in a game.");
 					}
+					return true;
 				}
-			
+				p.sendMessage(ChatColor.RED + "Unknown command. Use '/sw help' for a list of commands.");
 				return true;
 			}
 			
-			if(args.length == 3){
-				
+			if(args.length >= 3){
+				p.sendMessage(ChatColor.RED + "Unknown command. Use '/sw help' for a list of commands.");
 				return true;
 			}
 			

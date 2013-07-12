@@ -251,7 +251,7 @@ public class WorldEditUtility {
 		return true;
 	}
 	
-	public void resaveArena(Integer arena, Player p){
+	public void resaveArena(Integer arena){
 		
 		World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 		
