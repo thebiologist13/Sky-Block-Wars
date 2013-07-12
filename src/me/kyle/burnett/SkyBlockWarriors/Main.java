@@ -138,8 +138,15 @@ public class Main extends JavaPlugin{
 		if(!this.Config.contains("Lobby")){
 			return false;
 		}
-	
-		Location location = new Location(Bukkit.getServer().getWorld(Main.getInstance().Config.getString("Lobby.WORLD")), Main.getInstance().Config.getDouble("Lobby.X"), Main.getInstance().Config.getDouble("Lobby.Y"), Main.getInstance().Config.getDouble("Lobby.Z"), Main.getInstance().Config.getLong("Lobby.YAW"), Main.getInstance().Config.getLong("Lobby.YAW"));
+		
+		World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.WORLD"));
+		double x = Main.getInstance().Config.getDouble("Lobby.X");
+		double y = Main.getInstance().Config.getDouble("Lobby.Y");
+		double z = Main.getInstance().Config.getDouble("Lobby.Z");
+		long yaw = Main.getInstance().Config.getLong("Lobby.YAW");
+		long pitch = Main.getInstance().Config.getLong("Lobby.PITCH");
+		
+		Location location = new Location(world, x, y, z, yaw, pitch);
 		
 		p.teleport(location);
 		

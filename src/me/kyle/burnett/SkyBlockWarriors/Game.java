@@ -11,6 +11,7 @@ import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
+import net.minecraft.server.v1_6_R2.Packet54PlayNoteBlock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -41,11 +43,13 @@ public class Game {
 	private HashMap<String, Team> team = new HashMap<String, Team>();
 	private List<String> editors = new ArrayList<String>();
 	private int gameID;
+	private int count;
+	private int task;
 	
 	public Game(int gameID){
 		
 		this.gameID = gameID;
-		
+		this.task = gameID;
 		prepareArena(false);
 		
 	}
@@ -53,7 +57,7 @@ public class Game {
 	public Game(int gameID, boolean just){
 		
 		this.gameID = gameID;
-		
+		this.task = gameID;
 		prepareArena(just);
 		
 	}
@@ -204,7 +208,7 @@ public class Game {
 		
 		this.removeFromTeam(p);
 		
-		this.broadCastGame(ChatColor.GOLD + p.getName() + ChatColor.GREEN + "has left the arena.");
+		this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GOLD + p.getName() + ChatColor.GREEN + "has left the arena.");
 		
 	}
 	
@@ -245,7 +249,7 @@ public class Game {
 				PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				
-				this.broadCastGame(p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
+				this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
 				
 				int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
 				int max = Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4;
@@ -498,24 +502,40 @@ public class Game {
 		return this.unteamed;
 	}
 	
+	public void playerSoundGame(){
+		Packet54PlayNoteBlock packet = new Packet54PlayNoteBlock(1, 1, 1, 1, 1, 1);
+		
+		for(int x = 0; x < this.players.size(); x++){
+			
+			Player p = Bukkit.getServer().getPlayer(this.players.get(x));
+		
+			((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+		}
+	}
+	
 	public void checkStart(){
 		
 		if(getPlayers().size() >= Main.getInstance().Config.getInt("Auto-Start-Players")){
-			start();
+			this.setState(ArenaState.STARTING);
+			this.countdown();
 			
 		}else if(this.voted.size() * 100 / this.players.size() > 60){
-			start();
+			
+			this.setState(ArenaState.STARTING);
+			this.countdown();
 		}
 		
 	}
 	
 	public void start(){
 		
-		this.setState(ArenaState.STARTING);
+		 Bukkit.getServer().getScheduler().cancelTask(Game.this.task);
+		
+		this.setState(ArenaState.INGAME);
 		
 		this.addPlayersToTeams();
 		
-		this.broadCastGame(ChatColor.GREEN + "Starting");
+		this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "GO!");
 		
 		this.teleportPlayers();
 		
@@ -930,4 +950,35 @@ public class Game {
 			p.getPlayer().teleport(yellow);
 		}
 	}
+	
+
+	  public void countdown(){
+		  
+	    this.count = Main.getInstance().Config.getInt("Auto-Start-Time");
+
+	    if((this.state == ArenaState.WAITING) || (this.state == ArenaState.STARTING)) {
+	    	
+	      this.state = ArenaState.STARTING;
+	      
+	      this.task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
+	        public void run() {
+	          if (Game.this.count > 0) {
+	        	  
+	            if (Game.this.count % 10 == 0) {
+	              Game.this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
+	            }
+	            if (Game.this.count < 6) {
+		              Game.this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
+		              Game.this.playerSoundGame();
+	            }
+
+	            Game.this.count -= 1;
+	          } else {
+	            Game.this.start();
+	          }
+	        }
+	      }
+	      , 0L, 20L);
+	    }
+	  }
 }

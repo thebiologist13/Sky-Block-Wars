@@ -72,7 +72,7 @@ public class SW implements CommandExecutor{
 						
 						p.sendMessage(ChatColor.GREEN + "You have left the arena.");
 												
-						game.broadCastGame(ChatColor.GREEN +"Player " + p.getDisplayName() + ChatColor.GREEN + " has left the game.");
+						game.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN +"Player " + p.getDisplayName() + ChatColor.GREEN + " has left the game.");
 						
 					}else if(!gm.isPlayerInGame(p)){
 						
@@ -161,7 +161,7 @@ public class SW implements CommandExecutor{
 								
 								gm.getPlayerGame(p).addVoted(p);
 								p.sendMessage(ChatColor.GREEN + "Voted!");
-								gm.getPlayerGame(p).broadCastGame(p.getDisplayName() +  ChatColor.GREEN + " has voted to start.");
+								gm.getPlayerGame(p).broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + p.getDisplayName() +  ChatColor.GREEN + " has voted to start.");
 							}
 						}else if(gm.getPlayerGame(p).hasVoted(p)){
 							
