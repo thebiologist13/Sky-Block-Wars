@@ -1,5 +1,5 @@
 package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
-public class BlockBreak{
+public class BlockBreak {
 
 }
