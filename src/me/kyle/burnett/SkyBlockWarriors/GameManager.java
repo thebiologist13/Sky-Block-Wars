@@ -117,7 +117,7 @@ public class GameManager {
 		
 		if(isPlayerInGame(p)){
 			
-			getPlayerGame(p).removeFromGame(p);
+			getPlayerGame(p).removeFromGame(p, false);
 			playerGame.put(p.getName(), null);
 			
 			return true;

@@ -53,14 +53,19 @@ public class SW implements CommandExecutor{
 					if(args[0].equalsIgnoreCase("join")){
 						
 						if(p.hasPermission("skyblockwars.join")){
-						
-							if(Main.getInstance().teleportToLobby(p)){
-								
-								p.sendMessage(prefix + ChatColor.GREEN + "Arena not specifed teleporting to lobby.");
 							
-							} else if(!Main.getInstance().teleportToLobby(p)){
+							if(gm.isPlayerInGame(p)){
+							
+								if(Main.getInstance().teleportToLobby(p)){
+									
+									p.sendMessage(prefix + ChatColor.GREEN + "Arena not specifed teleporting to lobby.");
 								
-								p.sendMessage(prefix + ChatColor.RED + "Tryed to teleport to lobby but it was not found. Please tell server staff.");
+								} else if(!Main.getInstance().teleportToLobby(p)){
+									
+									p.sendMessage(prefix + ChatColor.RED + "Tryed to teleport to lobby but it was not found. Please tell server staff.");
+								}
+							}else if(!gm.isPlayerInGame(p)){
+								p.sendMessage(prefix + ChatColor.RED + "You have already joined.");
 							}
 						}else if(!p.hasPermission("skyblockwars.join")){
 							p.sendMessage(perm);
@@ -103,7 +108,13 @@ public class SW implements CommandExecutor{
 							
 							if(gm.isPlayerInGame(p)){
 								
-								gm.getPlayerGame(p).getPlayersAsList();
+								Game g = gm.getPlayerGame(p);
+								if(g.getState().equals(ArenaState.INGAME)){
+									p.sendMessage(prefix + ChatColor.GOLD + "Player's Alive:");
+									p.sendMessage(gm.getPlayerGame(p).getPlayersAsList());
+								}else if(!g.getState().equals(ArenaState.INGAME)){
+									p.sendMessage(prefix + ChatColor.RED + "The game has not started yet.");
+								}
 							
 							}else if(!gm.isPlayerInGame(p)){
 								p.sendMessage(prefix +ChatColor.RED + "You are not in a game.");
@@ -473,9 +484,12 @@ public class SW implements CommandExecutor{
 						if(p.hasPermission("skyblockwars.deactivate")){
 							if(gm.checkGameByID(Integer.parseInt(args[1]))){
 								
-								gm.deactivate(Integer.parseInt(args[1]));
-								p.sendMessage(prefix +ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been deactivated.");
-								
+								if(gm.isActive(Integer.parseInt(args[1]))){
+									gm.deactivate(Integer.parseInt(args[1]));
+									p.sendMessage(prefix +ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been deactivated.");
+								}else if(!gm.isActive(Integer.parseInt(args[1]))){
+									p.sendMessage(prefix + ChatColor.RED + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " is already deactivated.");
+								}
 							}else if(gm.checkGameByID(Integer.parseInt(args[1]))){
 								p.sendMessage(prefix +ChatColor.RED + "That arena does not exist.");
 							}
