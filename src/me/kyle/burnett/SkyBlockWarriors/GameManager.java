@@ -33,7 +33,7 @@ public class GameManager {
 				
 				if(Main.getInstance().Arena.getBoolean("Arena." + x + ".Enabled")){
 					
-					games.add(new Game(x));
+					games.add(new Game(x, true));
 				}
 			}
 		}
@@ -55,7 +55,7 @@ public class GameManager {
 		
 		ConfigManager.getInstance().saveYamls();
 		
-		games.add(new Game(newGame, true));
+		games.add(new Game(newGame, true, false));
 		
 		return newGame;
 	}
@@ -126,6 +126,10 @@ public class GameManager {
 		return false;
 	}
 	
+	public HashMap<String, Integer> getPlayersGame(){
+		return this.playerGame;
+	}
+	
 	public String listGames(){
 		
 		List<String> strings = new ArrayList<String>();
@@ -153,6 +157,8 @@ public class GameManager {
 	public void activate(int game){
 		Main.getInstance().Arena.set("Arena." + game + ".Active", true);
 		ConfigManager.getInstance().saveYamls();
+		getGameByID(game).prepareArena(false, false);
+		
 	}
 	
 	public void deactivate(int game){
@@ -252,4 +258,8 @@ public class GameManager {
 		return null;
 	}
 
+	
+	public HashMap<String, Integer> getPlayers(){
+		return this.playerGame;
+	}
 }

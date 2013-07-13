@@ -1,6 +1,7 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,19 +88,29 @@ public class Main extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		
+		Iterator<String> it = GameManager.getInstance().getPlayers().keySet().iterator();
+		
+		while(it.hasNext()){
+			
+			Player p = Bukkit.getServer().getPlayer(it.next());
+			
+			if(p != null){
+				this.teleportToLobby(p);
+			}
+		}
 	}    
 	
 	public Location getLobby(){
 		
 		if(this.Config.contains("Lobby")){
 		
-			World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.World"));
+			World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.WORLD"));
 			
 			int X = this.Config.getInt("Lobby.X");
 			int Y = this.Config.getInt("Lobby.Y");
 			int Z = this.Config.getInt("Lobby.Z");
-			float Yaw = this.Config.getLong("Lobby.Yaw");
-			float Pitch = this.Config.getLong("Lobby.Pitch");
+			float Yaw = this.Config.getLong("Lobby.YAW");
+			float Pitch = this.Config.getLong("Lobby.PITCH");
 			
 			Location lobby = new Location(world, X, Y, Z, Yaw, Pitch);
 			
@@ -138,7 +149,7 @@ public class Main extends JavaPlugin{
 		if(!this.Config.contains("Lobby")){
 			return false;
 		}
-		
+
 		World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.WORLD"));
 		double x = Main.getInstance().Config.getDouble("Lobby.X");
 		double y = Main.getInstance().Config.getDouble("Lobby.Y");

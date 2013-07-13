@@ -21,6 +21,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -30,13 +33,14 @@ import com.sk89q.worldedit.data.DataException;
 
 public class Game {
 	
-	ScoreboardManager manager = Bukkit.getScoreboardManager();
-	Scoreboard board = manager.getNewScoreboard();
-	Team BLUE = board.registerNewTeam("Blue Team");
-	Team RED = board.registerNewTeam("Red Team");
-	Team YELLOW = board.registerNewTeam("Yellow Team");
-	Team GREEN = board.registerNewTeam("Green Team");
-	public ArenaState state = ArenaState.LOADING;
+	private ScoreboardManager manager = Bukkit.getScoreboardManager();
+	private Scoreboard board = manager.getNewScoreboard();
+	private Team BLUE = board.registerNewTeam("Blue Team");
+	private Team RED = board.registerNewTeam("Red Team");
+	private Team YELLOW = board.registerNewTeam("Yellow Team");
+	private Team GREEN = board.registerNewTeam("Green Team");
+	private Objective objective = board.registerNewObjective("test", "dummy");
+	private ArenaState state = ArenaState.LOADING;
 	private List<String> unteamed = new ArrayList<String>();
 	private List<String> players = new ArrayList<String>();
 	private List<String> voted = new ArrayList<String>();
@@ -45,53 +49,69 @@ public class Game {
 	private int gameID;
 	private int count;
 	private int task;
+	private Score redT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.RED + "Red: "));
+	private Score greenT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Green:"));
+	private Score blueT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue: "));
+	private Score yellowT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.YELLOW + "Yellow: "));
+	private String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]";
 	
-	public Game(int gameID){
+	public Game(int gameID, boolean first){
 		
 		this.gameID = gameID;
 		this.task = gameID;
-		prepareArena(false);
+		prepareArena(false, first);
 		
 	}
 	
-	public Game(int gameID, boolean just){
+	public Game(int gameID, boolean just, boolean first){
 		
 		this.gameID = gameID;
 		this.task = gameID;
-		prepareArena(just);
+		prepareArena(just, first);
 		
 	}
 	
-	public void prepareArena(boolean just){
+	public void prepareArena(boolean just, boolean first){
 		
 		this.state = ArenaState.LOADING;
 		this.voted.clear();
 		this.players.clear();
 		this.team.clear();
+		this.unteamed.clear();
+		this.editors.clear();
 		
-		if(!just){
-		
-			try {
-				
-				WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
-				
-			} catch (MaxChangedBlocksException e) {
-				
-				e.printStackTrace();
-			} catch (DataException e) {
-				
-				e.printStackTrace();
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-		
-			ChestFiller.loadChests(this.gameID);
+		if(Main.getInstance().Arena.getBoolean("Arena."+ this.gameID + ".Active")){
+
+			if(!just){
 			
-			this.state = ArenaState.WAITING;
-			return;
+				try {
+					
+					WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
+					
+				} catch (MaxChangedBlocksException e) {
+					
+					e.printStackTrace();
+				} catch (DataException e) {
+					
+					e.printStackTrace();
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+				}
+				
+				this.RED.setDisplayName(ChatColor.RED + "Red");
+				this.GREEN.setDisplayName(ChatColor.GREEN + "Green");
+				this.BLUE.setDisplayName(ChatColor.RED + "Blue");
+				this.YELLOW.setDisplayName(ChatColor.RED + "Yellow");
+
+				ChestFiller.loadChests(this.gameID);
+				this.state = ArenaState.WAITING;
+				if(!first){
+					this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " is ready to join.");
+				}
+				return;
+			}
 		}
-		
 		this.state = ArenaState.IN_SETUP;
 		
 	}
@@ -206,10 +226,28 @@ public class Game {
 		
 		this.players.remove(p.getName());
 		
+		Scoreboard blankBoard = manager.getNewScoreboard();
+		p.setScoreboard(blankBoard);
+		
+		if(this.getPlayerTeam(p).equals(this.RED)){
+			this.redT.setScore(this.RED.getPlayers().size());
+		}else if(this.getPlayerTeam(p).equals(this.BLUE)){
+			this.blueT.setScore(this.BLUE.getPlayers().size());
+		}else if(this.getPlayerTeam(p).equals(this.YELLOW)){
+			this.yellowT.setScore(this.YELLOW.getPlayers().size());
+		}else if(this.getPlayerTeam(p).equals(this.GREEN)){
+			this.greenT.setScore(this.GREEN.getPlayers().size());
+		}
+		
+		for(String s : this.players){
+			Player pl = Bukkit.getServer().getPlayer(s);
+			pl.setScoreboard(board);
+		}
+		
 		this.removeFromTeam(p);
-		
+		InvManager.getInstance().restoreInv(p);
 		this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GOLD + p.getName() + ChatColor.GREEN + "has left the arena.");
-		
+		this.checkEnd();
 	}
 	
 	public void removeFromTeam(Player p){
@@ -254,14 +292,14 @@ public class Game {
 				int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
 				int max = Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4;
 				
-				p.sendMessage(ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
-				p.sendMessage(ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
+				p.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
+				p.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
 				 
 				this.checkStart();
 			
 			}else if((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) == this.players.size()){
 				
-				p.sendMessage(ChatColor.RED + "That arena is full.");
+				p.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.RED + "That arena is full.");
 			}
 		}
 		
@@ -462,7 +500,7 @@ public class Game {
 		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Y");
 		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
 		
-		return new Location(world,x,y,z);
+		return new Location(world,x,y+ 1,z);
 	}
 	
 	public Location getSpawnBlue(){
@@ -473,7 +511,7 @@ public class Game {
 		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Y");
 		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Z");
 		
-		return new Location(world,x,y,z);
+		return new Location(world,x,y + 1,z);
 	}
 	
 	public Location getSpawnYellow(){
@@ -484,7 +522,7 @@ public class Game {
 		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Y");
 		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Z");
 		
-		return new Location(world,x,y,z);
+		return new Location(world,x,y+ 1,z);
 	}
 	
 	public Location getSpawnGreen(){
@@ -495,7 +533,7 @@ public class Game {
 		int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Y");
 		int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Z");
 		
-		return new Location(world,x,y,z);
+		return new Location(world,x,y+ 1,z);
 	}
 	
 	public List<String> getUnteamed(){
@@ -523,13 +561,66 @@ public class Game {
 			
 			this.setState(ArenaState.STARTING);
 			this.countdown();
+			this.broadCastServer(prefix + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " will be starting soon.");
 		}
 		
 	}
 	
+	public void checkTeamEliminated(){
+		if(this.RED.getPlayers().size() <=0){
+			this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.RED + "red " + ChatColor.GREEN + "has been eliminated.");
+		}
+		
+		if(this.BLUE.getPlayers().size() <=0){
+			this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.BLUE + "blue " + ChatColor.GREEN + "has been eliminated.");
+		}
+		
+		if(this.YELLOW.getPlayers().size() <=0){
+			this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.YELLOW + "yellow " + ChatColor.GREEN + "has been eliminated.");
+		}
+		
+		if(this.GREEN.getPlayers().size() <=0){
+			this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.GREEN + "green " + ChatColor.GREEN + "has been eliminated.");
+		}
+	}
+	
+	public void checkEnd(){
+		
+		//R | G | Y = B
+		//R | G | B = Y
+		//R | B | Y = G
+		//G | B | Y = R
+		
+		int red, green,yellow,blue;
+		red = this.RED.getPlayers().size();
+		green = this.GREEN.getPlayers().size();
+		yellow = this.YELLOW.getPlayers().size();
+		blue = this.BLUE.getPlayers().size();
+		
+		if(red <= 0 && green <= 0 && yellow <= 0 && blue > 0){
+			this.endGame(this.BLUE);
+		}
+		else if(red <= 0 && green <= 0 && blue <= 0 && yellow > 0){
+			this.endGame(this.YELLOW);
+		}
+		
+		else if(red <= 0 && blue <= 0 && yellow <= 0 && green > 0){
+			this.endGame(this.GREEN);
+		}
+		
+		else if(green <= 0 && yellow <= 0 && blue <= 0 && red > 0){
+			this.endGame(this.RED);
+		}
+		
+		else if(green <= 0 && yellow <= 0 && blue <= 0 && yellow <= 0){
+			this.endGame(null);
+		}
+	
+	}
+	
 	public void start(){
 		
-		 Bukkit.getServer().getScheduler().cancelTask(Game.this.task);
+		Bukkit.getServer().getScheduler().cancelTask(Game.this.task);
 		
 		this.setState(ArenaState.INGAME);
 		
@@ -538,6 +629,13 @@ public class Game {
 		this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.GREEN + "GO!");
 		
 		this.teleportPlayers();
+		
+		this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		this.objective.setDisplayName("Team's");
+		redT.setScore(this.RED.getPlayers().size());
+		greenT.setScore(this.GREEN.getPlayers().size());
+		blueT.setScore(this.BLUE.getPlayers().size());
+		yellowT.setScore(this.YELLOW.getPlayers().size());
 		
 	}
 	
@@ -695,8 +793,14 @@ public class Game {
 				}
 			}	
 			
-			team.addPlayer(Bukkit.getServer().getPlayer(players.get(y)));
-			this.unteamed.remove(players.get(y));
+			Player p = Bukkit.getServer().getPlayer(players.get(y));
+			
+			team.addPlayer(p);
+			this.team.put(p.getName(), team);
+			this.unteamed.remove(p.getName());
+			InvManager.getInstance().saveInv(p);
+			
+			p.setScoreboard(this.board);
 		}
 	}
 	
@@ -728,11 +832,41 @@ public class Game {
 		return team;
 	}
 	
-	public void endGame(){
-		//Announce winner or reason of end.
-		//Remove players.
-		//Register stats.
-		//Unregister teams or clear them.
+	public void endGame(final Team team){
+		
+		this.setState(ArenaState.RESETING);
+			
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				if(team != null){
+					if(team.equals(Game.this.RED)){
+						Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red"+ ChatColor.GREEN + " you won.");
+					
+					}else if(team.equals(Game.this.GREEN)){
+						Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green"+ ChatColor.GREEN + " you won.");
+					}else if(team.equals(Game.this.BLUE)){
+						Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue"+ ChatColor.GREEN + " you won.");
+					}else if(team.equals(Game.this.YELLOW)){
+						Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow"+ ChatColor.GREEN + " you won.");
+					}
+				}
+					for(String s : Game.this.players){
+						Player p = Bukkit.getServer().getPlayer(s);
+						
+						if(p != null){
+							Main.getInstance().teleportToLobby(p);
+						}
+					}
+					
+					Game.this.prepareArena(false, false);
+					//Register stats.
+					//Unregister teams or clear them.
+			}
+		},10L);
+			
 	}
 	
 	public boolean isRedAvailable(){
@@ -929,10 +1063,10 @@ public class Game {
 		FileConfiguration s = Main.getInstance().Spawns;
 		
 		World world = Bukkit.getServer().getWorld(a.getString("Arena." + this.gameID + ".World"));
-		Location red = new Location(world, s.getDouble("Spawn." + this.gameID + ".Red.X"),s.getDouble("Spawn." + this.gameID + ".Red.Y"),s.getDouble("Spawn." + this.gameID + ".Red.Z") );
-		Location green = new Location(world, s.getDouble("Spawn." + this.gameID + ".Green.X"),s.getDouble("Spawn." + this.gameID + ".Green.Y"),s.getDouble("Spawn." + this.gameID + ".Green.Z") );
-		Location blue = new Location(world, s.getDouble("Spawn." + this.gameID + ".Blue.X"),s.getDouble("Spawn." + this.gameID + ".Blue.Y"),s.getDouble("Spawn." + this.gameID + ".Blue.Z") );
-		Location yellow = new Location(world, s.getDouble("Spawn." + this.gameID + ".Yellow.X"),s.getDouble("Spawn." + this.gameID + ".Yellow.Y"),s.getDouble("Spawn." + this.gameID + ".Yellow.Z") );
+		Location red = new Location(world, s.getDouble("Spawn." + this.gameID + ".Red.X"),s.getDouble("Spawn." + this.gameID + ".Red.Y") + 1 ,s.getDouble("Spawn." + this.gameID + ".Red.Z") );
+		Location green = new Location(world, s.getDouble("Spawn." + this.gameID + ".Green.X"),s.getDouble("Spawn." + this.gameID + ".Green.Y")+ 1,s.getDouble("Spawn." + this.gameID + ".Green.Z") );
+		Location blue = new Location(world, s.getDouble("Spawn." + this.gameID + ".Blue.X"),s.getDouble("Spawn." + this.gameID + ".Blue.Y")+ 1,s.getDouble("Spawn." + this.gameID + ".Blue.Z") );
+		Location yellow = new Location(world, s.getDouble("Spawn." + this.gameID + ".Yellow.X"),s.getDouble("Spawn." + this.gameID + ".Yellow.Y")+ 1,s.getDouble("Spawn." + this.gameID + ".Yellow.Z") );
 
 		for(OfflinePlayer p : this.RED.getPlayers()){
 			p.getPlayer().teleport(red);
@@ -977,8 +1111,7 @@ public class Game {
 	            Game.this.start();
 	          }
 	        }
-	      }
-	      , 0L, 20L);
+	      }, 0L, 20L);
 	    }
 	  }
 }

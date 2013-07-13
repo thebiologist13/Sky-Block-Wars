@@ -10,7 +10,7 @@ public class InvManager {
 	
 	static InvManager instance = new InvManager();
 	
-	public InvManager getInstance(){
+	public static InvManager getInstance(){
 		return instance;
 	}
 	
@@ -21,6 +21,9 @@ public class InvManager {
 		
 		Main.getInstance().Inv.set(p.getName() +  ".Main", InventoryUtil.getInstance().toBase64(main));
 		Main.getInstance().Inv.set(p.getName() + ".Armor", InventoryUtil.getInstance().toBase64(armor));
+		
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
 		
 		ConfigManager.getInstance().saveYamls();
 	}
