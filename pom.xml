@@ -53,6 +53,12 @@
 	</repositories>
 	<build>
 		<sourceDirectory>src/</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>resources/</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
