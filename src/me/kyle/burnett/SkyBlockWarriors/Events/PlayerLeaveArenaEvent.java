@@ -10,10 +10,12 @@ public class PlayerLeaveArenaEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private Player player;
     private Game game;
+    private boolean before;
 
-    public PlayerLeaveArenaEvent(Player p, Game g) {
+    public PlayerLeaveArenaEvent(Player p, Game g, boolean before) {
         this.player = p;
         this.game = g;
+        this.before = before;
     }
 
     public Player getPlayer() {
@@ -22,6 +24,10 @@ public class PlayerLeaveArenaEvent extends Event {
 
     public Game getGame() {
         return this.game;
+    }
+    
+    public boolean leftBeforeStart(){
+        return before;
     }
 
     public HandlerList getHandlers() {

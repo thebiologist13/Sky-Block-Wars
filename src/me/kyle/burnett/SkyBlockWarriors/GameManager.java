@@ -25,7 +25,7 @@ public class GameManager {
 
     public void setUp() {
 
-        this.games.clear();
+        games.clear();
 
         for (int x = 0; x <= getArenaAmount(); x++) {
 
@@ -41,7 +41,7 @@ public class GameManager {
 
     public int createGame(Player p) {
 
-        int amount = this.getArenaAmount();
+        int amount = getArenaAmount();
 
         int newGame = amount + 1;
 
@@ -79,14 +79,14 @@ public class GameManager {
     }
 
     public List<Game> getGames() {
-        return this.games;
+        return games;
     }
 
     public Game getPlayerGame(Player p) {
 
         if (playerGame.get(p.getName()) != null) {
 
-            return this.getGameByID(playerGame.get(p.getName()));
+            return getGameByID(playerGame.get(p.getName()));
         }
 
         return null;
@@ -94,40 +94,38 @@ public class GameManager {
 
     public boolean isPlayerInGame(Player p) {
 
-        if (this.playerGame.containsKey(p.getName())) {
-
-            if (this.playerGame.get(p.getName()) != null) {
+        if (playerGame.keySet().contains(p.getName())) {
+            
+            if (playerGame.get(p.getName()) != null) {
+                
                 return true;
             }
         }
 
         return false;
     }
-
-    public void setPlayerGame(Player p, Game g) {
-
-        playerGame.put(p.getName(), g.getGameID());
-    }
-
-    public int getArenaAmount() {
-        return Main.getInstance().Arena.getInt("Amount");
-    }
-
-    public boolean leaveGame(Player p) {
-
-        if (isPlayerInGame(p)) {
-
-            getPlayerGame(p).removeFromGame(p, false);
-            playerGame.put(p.getName(), null);
-
+    
+    public boolean hasPlayerGameStarted(Player p){
+            
+        if(getPlayerGame(p).getState().equals(ArenaState.IN_GAME)){
             return true;
         }
 
         return false;
     }
 
-    public HashMap<String, Integer> getPlayersGame() {
-        return this.playerGame;
+    public void setPlayerGame(Player p, Integer g) {
+
+        playerGame.put(p.getName(), g);
+    }
+
+    public int getArenaAmount() {
+        return Main.getInstance().Arena.getInt("Amount");
+    }
+    
+    public void removePlayer(Player p){
+        playerGame.keySet().remove(p.getName());
+
     }
 
     public String listGames() {
@@ -147,11 +145,13 @@ public class GameManager {
     public void disableGame(int game) {
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", false);
         ConfigManager.getInstance().saveYamls();
+        games.remove(game);
     }
 
     public void enableGame(int game) {
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", true);
         ConfigManager.getInstance().saveYamls();
+        games.add(new Game(game, false, false));
     }
 
     public void activate(int game) {
@@ -183,19 +183,19 @@ public class GameManager {
     }
 
     public HashMap<String, Integer> getConfirming() {
-        return this.confirm;
+        return confirm;
     }
 
     public HashMap<String, Integer> getEditing() {
 
-        return this.editing;
+        return editing;
     }
 
     public Game getGameEditing(Player p) {
 
-        int game = this.getEditing().get(p.getName());
+        int game = getEditing().get(p.getName());
 
-        return this.getGameByID(game);
+        return getGameByID(game);
     }
 
     public int getPlayerEditing(Player p) {
@@ -260,6 +260,6 @@ public class GameManager {
 
 
     public HashMap<String, Integer> getPlayers() {
-        return this.playerGame;
+        return playerGame;
     }
 }

@@ -1,9 +1,9 @@
-Plugin-Enable: true
 Max-People-In-A-Team: 4
 Minimum-Number-Of-People-In-The-Lobby-To-Vote: 2
 Block-Commands: false
 Auto-Start-Players: 4
 Auto-Start-Time: 60
+Minimum-Players-To-Start: 2
 Chests:
   Spawn-Chests:
       ItemID/Amount:

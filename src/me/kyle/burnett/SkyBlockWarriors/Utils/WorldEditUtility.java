@@ -70,8 +70,6 @@ public class WorldEditUtility {
 
         cc.paste(es, v, false);
 
-        System.out.println("Loaded Schematic.");
-
         return true;
     }
 

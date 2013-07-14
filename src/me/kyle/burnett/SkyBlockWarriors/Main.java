@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDamageEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
@@ -78,11 +79,13 @@ public class Main extends JavaPlugin {
 
         pm.registerEvents(new PlayerDeath(), this);
         pm.registerEvents(new PlayerLeave(), this);
+        pm.registerEvents(new PlayerDamageEvent(), this);
 
         getCommand("skyblockw").setExecutor(new SW());
 
         setUp();
 
+      
     }
 
     @Override
