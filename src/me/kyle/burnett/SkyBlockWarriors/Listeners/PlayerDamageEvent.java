@@ -10,37 +10,36 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scoreboard.Team;
 
 public class PlayerDamageEvent implements Listener {
-    
-    
+
+
     @EventHandler
     public void playerDamage(EntityDamageByEntityEvent e) {
         Entity ent = e.getEntity();
-        
-        if(ent instanceof Player){
-            
+
+        if (ent instanceof Player) {
+
             GameManager gm = GameManager.getInstance();
             Player p = (Player) ent;
-            
-            if(gm.isPlayerInGame(p)){
-                
-                if(gm.hasPlayerGameStarted(p)){
-                    
+
+            if (gm.isPlayerInGame(p)) {
+
+                if (gm.hasPlayerGameStarted(p)) {
+
                     Entity ed = e.getDamager();
-                    
-                    if(ed instanceof Player){
-                        
+
+                    if (ed instanceof Player) {
+
                         Player pd = (Player) ed;
                         Team team = gm.getPlayerGame(p).getPlayerTeam(p);
-                        if(team.getPlayers().contains(pd.getName())){
+                        if (team.getPlayers().contains(pd.getName())) {
                             e.setCancelled(true);
                         }
                     }
                 }
-                
+
             }
-            
-            
-            
+
+
         }
     }
 

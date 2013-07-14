@@ -85,7 +85,7 @@ public class Main extends JavaPlugin {
 
         setUp();
 
-      
+
     }
 
     @Override

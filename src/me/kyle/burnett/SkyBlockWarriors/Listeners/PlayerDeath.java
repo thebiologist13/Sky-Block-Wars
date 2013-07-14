@@ -24,32 +24,32 @@ public class PlayerDeath implements Listener {
 
             final Player p = (Player) ent;
 
-            if(GameManager.getInstance().isPlayerInGame(p)){
-                
+            if (GameManager.getInstance().isPlayerInGame(p)) {
+
                 if (GameManager.getInstance().hasPlayerGameStarted(p)) {
-                    
+
                     e.setDeathMessage(null);
-                    
+
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
-    
+
                         @Override
                         public void run() {
-                             
+
                             Packet205ClientCommand packet = new Packet205ClientCommand();
                             packet.a = 1;
-    
+
                             ((CraftPlayer) p).getHandle().playerConnection.a(packet);
-    
+
                             p.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamage() + ChatColor.RED + ".");
-                            
+
                             GameManager.getInstance().getPlayerGame(p).removeFromGame(p, false, true, false);
-                       
+
                         }
-    
-    
+
+
                     }, 1L);
-                }else if(!GameManager.getInstance().hasPlayerGameStarted(p)){
-                    
+                } else if (!GameManager.getInstance().hasPlayerGameStarted(p)) {
+
                     Packet205ClientCommand packet = new Packet205ClientCommand();
                     packet.a = 1;
 

@@ -95,19 +95,19 @@ public class GameManager {
     public boolean isPlayerInGame(Player p) {
 
         if (playerGame.keySet().contains(p.getName())) {
-            
+
             if (playerGame.get(p.getName()) != null) {
-                
+
                 return true;
             }
         }
 
         return false;
     }
-    
-    public boolean hasPlayerGameStarted(Player p){
-            
-        if(getPlayerGame(p).getState().equals(ArenaState.IN_GAME)){
+
+    public boolean hasPlayerGameStarted(Player p) {
+
+        if (getPlayerGame(p).getState().equals(ArenaState.IN_GAME)) {
             return true;
         }
 
@@ -122,8 +122,8 @@ public class GameManager {
     public int getArenaAmount() {
         return Main.getInstance().Arena.getInt("Amount");
     }
-    
-    public void removePlayer(Player p){
+
+    public void removePlayer(Player p) {
         playerGame.keySet().remove(p.getName());
 
     }

@@ -16,19 +16,19 @@ public class PlayerLeave implements Listener {
         Player p = e.getPlayer();
 
         if (GameManager.getInstance().isPlayerInGame(p)) {
-            
+
             GameManager gm = GameManager.getInstance();
-            
-            if(gm.hasPlayerGameStarted(p)){
-                
+
+            if (gm.hasPlayerGameStarted(p)) {
+
                 gm.getPlayerGame(p).removeFromGame(p, false, false, false);
-    
+
                 InvManager.getInstance().restoreInv(p);
-            
-            }else if(!gm.hasPlayerGameStarted(p)){
+
+            } else if (!gm.hasPlayerGameStarted(p)) {
                 gm.getPlayerGame(p).removeFromGame(p, false, false, true);
                 gm.removePlayer(p);
-    
+
                 InvManager.getInstance().restoreInv(p);
             }
         }

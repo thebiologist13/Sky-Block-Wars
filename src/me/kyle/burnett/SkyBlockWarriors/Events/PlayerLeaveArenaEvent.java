@@ -25,8 +25,8 @@ public class PlayerLeaveArenaEvent extends Event {
     public Game getGame() {
         return this.game;
     }
-    
-    public boolean leftBeforeStart(){
+
+    public boolean leftBeforeStart() {
         return before;
     }
 

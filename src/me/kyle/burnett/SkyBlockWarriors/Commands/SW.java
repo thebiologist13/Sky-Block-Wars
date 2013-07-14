@@ -77,23 +77,23 @@ public class SW implements CommandExecutor {
                         if (p.hasPermission("skyblockwars.user")) {
 
                             if (gm.isPlayerInGame(p)) {
-                                
+
                                 Game game = gm.getPlayerGame(p);
-                                
-                                if(gm.hasPlayerGameStarted(p)){
-                                                       
+
+                                if (gm.hasPlayerGameStarted(p)) {
+
                                     p.sendMessage(prefix + ChatColor.GREEN + "You have left the arena.");
-                                    
+
                                     game.removeFromGame(p, false, false, false);
-                                        
-                                }else if(!gm.hasPlayerGameStarted(p)){
-                                    
+
+                                } else if (!gm.hasPlayerGameStarted(p)) {
+
                                     p.sendMessage(prefix + ChatColor.GREEN + "You have left the arena.");
-                                    
-                                    game.removeFromGame(p, false, false, true);                                
-    
+
+                                    game.removeFromGame(p, false, false, true);
+
                                 }
-                                
+
                             } else if (!gm.isPlayerInGame(p)) {
 
                                 p.sendMessage(prefix + ChatColor.RED + "You are not in a game.");
@@ -204,27 +204,27 @@ public class SW implements CommandExecutor {
                     }
 
                     else if (args[0].equalsIgnoreCase("vote")) {
-                        
+
                         if (p.hasPermission("skyblockwars.vote")) {
-                            
+
                             if (gm.isPlayerInGame(p)) {
 
-                                if(!gm.hasPlayerGameStarted(p)){
-                                
+                                if (!gm.hasPlayerGameStarted(p)) {
+
                                     if (!gm.getPlayerGame(p).hasVoted(p)) {
-                                                
-                                            p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
-                                            gm.getPlayerGame(p).addVoted(p);                                            
-                                            gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
-                                        
+
+                                        p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
+                                        gm.getPlayerGame(p).addVoted(p);
+                                        gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
+
                                     } else if (gm.getPlayerGame(p).hasVoted(p)) {
-    
+
                                         p.sendMessage(prefix + ChatColor.RED + "You have already voted.");
                                     }
-                                }else if(gm.hasPlayerGameStarted(p)){
+                                } else if (gm.hasPlayerGameStarted(p)) {
                                     p.sendMessage(prefix + ChatColor.RED + "You can not vote when the game has started.");
                                 }
-                                
+
                             } else if (!gm.isPlayerInGame(p)) {
                                 p.sendMessage(prefix + ChatColor.RED + "You are not in an arena.");
                             }
@@ -312,40 +312,40 @@ public class SW implements CommandExecutor {
                         return true;
                     }
 
-                    else if (args[0].equalsIgnoreCase("join")) {          
-                        
+                    else if (args[0].equalsIgnoreCase("join")) {
+
                         if (p.hasPermission("skyblockwars.join." + args[1]) || p.hasPermission("skyblockwars.join")) {
-                            
-                            if (gm.checkGameByID(Integer.parseInt(args[1]))) {                         
-                                
-                                if(!gm.isPlayerInGame(p)){
-                                    
+
+                            if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+
+                                if (!gm.isPlayerInGame(p)) {
+
                                     if (gm.isActive(Integer.parseInt(args[1]))) {
-    
+
                                         Game game = gm.getGameByID(Integer.parseInt(args[1]));
-    
+
                                         if (game.getState().equals(ArenaState.WAITING)) {
-    
-                                            game.addPlayer(p);                                            
-    
+
+                                            game.addPlayer(p);
+
                                         } else if (game.getState() != ArenaState.WAITING) {
-    
+
                                             p.sendMessage(prefix + ChatColor.RED + "Can not join the arena because it is " + game.getState().toString().toLowerCase() + ".");
                                         }
-                                        
+
                                     } else if (!gm.isActive(Integer.parseInt(args[1]))) {
                                         p.sendMessage(prefix + ChatColor.RED + "That arena is disabled.");
                                     }
-                                    
-                                }else if(gm.isPlayerInGame(p)){
+
+                                } else if (gm.isPlayerInGame(p)) {
                                     p.sendMessage(prefix + ChatColor.RED + "You are already in a game.");
                                 }
-                                
+
                             } else if (!gm.checkGameByID(Integer.parseInt(args[1]))) {
-    
+
                                 p.sendMessage(prefix + ChatColor.RED + "That game does not exist.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.join." + args[1]) || p.hasPermission("skyblockwars.join")) {
                             p.sendMessage(perm);
                         }
@@ -456,33 +456,33 @@ public class SW implements CommandExecutor {
                     }
 
                     else if (args[0].equalsIgnoreCase("disable")) {
-                                            
+
                         if (p.hasPermission("skyblockwars.disable")) {
-                            
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
+
                                 Game g = gm.getGameByID(Integer.parseInt(args[1]));
 
                                 if (gm.isEnabled(Integer.parseInt(args[1]))) {
 
                                     if (gm.isActive(Integer.parseInt(args[1]))) {
-                                        
-                                        if(g.getState().equals(ArenaState.WAITING)){
-                                            
-                                           gm.disableGame(Integer.parseInt(args[1]));
-                                           p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been disabled.");
-                                         
-                                        }else if(g.getState().equals(ArenaState.GETTING_EDITED)) {
+
+                                        if (g.getState().equals(ArenaState.WAITING)) {
+
+                                            gm.disableGame(Integer.parseInt(args[1]));
+                                            p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been disabled.");
+
+                                        } else if (g.getState().equals(ArenaState.GETTING_EDITED)) {
                                             p.sendMessage(prefix + ChatColor.RED + "Could not disable arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " because it is being edited.");
-                                       
-                                        }else if(g.getState().equals(ArenaState.STARTING)) {
+
+                                        } else if (g.getState().equals(ArenaState.STARTING)) {
                                             g.endGameStarting();
-                                            p.sendMessage(prefix + ChatColor.RED + "Could not disable arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " because it is being edited.");                                  
+                                            p.sendMessage(prefix + ChatColor.RED + "Could not disable arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " because it is being edited.");
                                         }
-                                    }else if (!gm.isActive(Integer.parseInt(args[1]))) {
-                                        
+                                    } else if (!gm.isActive(Integer.parseInt(args[1]))) {
+
                                         gm.disableGame(Integer.parseInt(args[1]));
-                                        
+
                                         p.sendMessage(prefix + ChatColor.GREEN + "You disabled arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
                                     }
                                 } else if (!gm.isEnabled(Integer.parseInt(args[1]))) {
@@ -517,24 +517,24 @@ public class SW implements CommandExecutor {
                     }
 
                     if (args[0].equalsIgnoreCase("deactivate")) {
-                        
+
                         if (p.hasPermission("skyblockwars.deactivate")) {
-                            
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
 
                                 if (gm.isActive(Integer.parseInt(args[1]))) {
-                                    
-                                    if(gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)){
-                                        
+
+                                    if (gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)) {
+
                                         gm.deactivate(Integer.parseInt(args[1]));
-                                        
+
                                         p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been deactivated.");
-                                    
-                                    }else if(gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.IN_GAME)){
-                                        
+
+                                    } else if (gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.IN_GAME)) {
+
                                         p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " will be deactivated after the game is finished.");
                                     }
-                                    
+
                                 } else if (!gm.isActive(Integer.parseInt(args[1]))) {
                                     p.sendMessage(prefix + ChatColor.RED + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " is already deactivated.");
                                 }
