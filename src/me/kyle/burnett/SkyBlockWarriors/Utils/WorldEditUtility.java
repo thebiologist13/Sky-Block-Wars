@@ -51,36 +51,36 @@ public class WorldEditUtility {
         return (WorldEditPlugin) plugin;
     }
 
-    public boolean loadIslandSchematic(Integer arena){
+    public boolean loadIslandSchematic(Integer arena) {
 
         File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
-        
+
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 
-        if(world == null){
+        if (world == null) {
             Bukkit.getLogger().log(Level.SEVERE, "Error while loading schematic for arena " + arena);
             return false;
         }
-        
+
         SchematicFormat format = SchematicFormat.getFormat(file);
-        
+
         if (format == null) {
             System.out.println("Null Schematic.");
             return false;
         }
 
         EditSession es = new EditSession(new BukkitWorld(world), 999999999);
-        
+
         CuboidClipboard cc = null;
         try {
             cc = format.load(file);
         } catch (IOException | DataException e1) {
             e1.printStackTrace();
-            
+
         }
-        
+
         Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginZ"));
-            
+
         try {
             cc.paste(es, v, false);
         } catch (MaxChangedBlocksException e) {
