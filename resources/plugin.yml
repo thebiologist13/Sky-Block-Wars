@@ -1,6 +1,6 @@
 name: Sky-Block Wars
 main: me.kyle.burnett.SkyBlockWarriors.Main
-version: 1.0
+version: 1.0.0
 author: Burnett
 description: >
              Sky block warrior plugin.
@@ -12,7 +12,6 @@ commands:
 permissions:
     skyblockwars.admin:
         children:
-            skyblockwars.user: true
             skyblockwars.builder: true
             skyblockwars.usecommands: true
             skyblockwars.setlobby: true
@@ -22,6 +21,8 @@ permissions:
             skyblockwars.deactivate: true
             skyblockwars.save: true
             skyblockwars.load: true
+            skyblockwars.reload: true
+            skyblockwars.help.admin: true
         default: op
     skyblockwars.builder:
         children:
@@ -32,6 +33,7 @@ permissions:
             skyblockwars.setspawn: true
             skyblockwars.addchest: true
             skyblockwars.user: true
+            skyblockwars.help.builder: true
         default: op
     skyblockwars.user:
         children:
@@ -78,4 +80,10 @@ permissions:
     skyblockwars.save:
         default: op
     skyblockwars.load:
+        default: op
+    skyblockwars.reload:
+        default: op
+    skyblockwars.help.builder:
+        default: op
+    skyblockwars.help.admin:
         default: op

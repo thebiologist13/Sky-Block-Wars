@@ -33,7 +33,7 @@ public class GameManager {
 
                 if (Main.getInstance().Arena.getBoolean("Arena." + x + ".Enabled")) {
 
-                    games.add(new Game(x, true));
+                    games.add(new Game(x, false, true));
                 }
             }
         }
@@ -74,7 +74,7 @@ public class GameManager {
 
         getGames().remove(g);
 
-        games.add(new Game(arena, true));
+        games.add(new Game(arena, true, false));
 
     }
 

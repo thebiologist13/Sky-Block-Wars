@@ -1,6 +1,5 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +28,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.data.DataException;
-
 public class Game {
 
     private ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -59,19 +55,11 @@ public class Game {
     private boolean starting;
     GameManager gm = GameManager.getInstance();
 
-    public Game(int gameID, boolean first) {
+    public Game(int gameID, boolean justCreated, boolean justRestarted) {
 
         this.gameID = gameID;
         this.task = gameID;
-        prepareArena(false, first);
-
-    }
-
-    public Game(int gameID, boolean just, boolean first) {
-
-        this.gameID = gameID;
-        this.task = gameID;
-        prepareArena(just, first);
+        prepareArena(justCreated, justRestarted);
 
     }
 
@@ -89,12 +77,7 @@ public class Game {
 
             if (!justCreated) {
 
-                try {
-                    WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
-
-                } catch (MaxChangedBlocksException | DataException | IOException e) {
-                    e.printStackTrace();
-                }
+                WorldEditUtility.getInstance().loadIslandSchematic(this.gameID);
 
                 this.RED.setDisplayName(ChatColor.RED + "Red");
                 this.GREEN.setDisplayName(ChatColor.GREEN + "Green");
@@ -236,16 +219,8 @@ public class Game {
     }
 
     public void addPlayer(Player p) {
-
-        if (this.players.size() > Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
-
-            return;
-
-        } else if (this.state != ArenaState.WAITING) {
-
-            return;
-
-        } else if (this.state == ArenaState.WAITING) {
+        
+        if (this.state == ArenaState.WAITING) {
 
             if (!((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) == this.players.size())) {
 
@@ -262,16 +237,12 @@ public class Game {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
                 p.sendMessage(prefix + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
-
+                
                 this.checkStart();
-
-            } else if ((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) == this.players.size()) {
-
-                p.sendMessage(prefix + ChatColor.RED + "That arena is full.");
             }
         }
-
         return;
+
     }
 
     public void removeFromGame(Player p, boolean end, boolean died, boolean instart) {

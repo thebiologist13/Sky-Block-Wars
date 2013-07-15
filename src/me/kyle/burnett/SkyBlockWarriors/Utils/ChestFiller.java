@@ -14,12 +14,6 @@ import me.kyle.burnett.SkyBlockWarriors.Main;
 
 public class ChestFiller {
 
-    public static Main plugin;
-
-    public ChestFiller(Main instance) {
-        plugin = instance;
-    }
-
     public static void loadChests(int arena) {
         Main plugin = Main.getInstance();
         World w = Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
@@ -32,7 +26,7 @@ public class ChestFiller {
     private static void fillChests(World world, List<String> chestLocations, List<String> chestContents) {
         ItemStack[] items = new ItemStack[27];
 
-        int i = 0;
+        int i = -1;
         for (String item : chestContents) {
             items[i++] = itemFromString(item);
         }

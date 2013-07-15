@@ -17,6 +17,8 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
@@ -49,14 +51,15 @@ public class WorldEditUtility {
         return (WorldEditPlugin) plugin;
     }
 
-    public boolean loadIslandSchematic(Integer arena) throws DataException, IOException, MaxChangedBlocksException {
+    public boolean loadIslandSchematic(Integer arena){
 
         File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
         
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
 
         if(world == null){
-            System.out.println("World is null");
+            Bukkit.getLogger().log(Level.SEVERE, "Error while loading schematic for arena " + arena);
+            return false;
         }
         
         SchematicFormat format = SchematicFormat.getFormat(file);
@@ -68,11 +71,21 @@ public class WorldEditUtility {
 
         EditSession es = new EditSession(new BukkitWorld(world), 999999999);
         
-        CuboidClipboard cc = format.load(file);
+        CuboidClipboard cc = null;
+        try {
+            cc = format.load(file);
+        } catch (IOException | DataException e1) {
+            e1.printStackTrace();
+            
+        }
         
         Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginZ"));
             
-        cc.paste(es, v, false);
+        try {
+            cc.paste(es, v, false);
+        } catch (MaxChangedBlocksException e) {
+            e.printStackTrace();
+        }
 
         return true;
     }
