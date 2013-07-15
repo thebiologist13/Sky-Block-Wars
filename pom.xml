@@ -50,7 +50,7 @@
 		<sourceDirectory>src/</sourceDirectory>
 		<resources>
 			<resource>
-				<directory>resources/</directory>
+				<directory>resources</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
