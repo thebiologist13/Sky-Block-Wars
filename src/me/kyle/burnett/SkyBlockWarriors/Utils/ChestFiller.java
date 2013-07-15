@@ -26,7 +26,7 @@ public class ChestFiller {
 
         fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Spawn"), plugin.Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
         fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Side"), plugin.Config.getStringList("Chests.Side-Chests.ItemID/Amount"));
-        fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Center"), plugin.Config.getStringList("Chests.Middle-Chests.ItemID/Amount"));
+        fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Center"), plugin.Config.getStringList("Chests.Middle-Chest.ItemID/Amount"));
     }
 
     private static void fillChests(World world, List<String> chestLocations, List<String> chestContents) {

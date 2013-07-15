@@ -52,7 +52,7 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.join")) {
 
-                            if (gm.isPlayerInGame(p)) {
+                            if (!gm.isPlayerInGame(p)) {
 
                                 if (Main.getInstance().teleportToLobby(p)) {
 
@@ -62,7 +62,7 @@ public class SW implements CommandExecutor {
 
                                     p.sendMessage(prefix + ChatColor.RED + "Tryed to teleport to lobby but it was not found. Please tell server staff.");
                                 }
-                            } else if (!gm.isPlayerInGame(p)) {
+                            } else if (gm.isPlayerInGame(p)) {
                                 p.sendMessage(prefix + ChatColor.RED + "You have already joined.");
                             }
                         } else if (!p.hasPermission("skyblockwars.join")) {
@@ -211,15 +211,21 @@ public class SW implements CommandExecutor {
 
                                 if (!gm.hasPlayerGameStarted(p)) {
 
-                                    if (!gm.getPlayerGame(p).hasVoted(p)) {
-
-                                        p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
-                                        gm.getPlayerGame(p).addVoted(p);
-                                        gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
-
-                                    } else if (gm.getPlayerGame(p).hasVoted(p)) {
-
-                                        p.sendMessage(prefix + ChatColor.RED + "You have already voted.");
+                                    if(!gm.getPlayerGame(p).getState().equals(ArenaState.STARTING)){
+                                    
+                                        if (!gm.getPlayerGame(p).hasVoted(p)) {
+    
+                                            p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
+                                            gm.getPlayerGame(p).addVoted(p);
+                                            gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
+    
+                                        } else if (gm.getPlayerGame(p).hasVoted(p)) {
+    
+                                            p.sendMessage(prefix + ChatColor.RED + "You have already voted.");
+                                        }
+                                    }else if(gm.getPlayerGame(p).getState().equals(ArenaState.STARTING)){
+                                        
+                                        p.sendMessage(prefix + ChatColor.RED + "Game is already starting.");
                                     }
                                 } else if (gm.hasPlayerGameStarted(p)) {
                                     p.sendMessage(prefix + ChatColor.RED + "You can not vote when the game has started.");
@@ -324,7 +330,7 @@ public class SW implements CommandExecutor {
 
                                         Game game = gm.getGameByID(Integer.parseInt(args[1]));
 
-                                        if (game.getState().equals(ArenaState.WAITING)) {
+                                        if (game.getState().equals(ArenaState.WAITING) || game.getState().equals(ArenaState.STARTING)) {
 
                                             game.addPlayer(p);
 
@@ -503,9 +509,9 @@ public class SW implements CommandExecutor {
                     else if (args[0].equalsIgnoreCase("activate")) {
                         if (p.hasPermission("skyblockwars.activate")) {
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+                                p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been activated.");
 
                                 gm.activate(Integer.parseInt(args[1]));
-                                p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been activated.");
 
                             } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");

@@ -122,6 +122,8 @@ public class Game {
         this.setState(ArenaState.IN_GAME);
 
         this.addPlayersToTeams();
+        
+        this.unteamed.clear();
 
         this.broadCastGame(prefix + ChatColor.GREEN + "GO!");
         this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " has started.");
@@ -130,26 +132,26 @@ public class Game {
 
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         this.objective.setDisplayName("Team's");
-        redT.setScore(this.RED.getPlayers().size());
-        greenT.setScore(this.GREEN.getPlayers().size());
-        blueT.setScore(this.BLUE.getPlayers().size());
-        yellowT.setScore(this.YELLOW.getPlayers().size());
+        this.redT.setScore(this.RED.getPlayers().size());
+        this.greenT.setScore(this.GREEN.getPlayers().size());
+        this.blueT.setScore(this.BLUE.getPlayers().size());
+        this.yellowT.setScore(this.YELLOW.getPlayers().size());
 
-        checkEnd();
+        this.checkEnd();
 
     }
 
     public void checkStart() {
 
-        if (getPlayers().size() >= Main.getInstance().Config.getInt("Auto-Start-Players")) {
-            this.setState(ArenaState.STARTING);
-            this.countdown();
+        if (this.getPlayers().size() >= Main.getInstance().Config.getInt("Auto-Start-Players")) {
+
+            this.countdown();         
 
         } else if (this.voted.size() * 100 / this.players.size() > 50) {
 
-            this.setState(ArenaState.STARTING);
             this.countdown();
             this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " will be starting soon.");
+       
         }
 
     }
@@ -233,15 +235,15 @@ public class Game {
 
     }
 
-    public ArenaState addPlayer(Player p) {
+    public void addPlayer(Player p) {
 
         if (this.players.size() > Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
 
-            return ArenaState.FULL;
+            return;
 
         } else if (this.state != ArenaState.WAITING) {
 
-            return this.state;
+            return;
 
         } else if (this.state == ArenaState.WAITING) {
 
@@ -253,7 +255,7 @@ public class Game {
                 PlayerJoinArenaEvent event = new PlayerJoinArenaEvent(p, Game.this);
                 Bukkit.getServer().getPluginManager().callEvent(event);
 
-                this.broadCastGame(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
+                this.broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has joined the arena.");
 
                 int startPlayers = Main.getInstance().Config.getInt("Auto-Start-Players");
                 int max = Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4;
@@ -269,7 +271,7 @@ public class Game {
             }
         }
 
-        return ArenaState.OTHER_REASON;
+        return;
     }
 
     public void removeFromGame(Player p, boolean end, boolean died, boolean instart) {
@@ -279,7 +281,8 @@ public class Game {
 
         this.players.remove(p.getName());
         this.voted.remove(p.getName());
-
+        gm.removePlayer(p);
+        
         if (!instart) {
 
             Scoreboard blankBoard = manager.getNewScoreboard();
@@ -312,24 +315,24 @@ public class Game {
                 p.setGameMode(this.saveGM.get(p.getName()));
                 this.saveGM.keySet().remove(p.getName());
             }
-        }
+    
+            if (!end) {
+                
+                if (!died) {
+                    this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
 
-        gm.removePlayer(p);
-
-        if (!end) {
-            if (!died) {
-
-                this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
-                if (starting) {
-                    if (checkEndStart()) {
-                        this.endStart();
-                        return;
-                    }
+                } else if (died) {
+                    this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
                 }
-            } else if (died) {
-                GameManager.getInstance().getPlayerGame(p).broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
+                this.checkEnd();
             }
-            this.checkEnd();
+        }else if(instart){
+            if (starting) {
+                if (checkEndStart()) {
+                    this.endStart();
+                    return;
+                }
+            }
         }
     }
 
@@ -830,9 +833,9 @@ public class Game {
                 int x = r.nextInt(1);
 
                 if (x == 1) {
-                    team = this.GREEN;
+                    team = this.BLUE;
                 }
-                team = this.RED;
+                team = this.GREEN;
                 System.out.println(10);
             }
 
@@ -842,9 +845,9 @@ public class Game {
                 int x = r.nextInt(1);
 
                 if (x == 1) {
-                    team = this.GREEN;
+                    team = this.BLUE;
                 }
-                team = this.RED;
+                team = this.YELLOW;
                 System.out.println(11);
             }
 
@@ -854,9 +857,9 @@ public class Game {
                 int x = r.nextInt(1);
 
                 if (x == 1) {
-                    team = this.GREEN;
+                    team = this.YELLOW;
                 }
-                team = this.RED;
+                team = this.GREEN;
                 System.out.println(12);
             }
 
@@ -920,11 +923,10 @@ public class Game {
                 System.out.println(16);
             }
 
-            Player p = Bukkit.getServer().getPlayer(players.get(y));
-
+            Player p = Bukkit.getServer().getPlayer(unteamed.get(y));
+            System.out.println(unteamed.get(y));
             team.addPlayer(p);
             this.team.put(p.getName(), team);
-            this.unteamed.remove(p.getName());
             InvManager.getInstance().saveInv(p);
 
             p.setScoreboard(this.board);
@@ -1206,10 +1208,10 @@ public class Game {
 
         this.count = Main.getInstance().Config.getInt("Auto-Start-Time");
 
-        if ((this.state == ArenaState.WAITING) || (this.state == ArenaState.STARTING)) {
+        if (this.state == ArenaState.WAITING) {
 
-            this.state = ArenaState.STARTING;
-
+            this.setState(ArenaState.STARTING);
+            
             this.starting = true;
 
             this.task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
