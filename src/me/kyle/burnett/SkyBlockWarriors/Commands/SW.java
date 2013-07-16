@@ -441,18 +441,24 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.edit")) {
 
-                            if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-
-                                gm.addEditor(p, Integer.parseInt(args[1]));
-
-                                gm.getGameByID(Integer.parseInt(args[1])).setState(ArenaState.GETTING_EDITED);
-
-                                p.sendMessage(prefix + ChatColor.GREEN + "Now editing arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
-
-                            } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-
-                                p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
+                            if(!gm.isEditing(p)){
+                            
+                                if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+    
+                                    gm.addEditor(p, Integer.parseInt(args[1]));
+    
+                                    gm.getGameByID(Integer.parseInt(args[1])).setState(ArenaState.GETTING_EDITED);
+    
+                                    p.sendMessage(prefix + ChatColor.GREEN + "Now editing arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
+    
+                                } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+    
+                                    p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
+                                }
+                            }else if(gm.isEditing(p)){
+                                p.sendMessage(prefix + ChatColor.RED + "You are already editing an arena.");
                             }
+                            
 
                         } else if (p.hasPermission("skyblockwars.edit")) {
 

@@ -54,5 +54,8 @@ public class InvManager {
 
         p.getInventory().setContents(main.toArray(new ItemStack[36]));
         p.getInventory().setArmorContents(armor.toArray(new ItemStack[4]));
+        
+        Main.getInstance().Inv.set(p.getName(),  null);
+        ConfigManager.getInstance().saveYamls();
     }
 }

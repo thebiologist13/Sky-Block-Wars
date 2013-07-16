@@ -13,10 +13,14 @@ import org.bukkit.util.Vector;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 
 public class ChestFiller {
-
+    
+   static Main plugin = Main.getInstance();
+    
     public static void loadChests(int arena) {
-        Main plugin = Main.getInstance();
-        World w = Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
+
+        String world = plugin.Arena.getString("Arena." + arena + ".World");
+        
+        World w = Bukkit.getServer().getWorld(world);
 
         fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Spawn"), plugin.Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
         fillChests(w, plugin.Chest.getStringList("Chest." + arena + ".Side"), plugin.Config.getStringList("Chests.Side-Chests.ItemID/Amount"));
@@ -26,7 +30,7 @@ public class ChestFiller {
     private static void fillChests(World world, List<String> chestLocations, List<String> chestContents) {
         ItemStack[] items = new ItemStack[27];
 
-        int i = -1;
+        int i = 0;
         for (String item : chestContents) {
             items[i++] = itemFromString(item);
         }
@@ -38,7 +42,7 @@ public class ChestFiller {
                 Chest c = (Chest) b.getState();
                 c.getInventory().setContents(items);
             } else {
-                Main.getInstance().getLogger().warning("Failed to find chest at " + locString + ", skipping...");
+                plugin.getLogger().warning("Failed to find chest at " + locString + ", skipping...");
             }
         }
     }
