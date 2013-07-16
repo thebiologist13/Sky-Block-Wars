@@ -8,7 +8,6 @@ import java.util.Random;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
-import me.kyle.burnett.SkyBlockWarriors.Utils.ChestFiller;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 import net.minecraft.server.v1_6_R2.Packet54PlayNoteBlock;
 
@@ -16,17 +15,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 public class Game {
 
@@ -72,6 +76,11 @@ public class Game {
         this.unteamed.clear();
         this.editors.clear();
         this.saveGM.clear();
+        this.redT.setScore(0);
+        this.blueT.setScore(0);
+        this.yellowT.setScore(0);
+        this.greenT.setScore(0);
+
 
         if (Main.getInstance().Arena.getBoolean("Arena." + this.gameID + ".Active")) {
 
@@ -84,7 +93,7 @@ public class Game {
                 this.BLUE.setDisplayName(ChatColor.RED + "Blue");
                 this.YELLOW.setDisplayName(ChatColor.RED + "Yellow");
 
-                ChestFiller.loadChests(this.gameID);
+                this.loadChests();
                 this.state = ArenaState.WAITING;
                 if (!firstLoad) {
 
@@ -220,7 +229,7 @@ public class Game {
 
     public void addPlayer(Player p) {
 
-        if (this.state == ArenaState.WAITING) {
+        if (this.getState().equals(ArenaState.WAITING) || this.getState().equals(ArenaState.STARTING)) {
 
             if (!((Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) == this.players.size())) {
 
@@ -236,7 +245,7 @@ public class Game {
                 int max = Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4;
 
                 p.sendMessage(prefix + ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
-                p.sendMessage(prefix + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
+                this.broadCastGame(prefix + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
 
                 this.checkStart();
             }
@@ -251,6 +260,7 @@ public class Game {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         this.players.remove(p.getName());
+        this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
 
@@ -290,16 +300,24 @@ public class Game {
             if (!end) {
 
                 if (!died) {
+                    
                     this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
 
                 } else if (died) {
+                    
                     this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
                 }
                 this.checkEnd();
             }
+            
         } else if (instart) {
+            
+            this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
+
             if (starting) {
+                
                 if (checkEndStart()) {
+                    
                     this.endStart();
                     return;
                 }
@@ -1135,6 +1153,7 @@ public class Game {
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
+            p.getPlayer().getActivePotionEffects().clear();
         }
 
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
@@ -1147,6 +1166,7 @@ public class Game {
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
+            p.getPlayer().getActivePotionEffects().clear();
         }
 
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
@@ -1159,6 +1179,7 @@ public class Game {
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
+            p.getPlayer().getActivePotionEffects().clear();
         }
 
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
@@ -1171,6 +1192,7 @@ public class Game {
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
+            p.getPlayer().getActivePotionEffects().clear();
         }
     }
 
@@ -1212,5 +1234,61 @@ public class Game {
                 }
             }, 0L, 20L);
         }
+    }
+    
+    public void loadChests() {
+
+        String world = Main.getInstance().Arena.getString("Arena." + this.gameID + ".World");
+        
+        World w = Bukkit.getServer().getWorld(world);
+
+        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn"), Main.getInstance().Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
+        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side"), Main.getInstance().Config.getStringList("Chests.Side-Chests.ItemID/Amount"));
+        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center"), Main.getInstance().Config.getStringList("Chests.Middle-Chest.ItemID/Amount"));
+    }
+
+    public void fillChests(World world, List<String> chestLocations, List<String> chestContents) {
+        ItemStack[] items = new ItemStack[27];
+
+        int i = 0;
+        for (String item : chestContents) {
+            items[i++] = this.itemFromString(item);
+        }
+
+        for (String locString : chestLocations) {
+            Block b = world.getBlockAt(this.vecFromString(locString).toLocation(world));
+
+            if (b.getType().equals(Material.CHEST)) {
+                Chest c = (Chest) b.getState();
+                c.getInventory().setContents(items);
+            } else {
+                Main.getInstance().getLogger().warning("Failed to find chest at " + locString + ", skipping...");
+            }
+        }
+    }
+    
+    private Vector vecFromString(String string) {
+        String[] split = string.split(",");
+        return new Vector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+    }
+
+    private ItemStack itemFromString(String string) {
+
+        String[] split = string.split(",");
+
+        for (int x = 0; x < split.length; x++) {
+            split[x] = split[x].toLowerCase().trim();
+        }
+        if (split.length < 1)
+            return null;
+        if (split.length == 1)
+            return new ItemStack(Integer.parseInt(split[0]));
+        if (split.length == 2)
+            return new ItemStack(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+        if (split.length == 3) {
+            return new ItemStack(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Short.parseShort(split[2]));
+        }
+
+        return null;
     }
 }

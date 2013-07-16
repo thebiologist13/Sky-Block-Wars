@@ -20,7 +20,7 @@ public class PlayerLeave implements Listener {
             GameManager gm = GameManager.getInstance();
 
             if (gm.hasPlayerGameStarted(p)) {
-
+                
                 gm.getPlayerGame(p).removeFromGame(p, false, false, false);
 
                 InvManager.getInstance().restoreInv(p);
@@ -28,7 +28,6 @@ public class PlayerLeave implements Listener {
             } else if (!gm.hasPlayerGameStarted(p)) {
                 gm.getPlayerGame(p).removeFromGame(p, false, false, true);
 
-                InvManager.getInstance().restoreInv(p);
             }
         }
 

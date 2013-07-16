@@ -126,17 +126,8 @@ public class SW implements CommandExecutor {
 
                             if (gm.isPlayerInGame(p)) {
 
-                                Game g = gm.getPlayerGame(p);
-
-                                if (g.getState().equals(ArenaState.IN_GAME)) {
-
-                                    p.sendMessage(prefix + ChatColor.GOLD + "Player's Alive:");
-                                    p.sendMessage(gm.getPlayerGame(p).getPlayersAsList());
-
-                                } else if (!g.getState().equals(ArenaState.IN_GAME)) {
-
-                                    p.sendMessage(prefix + ChatColor.RED + "The game has not started yet.");
-                                }
+                                p.sendMessage(prefix + ChatColor.GOLD + "Player's:");
+                                p.sendMessage(gm.getPlayerGame(p).getPlayersAsList());
 
                             } else if (!gm.isPlayerInGame(p)) {
 
@@ -392,16 +383,21 @@ public class SW implements CommandExecutor {
                         if (p.hasPermission("skyblockwars.join." + args[1]) || p.hasPermission("skyblockwars.join")) {
 
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+                                
 
                                 if (!gm.isPlayerInGame(p)) {
+                                    
 
                                     if (gm.isActive(Integer.parseInt(args[1]))) {
 
+                                        
                                         Game game = gm.getGameByID(Integer.parseInt(args[1]));
 
                                         if (game.getState().equals(ArenaState.WAITING) || game.getState().equals(ArenaState.STARTING)) {
+                                            
 
                                             if (game.getPlayers().size() != Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+                                                
 
                                                 game.addPlayer(p);
 
@@ -597,8 +593,11 @@ public class SW implements CommandExecutor {
                     }
 
                     else if (args[0].equalsIgnoreCase("activate")) {
+                        
                         if (p.hasPermission("skyblockwars.activate")) {
+                            
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+                                
                                 p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been activated.");
 
                                 gm.activate(Integer.parseInt(args[1]));
@@ -805,6 +804,33 @@ public class SW implements CommandExecutor {
 
                         }
                         return true;
+                    }
+                    
+                    if(args[0].equalsIgnoreCase("prepare")){
+                        
+                        if(p.hasPermission("skyblockwars.prepare")){
+                        
+                            if (gm.checkGameByID(Integer.parseInt(args[1]))) {
+                                
+                                if(gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)){
+                                   
+                                    p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been prepared.");
+
+                                    gm.getGameByID(Integer.parseInt(args[1])).prepareArena(false, false);
+                                    
+                                    
+                                }else if(!gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)){
+                                    p.sendMessage(prefix + ChatColor.RED + "Can not do this because arena is " + gm.getGameByID(Integer.parseInt(args[1])).getState().toString().replaceAll("_"," "));
+                                }
+
+                                
+                            }else  if (!gm.checkGameByID(Integer.parseInt(args[1]))) {
+                                p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
+                            }
+                            
+                        }else  if(!p.hasPermission("skyblockwars.prepare")){
+                            p.sendMessage(perm);
+                        }
                     }
 
                     p.sendMessage(prefix + ChatColor.RED + "Unknown command. Use '/sw help' for a list of commands.");

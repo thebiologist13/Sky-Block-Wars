@@ -23,6 +23,7 @@ permissions:
             skyblockwars.load: true
             skyblockwars.reload: true
             skyblockwars.help.admin: true
+            skyblockwars.prepare: true
         default: op
     skyblockwars.builder:
         children:
@@ -86,4 +87,6 @@ permissions:
     skyblockwars.help.builder:
         default: op
     skyblockwars.help.admin:
+        default: op
+    skyblockwars.prepare:
         default: op
