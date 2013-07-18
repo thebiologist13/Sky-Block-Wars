@@ -33,18 +33,19 @@ public class InvManager {
 
     @SuppressWarnings("unchecked")
     public void restoreInv(Player p) {
+        
         List<ItemStack> main = (List<ItemStack>) Main.getInstance().Inv.getList(p.getName() + ".Main");
         List<ItemStack> armor = (List<ItemStack>) Main.getInstance().Inv.getList(p.getName() + ".Armor");
 
         // Check the cast
         try {
+            for (@SuppressWarnings("unused") 
+            ItemStack i : main);
+            
             for (@SuppressWarnings("unused")
-            ItemStack i : main)
-                ;
-            for (@SuppressWarnings("unused")
-            ItemStack i : armor)
-                ;
+            ItemStack i : armor);
         } catch (ClassCastException e) {
+            
             p.sendMessage(ChatColor.RED + "There was an error restoring your inventory! :(");
             p.sendMessage(ChatColor.RED + "The admin has been notified.");
             Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error: Unable to restore inventory of " + ChatColor.YELLOW + p.getName());
@@ -55,7 +56,7 @@ public class InvManager {
         p.getInventory().setContents(main.toArray(new ItemStack[36]));
         p.getInventory().setArmorContents(armor.toArray(new ItemStack[4]));
         
-        Main.getInstance().Inv.set(p.getName(),  null);
+        //Main.getInstance().Inv.set(p.getName(),  null);
         ConfigManager.getInstance().saveYamls();
     }
 }

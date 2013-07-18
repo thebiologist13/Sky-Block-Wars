@@ -20,6 +20,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class Game {
     private Team YELLOW = board.registerNewTeam("Yellow Team");
     private Team GREEN = board.registerNewTeam("Green Team");
     private Objective objective = board.registerNewObjective("test", "dummy");
-    private ArenaState state = ArenaState.LOADING;
+    private ArenaState state;
     private List<String> unteamed = new ArrayList<String>();
     private List<String> players = new ArrayList<String>();
     private List<String> voted = new ArrayList<String>();
@@ -57,19 +58,25 @@ public class Game {
     private Score yellowT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.YELLOW + "Yellow: "));
     private String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]";
     private boolean starting;
+    private Location min, max;
+    private World world;
     GameManager gm = GameManager.getInstance();
 
     public Game(int gameID, boolean justCreated, boolean justRestarted) {
-
+                
         this.gameID = gameID;
         this.task = gameID;
+        this.world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
+        
         prepareArena(justCreated, justRestarted);
-
+        
+        this.min = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
+        this.max = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxZ"));
     }
 
     public void prepareArena(boolean justCreated, boolean firstLoad) {
 
-        this.state = ArenaState.LOADING;
+        this.setState(ArenaState.LOADING);
         this.voted.clear();
         this.players.clear();
         this.team.clear();
@@ -94,7 +101,7 @@ public class Game {
                 this.YELLOW.setDisplayName(ChatColor.RED + "Yellow");
 
                 this.loadChests();
-                this.state = ArenaState.WAITING;
+                this.setState(ArenaState.WAITING);
                 if (!firstLoad) {
 
                     Game.this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + Game.this.gameID + ChatColor.GREEN + " is ready to join.");
@@ -104,7 +111,7 @@ public class Game {
             }
         }
 
-        this.state = ArenaState.IN_SETUP;
+        this.setState(ArenaState.IN_SETUP);
     }
 
     public void start() {
@@ -246,7 +253,8 @@ public class Game {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "The game will automatically start when there are " + startPlayers + " players.");
                 this.broadCastGame(prefix + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
-
+                Main.getInstance().teleportToWaiting(p);
+                this.updateSignPlayers();
                 this.checkStart();
             }
         }
@@ -263,6 +271,7 @@ public class Game {
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
+        this.updateSignPlayers();
 
         if (!instart) {
 
@@ -452,6 +461,7 @@ public class Game {
     }
 
     public boolean isPlayerInTeam(Player p) {
+        
         if (this.team.containsKey(p.getName())) {
             if (this.team.get(p.getName()) != null) {
                 return true;
@@ -461,15 +471,14 @@ public class Game {
         return false;
     }
 
-
     public ArenaState getState() {
         return this.state;
     }
 
     public void setState(ArenaState state) {
         this.state = state;
+        this.updateSignState();
     }
-
 
     public void broadCastGame(String s) {
 
@@ -482,7 +491,6 @@ public class Game {
         }
 
     }
-
 
     public void broadCastServer(String s) {
 
@@ -642,6 +650,9 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Z", p.getLocation().getBlockZ());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.YAW", p.getLocation().getYaw());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.PITCH", p.getLocation().getPitch());
+
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -649,6 +660,8 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Z", p.getLocation().getBlockZ());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.YAW", p.getLocation().getYaw());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.PITCH", p.getLocation().getPitch());        
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -656,6 +669,8 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Z", p.getLocation().getBlockZ());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.YAW", p.getLocation().getYaw());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.PITCH", p.getLocation().getPitch());        
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -664,6 +679,8 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.Z", p.getLocation().getBlockZ());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.YAW", p.getLocation().getYaw());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.PITCH", p.getLocation().getPitch());
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -671,44 +688,52 @@ public class Game {
 
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.X");
-        int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Y");
-        int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
-
-        return new Location(world, x, y + 1, z);
+        double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.X");
+        double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Y");
+        double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
+        long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.YAW");
+        long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.PITCH");
+        
+        return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnBlue() {
 
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.X");
-        int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Y");
-        int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Z");
-
-        return new Location(world, x, y + 1, z);
+        double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.X");
+        double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Y");
+        double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Z");
+        long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.YAW");
+        long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.PITCH");
+        
+        return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnYellow() {
 
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.X");
-        int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Y");
-        int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Z");
-
-        return new Location(world, x, y + 1, z);
+        double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.X");
+        double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Y");
+        double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Z");
+        long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.YAW");
+        long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.PITCH");
+        
+        return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnGreen() {
 
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        int x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.X");
-        int y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Y");
-        int z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Z");
-
-        return new Location(world, x, y + 1, z);
+        double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.X");
+        double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Y");
+        double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Z");
+        long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.YAW");
+        long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.PITCH");
+        
+        return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
     public List<String> getUnteamed() {
@@ -716,6 +741,7 @@ public class Game {
     }
 
     public void playerSoundGame() {
+        
         Packet54PlayNoteBlock packet = new Packet54PlayNoteBlock(1, 1, 1, 1, 1, 1);
 
         for (int x = 0; x < this.players.size(); x++) {
@@ -1196,7 +1222,6 @@ public class Game {
         }
     }
 
-
     public void countdown() {
 
         this.count = Main.getInstance().Config.getInt("Auto-Start-Time");
@@ -1204,6 +1229,7 @@ public class Game {
         if (this.state == ArenaState.WAITING) {
 
             this.setState(ArenaState.STARTING);
+            this.updateSignState();
 
             this.starting = true;
 
@@ -1291,4 +1317,89 @@ public class Game {
 
         return null;
     }
+    
+    public boolean isBlockInArena(Location l){
+        
+        if (l.getWorld() != this.min.getWorld()) return false;
+        
+        double x = l.getX();
+        double z = l.getZ();
+        
+        return (x >= this.min.getBlockX()) && (x < this.max.getBlockX() + 1) && (z >= this.min.getBlockZ()) && (z < this.max.getBlockZ() + 1);
+    }
+    
+    public void updateSignPlayers(){
+        
+        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID); 
+        
+        for(int x = 0; x < signs.size(); x++){
+            
+            Vector v = this.vecFromString(signs.get(x));
+            
+            Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+            
+            if(b.getState() instanceof Sign){
+                
+                System.out.println(2);
+                Sign s = (Sign) b.getState();
+               
+                if(this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4){
+                   
+                   s.setLine(0, "§4§l[Full]");
+                }
+               
+                s.setLine(2, this.players.size() + "/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
+              
+                s.update();
+           }
+            
+            
+        }           
+    } 
+    
+    public void updateSignState(){
+        
+        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID); 
+        
+        for(int x = 0; x < signs.size(); x++){
+            
+           Vector v = this.vecFromString(signs.get(x));
+           
+           System.out.println(world.getName());           
+            
+           Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+           
+           if(b.getState() instanceof Sign){
+               
+               Sign s = (Sign) b.getState();
+               
+               if(this.getState().equals(ArenaState.WAITING)) {
+                   
+                   ((Sign) s).setLine(0, "§l§9[Join]");
+
+                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Waiting");
+               
+               } else if(this.getState().equals(ArenaState.STARTING)) {
+                   
+                   ((Sign) s).setLine(0, "§l§9[Join]");
+
+                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Starting");
+               
+               } else if(this.getState().equals(ArenaState.IN_GAME)) {
+                   
+                   ((Sign) s).setLine(0, "§l§9[Spectate]");
+
+                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+               
+               } else {
+                   ((Sign) s).setLine(0, "§l§4[UnJoinable]");
+
+                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
+               }
+               
+               s.update();
+
+           }                                 
+        }           
+    } 
 }

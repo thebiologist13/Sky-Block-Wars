@@ -43,6 +43,7 @@ permissions:
             skyblockwars.listgames: true
             skyblockwars.team: true
             skyblockwars.vote: true
+            skyblockwars.sign.join: true
         default: op
     skyblockwars.join:
         default: op
@@ -89,4 +90,6 @@ permissions:
     skyblockwars.help.admin:
         default: op
     skyblockwars.prepare:
+        default: op
+    skyblockwars.sign.join:
         default: op

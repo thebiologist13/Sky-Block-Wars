@@ -42,6 +42,12 @@ public class ConfigManager {
             Main.getInstance().spawnFile.getParentFile().mkdirs();
             copy(Main.getInstance().getResource("spawns.yml"), Main.getInstance().spawnFile);
         }
+        
+        if (!Main.getInstance().signFile.exists()) {
+            Main.getInstance().signFile.getParentFile().mkdirs();
+            copy(Main.getInstance().getResource("signs.yml"), Main.getInstance().signFile);
+        }
+
 
     }
 
@@ -67,6 +73,7 @@ public class ConfigManager {
             Main.getInstance().Inv.load(Main.getInstance().invFile);
             Main.getInstance().Chest.load(Main.getInstance().chestFile);
             Main.getInstance().Spawns.load(Main.getInstance().spawnFile);
+            Main.getInstance().Signs.load(Main.getInstance().signFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,6 +87,7 @@ public class ConfigManager {
             Main.getInstance().Inv.save(Main.getInstance().invFile);
             Main.getInstance().Chest.save(Main.getInstance().chestFile);
             Main.getInstance().Spawns.save(Main.getInstance().spawnFile);
+            Main.getInstance().Signs.save(Main.getInstance().signFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,14 +2,14 @@ package me.kyle.burnett.SkyBlockWarriors;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.Interact;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDamageEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerMove;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.SignChange;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
 import org.bukkit.Bukkit;
@@ -40,10 +40,11 @@ public class Main extends JavaPlugin {
 
     public File spawnFile;
     public FileConfiguration Spawns;
+    
+    public File signFile;
+    public FileConfiguration Signs;
 
     private PluginManager pm = Bukkit.getServer().getPluginManager();
-
-    private Logger log = Bukkit.getLogger();
 
     public static Main getInstance() {
         return instance;
@@ -59,6 +60,7 @@ public class Main extends JavaPlugin {
         invFile = new File(getDataFolder(), "inventorys.yml");
         chestFile = new File(getDataFolder(), "chests.yml");
         spawnFile = new File(getDataFolder(), "spawns.yml");
+        signFile = new File(getDataFolder(), "signs.yml");
 
         try {
 
@@ -74,12 +76,16 @@ public class Main extends JavaPlugin {
         this.Inv = new YamlConfiguration();
         this.Chest = new YamlConfiguration();
         this.Spawns = new YamlConfiguration();
+        this.Signs = new YamlConfiguration();
         ConfigManager.getInstance().loadYamls();
         ConfigManager.getInstance().saveYamls();
 
         pm.registerEvents(new PlayerDeath(), this);
         pm.registerEvents(new PlayerLeave(), this);
         pm.registerEvents(new PlayerDamageEvent(), this);
+        pm.registerEvents(new PlayerMove(), this);
+        pm.registerEvents(new SignChange(), this);
+        pm.registerEvents(new Interact(), this);
 
         getCommand("skyblockw").setExecutor(new SW());
 
@@ -101,26 +107,6 @@ public class Main extends JavaPlugin {
                 this.teleportToLobby(p);
             }
         }
-    }
-
-    public Location getLobby() {
-
-        if (this.Config.contains("Lobby")) {
-
-            World world = Bukkit.getServer().getWorld(this.Config.getString("Lobby.WORLD"));
-
-            int X = this.Config.getInt("Lobby.X");
-            int Y = this.Config.getInt("Lobby.Y");
-            int Z = this.Config.getInt("Lobby.Z");
-            float Yaw = this.Config.getLong("Lobby.YAW");
-            float Pitch = this.Config.getLong("Lobby.PITCH");
-
-            Location lobby = new Location(world, X, Y, Z, Yaw, Pitch);
-
-            return lobby;
-        }
-        log.log(Level.SEVERE, "Skyblock Wars lobby not found.");
-        return null;
     }
 
     public void setUp() {
@@ -146,6 +132,17 @@ public class Main extends JavaPlugin {
         this.Config.set("Lobby.WORLD", p.getLocation().getWorld().getName());
         ConfigManager.getInstance().saveYamls();
     }
+    
+    public void setWaiting(Player p) {
+
+        this.Config.set("Waiting.X", p.getLocation().getBlockX());
+        this.Config.set("Waiting.Y", p.getLocation().getBlockY());
+        this.Config.set("Waiting.Z", p.getLocation().getBlockZ());
+        this.Config.set("Waiting.YAW", p.getLocation().getPitch());
+        this.Config.set("Waiting.PITCH", p.getLocation().getYaw());
+        this.Config.set("Waiting.WORLD", p.getLocation().getWorld().getName());
+        ConfigManager.getInstance().saveYamls();
+    }
 
     public boolean teleportToLobby(Player p) {
 
@@ -159,6 +156,26 @@ public class Main extends JavaPlugin {
         double z = Main.getInstance().Config.getDouble("Lobby.Z");
         long yaw = Main.getInstance().Config.getLong("Lobby.YAW");
         long pitch = Main.getInstance().Config.getLong("Lobby.PITCH");
+
+        Location location = new Location(world, x, y, z, yaw, pitch);
+
+        p.teleport(location);
+
+        return true;
+    }
+    
+    public boolean teleportToWaiting(Player p) {
+
+        if (!this.Config.contains("Waiting")) {
+            return false;
+        }
+
+        World world = Bukkit.getServer().getWorld(this.Config.getString("Waiting.WORLD"));
+        double x = Main.getInstance().Config.getDouble("Waiting.X");
+        double y = Main.getInstance().Config.getDouble("Waiting.Y");
+        double z = Main.getInstance().Config.getDouble("Waiting.Z");
+        long yaw = Main.getInstance().Config.getLong("Waiting.YAW");
+        long pitch = Main.getInstance().Config.getLong("Waiting.PITCH");
 
         Location location = new Location(world, x, y, z, yaw, pitch);
 
