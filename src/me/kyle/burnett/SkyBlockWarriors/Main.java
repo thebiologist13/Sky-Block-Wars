@@ -101,7 +101,7 @@ public class Main extends JavaPlugin {
 
         try {
             this.checkDatabase();
-            
+
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             log.severe("Connection failed. Defaulting to SQLite.");
@@ -110,9 +110,9 @@ public class Main extends JavaPlugin {
 
         try {
             this.checkDatabase();
-            
+
         } catch (ClassNotFoundException | SQLException e) {
-            
+
             e.printStackTrace();
             log.severe("An error has occured. Shutting down sky block wars.");
             pm.disablePlugin(this);
@@ -211,14 +211,14 @@ public class Main extends JavaPlugin {
         return true;
     }
 
-    public void checkDatabase() throws SQLException, ClassNotFoundException{
-        
+    public void checkDatabase() throws SQLException, ClassNotFoundException {
+
         Connection con = null;
-        
+
         con = SQLSelection.getConnection();
 
         con.createStatement().execute("CREATE TABLE IF NOT EXISTS sbw(username VARCHAR(255), kills INTEGER, deaths INTEGER, wins INTEGER, losses INTEGER, played INTEGER)");
-    
+
 
     }
 

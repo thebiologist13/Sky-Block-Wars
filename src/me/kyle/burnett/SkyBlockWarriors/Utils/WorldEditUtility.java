@@ -55,13 +55,13 @@ public class WorldEditUtility {
 
         File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
 
-        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));   
-        
+        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
+
         if (world == null) {
             Bukkit.getLogger().log(Level.SEVERE, "Error while loading schematic for arena " + arena);
-            
+
         }
-      
+
         SchematicFormat format = SchematicFormat.getFormat(file);
 
         if (format == null) {
@@ -78,7 +78,7 @@ public class WorldEditUtility {
         }
 
         EditSession es = new EditSession(new BukkitWorld(world), cc.getHeight() * cc.getWidth() * cc.getLength() * 4);
-        
+
         Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginZ"));
 
         try {

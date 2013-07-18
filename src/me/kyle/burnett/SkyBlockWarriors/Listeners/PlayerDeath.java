@@ -53,35 +53,35 @@ public class PlayerDeath implements Listener {
 
 
                     }, 1L);
-                                 
+
                     try {
-                        
+
                         PlayerDeaths.setPlayerDeaths(p, 1);
-                        
+
                     } catch (ClassNotFoundException | SQLException e1) {
-                        
+
                         e1.printStackTrace();
                     }
                     try {
-                        
+
                         PlayerLosses.setPlayerLosses(p, 1);
-                        
+
                     } catch (ClassNotFoundException | SQLException e1) {
-                        
+
                         e1.printStackTrace();
                     }
                     if (p.getKiller() instanceof Player) {
-                        
+
                         try {
-                            
+
                             PlayerKills.setPlayerKills(p.getKiller(), 1);
-                            
+
                         } catch (ClassNotFoundException | SQLException e1) {
-                            
+
                             e1.printStackTrace();
                         }
                     }
-          
+
 
                 } else if (!GameManager.getInstance().hasPlayerGameStarted(p)) {
 

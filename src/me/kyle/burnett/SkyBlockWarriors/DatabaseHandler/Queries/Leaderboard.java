@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
 public class Leaderboard {
 
     public static void getTopPlayers(Player player, String category) throws SQLException, ClassNotFoundException {
-        
+
         int limit = Main.getInstance().Config.getInt("Leaderboard-Print-Limit");
-        
+
         ResultSet rs = SQLSelection.getStatement().executeQuery("SELECT username, " + category.toLowerCase() + " FROM sbw ORDER BY " + category.toLowerCase() + " DESC LIMIT " + limit + ";");
         category = category.substring(0, 1).toUpperCase() + category.substring(1, category.length());
         player.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]Leaderboard sorted by " + category + ":");

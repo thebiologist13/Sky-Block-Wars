@@ -323,7 +323,7 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
-                        
+
                     } else if (args[0].equalsIgnoreCase("leaderboard") || args[0].equalsIgnoreCase("leader")) {
 
                         if (p.hasPermission("skyblockwars.leader")) {
@@ -334,14 +334,14 @@ public class SW implements CommandExecutor {
                                 e.printStackTrace();
                             }
 
-                        }else if (!p.hasPermission("skyblockwars.leader")) {
-                            
+                        } else if (!p.hasPermission("skyblockwars.leader")) {
+
                             p.sendMessage(perm);
                         }
                         return true;
-                        
+
                     } else if (args[0].equalsIgnoreCase("stats")) {
-                        
+
                         if (p.hasPermission("skyblockwars.stats")) {
 
                             try {
@@ -349,9 +349,9 @@ public class SW implements CommandExecutor {
                             } catch (ClassNotFoundException | SQLException e) {
                                 e.printStackTrace();
                             }
-                            
-                        }else if (!p.hasPermission("skyblockwars.stats")) {
-                            
+
+                        } else if (!p.hasPermission("skyblockwars.stats")) {
+
                             p.sendMessage(perm);
                         }
                         return true;
@@ -960,11 +960,11 @@ public class SW implements CommandExecutor {
 
                             if (args[1].equalsIgnoreCase("kills") || args[1].equalsIgnoreCase("deaths") || args[1].equalsIgnoreCase("wins") || args[1].equalsIgnoreCase("losses") || args[1].equalsIgnoreCase("played")) {
 
-                                    try {
-                                        Leaderboard.getTopPlayers(p, args[1]);
-                                    } catch (ClassNotFoundException | SQLException e) {
-                                        e.printStackTrace();
-                                    }
+                                try {
+                                    Leaderboard.getTopPlayers(p, args[1]);
+                                } catch (ClassNotFoundException | SQLException e) {
+                                    e.printStackTrace();
+                                }
 
                             } else {
                                 p.sendMessage(prefix + ChatColor.RED + "Incorrect variable. Please use Kills, Deaths, Wins, Losses, or Played.");
@@ -996,6 +996,10 @@ public class SW implements CommandExecutor {
                                     e.printStackTrace();
                                 }
                             }
+
+                        } else if (!p.hasPermission("skyblockwars.stats")) {
+
+                            p.sendMessage(perm);
                         }
                         return true;
                     }

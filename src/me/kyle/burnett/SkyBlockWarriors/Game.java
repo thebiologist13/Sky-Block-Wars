@@ -68,13 +68,13 @@ public class Game {
     GameManager gm = GameManager.getInstance();
 
     public Game(int gameID, boolean justCreated, boolean justRestarted) {
-                
+
         this.gameID = gameID;
         this.task = gameID;
         this.world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
-        
+
         prepareArena(justCreated, justRestarted);
-        
+
         this.min = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
         this.max = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxZ"));
     }
@@ -170,24 +170,24 @@ public class Game {
             public void run() {
 
                 if (team != null) {
-                    
+
                     if (team.equals(Game.this.RED)) {
-                        
+
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
-                    
+
                     } else if (team.equals(Game.this.GREEN)) {
-                       
+
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
-                   
+
                     } else if (team.equals(Game.this.BLUE)) {
-                      
+
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
-                   
+
                     } else if (team.equals(Game.this.YELLOW)) {
-                        
+
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
                     }
-                    
+
                     try {
                         PlayerWins.setPlayerWins(players, 1);
                     } catch (ClassNotFoundException | SQLException e) {
@@ -327,31 +327,31 @@ public class Game {
             if (!end) {
 
                 if (!died) {
-                    
+
                     this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
 
                 } else if (died) {
-                    
+
                     this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
                 }
-                
+
                 this.checkEnd();
-                
+
                 try {
                     PlayerLosses.setPlayerLosses(p, 1);
                 } catch (ClassNotFoundException | SQLException e) {
                     e.printStackTrace();
                 }
             }
-            
+
         } else if (instart) {
-            
+
             this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
-            
+
             if (starting) {
-                
+
                 if (checkEndStart()) {
-                    
+
                     this.endStart();
                     return;
                 }
@@ -486,7 +486,7 @@ public class Game {
     }
 
     public boolean isPlayerInTeam(Player p) {
-        
+
         if (this.team.containsKey(p.getName())) {
             if (this.team.get(p.getName()) != null) {
                 return true;
@@ -686,7 +686,7 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Z", p.getLocation().getBlockZ());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.YAW", p.getLocation().getYaw());
-        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.PITCH", p.getLocation().getPitch());        
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.PITCH", p.getLocation().getPitch());
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -695,7 +695,7 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Z", p.getLocation().getBlockZ());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.YAW", p.getLocation().getYaw());
-        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.PITCH", p.getLocation().getPitch());        
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.PITCH", p.getLocation().getPitch());
         ConfigManager.getInstance().saveYamls();
     }
 
@@ -718,7 +718,7 @@ public class Game {
         double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.PITCH");
-        
+
         return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
@@ -731,7 +731,7 @@ public class Game {
         double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Z");
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.PITCH");
-        
+
         return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
@@ -744,7 +744,7 @@ public class Game {
         double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Z");
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.PITCH");
-        
+
         return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
@@ -757,7 +757,7 @@ public class Game {
         double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Z");
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.PITCH");
-        
+
         return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
@@ -766,7 +766,7 @@ public class Game {
     }
 
     public void playerSoundGame() {
-        
+
         Packet54PlayNoteBlock packet = new Packet54PlayNoteBlock(1, 1, 1, 1, 1, 1);
 
         for (int x = 0; x < this.players.size(); x++) {
@@ -1310,11 +1310,11 @@ public class Game {
             }, 0L, 20L);
         }
     }
-    
+
     public void loadChests() {
 
         String world = Main.getInstance().Arena.getString("Arena." + this.gameID + ".World");
-        
+
         World w = Bukkit.getServer().getWorld(world);
 
         this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn"), Main.getInstance().Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
@@ -1341,7 +1341,7 @@ public class Game {
             }
         }
     }
-    
+
     private Vector vecFromString(String string) {
         String[] split = string.split(",");
         return new Vector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
@@ -1366,89 +1366,90 @@ public class Game {
 
         return null;
     }
-    
-    public boolean isBlockInArena(Location l){
-        
-        if (l.getWorld() != this.min.getWorld()) return false;
-        
+
+    public boolean isBlockInArena(Location l) {
+
+        if (l.getWorld() != this.min.getWorld())
+            return false;
+
         double x = l.getX();
         double z = l.getZ();
-        
+
         return (x >= this.min.getBlockX()) && (x < this.max.getBlockX() + 1) && (z >= this.min.getBlockZ()) && (z < this.max.getBlockZ() + 1);
     }
-    
-    public void updateSignPlayers(){
-        
-        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID); 
-        
-        for(int x = 0; x < signs.size(); x++){
-            
+
+    public void updateSignPlayers() {
+
+        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID);
+
+        for (int x = 0; x < signs.size(); x++) {
+
             Vector v = this.vecFromString(signs.get(x));
-            
+
             Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-            
-            if(b.getState() instanceof Sign){
-                
+
+            if (b.getState() instanceof Sign) {
+
                 System.out.println(2);
                 Sign s = (Sign) b.getState();
-               
-                if(this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4){
-                   
-                   s.setLine(0, "§4§l[Full]");
+
+                if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+
+                    s.setLine(0, "§4§l[Full]");
                 }
-               
+
                 s.setLine(2, this.players.size() + "/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
-              
+
                 s.update();
-           }
-            
-            
-        }           
-    } 
-    
-    public void updateSignState(){
-        
-        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID); 
-        
-        for(int x = 0; x < signs.size(); x++){
-            
-           Vector v = this.vecFromString(signs.get(x));
-           
-           System.out.println(world.getName());           
-            
-           Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-           
-           if(b.getState() instanceof Sign){
-               
-               Sign s = (Sign) b.getState();
-               
-               if(this.getState().equals(ArenaState.WAITING)) {
-                   
-                   ((Sign) s).setLine(0, "§l§9[Join]");
+            }
 
-                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Waiting");
-               
-               } else if(this.getState().equals(ArenaState.STARTING)) {
-                   
-                   ((Sign) s).setLine(0, "§l§9[Join]");
 
-                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Starting");
-               
-               } else if(this.getState().equals(ArenaState.IN_GAME)) {
-                   
-                   ((Sign) s).setLine(0, "§l§9[Spectate]");
+        }
+    }
 
-                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
-               
-               } else {
-                   ((Sign) s).setLine(0, "§l§4[UnJoinable]");
+    public void updateSignState() {
 
-                   ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
-               }
-               
-               s.update();
+        List<String> signs = Main.getInstance().Signs.getStringList("Signs." + this.gameID);
 
-           }                                 
-        }           
-    } 
+        for (int x = 0; x < signs.size(); x++) {
+
+            Vector v = this.vecFromString(signs.get(x));
+
+            System.out.println(world.getName());
+
+            Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+
+            if (b.getState() instanceof Sign) {
+
+                Sign s = (Sign) b.getState();
+
+                if (this.getState().equals(ArenaState.WAITING)) {
+
+                    ((Sign) s).setLine(0, "§l§9[Join]");
+
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Waiting");
+
+                } else if (this.getState().equals(ArenaState.STARTING)) {
+
+                    ((Sign) s).setLine(0, "§l§9[Join]");
+
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Starting");
+
+                } else if (this.getState().equals(ArenaState.IN_GAME)) {
+
+                    ((Sign) s).setLine(0, "§l§9[Spectate]");
+
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+
+                } else {
+                    ((Sign) s).setLine(0, "§l§4[UnJoinable]");
+
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
+                }
+
+                s.update();
+
+            }
+        }
+    }
 }

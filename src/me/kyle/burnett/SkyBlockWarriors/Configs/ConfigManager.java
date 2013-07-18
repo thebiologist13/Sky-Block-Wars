@@ -42,7 +42,7 @@ public class ConfigManager {
             Main.getInstance().spawnFile.getParentFile().mkdirs();
             copy(Main.getInstance().getResource("spawns.yml"), Main.getInstance().spawnFile);
         }
-        
+
         if (!Main.getInstance().signFile.exists()) {
             Main.getInstance().signFile.getParentFile().mkdirs();
             copy(Main.getInstance().getResource("signs.yml"), Main.getInstance().signFile);
