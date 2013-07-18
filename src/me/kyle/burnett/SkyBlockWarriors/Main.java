@@ -1,9 +1,14 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.SQLSelection;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.Interact;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDamageEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
@@ -40,9 +45,11 @@ public class Main extends JavaPlugin {
 
     public File spawnFile;
     public FileConfiguration Spawns;
-    
+
     public File signFile;
     public FileConfiguration Signs;
+
+    public Logger log = Bukkit.getLogger();
 
     private PluginManager pm = Bukkit.getServer().getPluginManager();
 
@@ -92,6 +99,26 @@ public class Main extends JavaPlugin {
         setUp();
 
 
+        try {
+            this.checkDatabase();
+            
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            log.severe("Connection failed. Defaulting to SQLite.");
+            this.Config.set("MySQL.Enable", false);
+        }
+
+        try {
+            this.checkDatabase();
+            
+        } catch (ClassNotFoundException | SQLException e) {
+            
+            e.printStackTrace();
+            log.severe("An error has occured. Shutting down sky block wars.");
+            pm.disablePlugin(this);
+        }
+
+
     }
 
     @Override
@@ -132,7 +159,7 @@ public class Main extends JavaPlugin {
         this.Config.set("Lobby.WORLD", p.getLocation().getWorld().getName());
         ConfigManager.getInstance().saveYamls();
     }
-    
+
     public void setWaiting(Player p) {
 
         this.Config.set("Waiting.X", p.getLocation().getBlockX());
@@ -163,7 +190,7 @@ public class Main extends JavaPlugin {
 
         return true;
     }
-    
+
     public boolean teleportToWaiting(Player p) {
 
         if (!this.Config.contains("Waiting")) {
@@ -182,6 +209,17 @@ public class Main extends JavaPlugin {
         p.teleport(location);
 
         return true;
+    }
+
+    public void checkDatabase() throws SQLException, ClassNotFoundException{
+        
+        Connection con = null;
+        
+        con = SQLSelection.getConnection();
+
+        con.createStatement().execute("CREATE TABLE IF NOT EXISTS sbw(username VARCHAR(255), kills INTEGER, deaths INTEGER, wins INTEGER, losses INTEGER, played INTEGER)");
+    
+
     }
 
 }

@@ -1,11 +1,16 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.CreatePlayer;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerLosses;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerPlayed;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerWins;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
@@ -165,14 +170,28 @@ public class Game {
             public void run() {
 
                 if (team != null) {
+                    
                     if (team.equals(Game.this.RED)) {
+                        
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
+                    
                     } else if (team.equals(Game.this.GREEN)) {
+                       
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
+                   
                     } else if (team.equals(Game.this.BLUE)) {
+                      
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
+                   
                     } else if (team.equals(Game.this.YELLOW)) {
+                        
                         Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
+                    }
+                    
+                    try {
+                        PlayerWins.setPlayerWins(players, 1);
+                    } catch (ClassNotFoundException | SQLException e) {
+                        e.printStackTrace();
                     }
                 }
                 for (int x = 0; x < Game.this.players.size(); x++) {
@@ -185,7 +204,6 @@ public class Game {
                 }
 
                 Game.this.prepareArena(false, false);
-                //Register stats.
             }
         }, 2L);
 
@@ -316,13 +334,20 @@ public class Game {
                     
                     this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
                 }
+                
                 this.checkEnd();
+                
+                try {
+                    PlayerLosses.setPlayerLosses(p, 1);
+                } catch (ClassNotFoundException | SQLException e) {
+                    e.printStackTrace();
+                }
             }
             
         } else if (instart) {
             
             this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
-
+            
             if (starting) {
                 
                 if (checkEndStart()) {
@@ -1180,6 +1205,12 @@ public class Game {
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+            try {
+                CreatePlayer.enterNewUser(p.getPlayer());
+                PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
@@ -1193,6 +1224,12 @@ public class Game {
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+            try {
+                CreatePlayer.enterNewUser(p.getPlayer());
+                PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
@@ -1206,6 +1243,12 @@ public class Game {
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+            try {
+                CreatePlayer.enterNewUser(p.getPlayer());
+                PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
@@ -1219,6 +1262,12 @@ public class Game {
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+            try {
+                CreatePlayer.enterNewUser(p.getPlayer());
+                PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

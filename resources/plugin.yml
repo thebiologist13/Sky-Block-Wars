@@ -44,6 +44,9 @@ permissions:
             skyblockwars.team: true
             skyblockwars.vote: true
             skyblockwars.sign.join: true
+            skyblockwars.sign.leave: true
+            skyblockwars.leader: true
+            skyblockwars.stats: true
         default: op
     skyblockwars.join:
         default: op
@@ -92,4 +95,10 @@ permissions:
     skyblockwars.prepare:
         default: op
     skyblockwars.sign.join:
+        default: op
+    skyblockwars.sign.leave:
+        default: op
+    skyblockwars.leader:
+        default: op
+    skyblockwars.stats:
         default: op

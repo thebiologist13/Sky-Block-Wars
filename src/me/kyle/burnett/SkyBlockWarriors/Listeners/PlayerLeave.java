@@ -1,7 +1,11 @@
 package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
+import java.sql.SQLException;
+
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.InvManager;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerLosses;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,6 +28,16 @@ public class PlayerLeave implements Listener {
                 gm.getPlayerGame(p).removeFromGame(p, false, false, false);
 
                 InvManager.getInstance().restoreInv(p);
+                            
+                try {
+                    
+                    PlayerLosses.setPlayerLosses(p, 1);
+                    
+                } catch (ClassNotFoundException | SQLException e1) {
+                    
+                    e1.printStackTrace();
+                }
+ 
 
             } else if (!gm.hasPlayerGameStarted(p)) {
                 gm.getPlayerGame(p).removeFromGame(p, false, false, true);

@@ -4,6 +4,14 @@ Block-Commands: false
 Auto-Start-Players: 4
 Auto-Start-Time: 60
 Minimum-Players-To-Start: 2
+Leaderboard-Print-Limit: 5
+MySQL:
+  Enable: false
+  Address: localhost
+  Port: 3306
+  Database: Minecraft
+  Username: Admin
+  Password: Password
 Chests:
   Spawn-Chests:
       ItemID/Amount:

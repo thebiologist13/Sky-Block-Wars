@@ -1,7 +1,12 @@
 package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
+import java.sql.SQLException;
+
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerDeaths;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerKills;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerLosses;
 import net.minecraft.server.v1_6_R2.Packet205ClientCommand;
 
 import org.bukkit.Bukkit;
@@ -48,6 +53,36 @@ public class PlayerDeath implements Listener {
 
 
                     }, 1L);
+                                 
+                    try {
+                        
+                        PlayerDeaths.setPlayerDeaths(p, 1);
+                        
+                    } catch (ClassNotFoundException | SQLException e1) {
+                        
+                        e1.printStackTrace();
+                    }
+                    try {
+                        
+                        PlayerLosses.setPlayerLosses(p, 1);
+                        
+                    } catch (ClassNotFoundException | SQLException e1) {
+                        
+                        e1.printStackTrace();
+                    }
+                    if (p.getKiller() instanceof Player) {
+                        
+                        try {
+                            
+                            PlayerKills.setPlayerKills(p.getKiller(), 1);
+                            
+                        } catch (ClassNotFoundException | SQLException e1) {
+                            
+                            e1.printStackTrace();
+                        }
+                    }
+          
+
                 } else if (!GameManager.getInstance().hasPlayerGameStarted(p)) {
 
                     Packet205ClientCommand packet = new Packet205ClientCommand();

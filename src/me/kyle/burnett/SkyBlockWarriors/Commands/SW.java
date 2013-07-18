@@ -1,13 +1,18 @@
 package me.kyle.burnett.SkyBlockWarriors.Commands;
 
+import java.sql.SQLException;
+
 import me.kyle.burnett.SkyBlockWarriors.ArenaState;
 import me.kyle.burnett.SkyBlockWarriors.ChestType;
 import me.kyle.burnett.SkyBlockWarriors.Game;
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.Leaderboard;
+import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerSearch;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -50,14 +55,16 @@ public class SW implements CommandExecutor {
                 if (args.length == 1) {
 
                     if (args[0].equalsIgnoreCase("help")) {
-                        
+
                         p.sendMessage(ChatColor.GOLD + "----------" + ChatColor.GREEN + "Sky Block War's Help" + ChatColor.GOLD + "----------");
                         p.sendMessage(ChatColor.GOLD + "/sw join [arena] - " + ChatColor.BLUE + "Join a specific arena or get teleported to the lobby.");
                         p.sendMessage(ChatColor.GOLD + "/sw list - " + ChatColor.BLUE + "List players in your current game.");
                         p.sendMessage(ChatColor.GOLD + "/sw listgames -  " + ChatColor.BLUE + "List all available games.");
                         p.sendMessage(ChatColor.GOLD + "/sw team " + teams + " -  " + ChatColor.BLUE + "Choose a team once you join a game.");
                         p.sendMessage(ChatColor.GOLD + "/sw vote -  " + ChatColor.BLUE + "Vote to start the game.");
-                       
+                        p.sendMessage(ChatColor.GOLD + "/sw leader {Kills, Deaths, Wins, Losses, Played} - " + ChatColor.BLUE + "Shows leaderboards for selected category.");
+                        p.sendMessage(ChatColor.GOLD + "/sw stats {player} - " + ChatColor.BLUE + "Gives more indepth stats for specified player.");
+
                         return true;
                     }
 
@@ -80,7 +87,7 @@ public class SW implements CommandExecutor {
 
                                 p.sendMessage(prefix + ChatColor.RED + "You have already joined.");
                             }
-                            
+
                         } else if (!p.hasPermission("skyblockwars.join")) {
 
                             p.sendMessage(perm);
@@ -249,20 +256,20 @@ public class SW implements CommandExecutor {
                                     if (!gm.getPlayerGame(p).getState().equals(ArenaState.STARTING)) {
 
                                         if (gm.getPlayerGame(p).getPlayers().size() >= Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
-                                        
+
                                             if (!gm.getPlayerGame(p).hasVoted(p)) {
-    
+
                                                 p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
                                                 gm.getPlayerGame(p).addVoted(p);
                                                 gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
-    
+
                                             } else if (gm.getPlayerGame(p).hasVoted(p)) {
-    
+
                                                 p.sendMessage(prefix + ChatColor.RED + "You have already voted.");
                                             }
-                                            
-                                        }else if (gm.getPlayerGame(p).getPlayers().size() < Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
-                                           
+
+                                        } else if (gm.getPlayerGame(p).getPlayers().size() < Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
+
                                             p.sendMessage(prefix + ChatColor.RED + "You cant vote. There are not enough players to start.");
                                         }
 
@@ -298,26 +305,58 @@ public class SW implements CommandExecutor {
                             p.sendMessage(prefix + ChatColor.GREEN + "Config's reloaded.");
 
                         } else if (!p.hasPermission("skyblockwars.reload")) {
-                            
-                            p.sendMessage(perm);                            
+
+                            p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
-                    
-                    if(args[0].equalsIgnoreCase("setwaiting")){
-                        
-                        if(p.hasPermission("skyblockwars.setwaiting")){
-                            
+
+                    else if (args[0].equalsIgnoreCase("setwaiting")) {
+
+                        if (p.hasPermission("skyblockwars.setwaiting")) {
+
                             Main.getInstance().setWaiting(p);
                             p.sendMessage(prefix + ChatColor.GREEN + "Waiting room set succesfully.");
-                            
-                        }else if(!p.hasPermission("skyblockwars.setwaiting")){
-                            
-                            p.sendMessage(perm);                            
+
+                        } else if (!p.hasPermission("skyblockwars.setwaiting")) {
+
+                            p.sendMessage(perm);
                         }
+                        
+                    } else if (args[0].equalsIgnoreCase("leaderboard") || args[0].equalsIgnoreCase("leader")) {
+
+                        if (p.hasPermission("skyblockwars.leader")) {
+
+                            try {
+                                Leaderboard.getTopPlayers(p, "kills");
+                            } catch (ClassNotFoundException | SQLException e) {
+                                e.printStackTrace();
+                            }
+
+                        }else if (!p.hasPermission("skyblockwars.leader")) {
+                            
+                            p.sendMessage(perm);
+                        }
+                        return true;
+                        
+                    } else if (args[0].equalsIgnoreCase("stats")) {
+                        
+                        if (p.hasPermission("skyblockwars.stats")) {
+
+                            try {
+                                PlayerSearch.getPlayerData(p, p.getName());
+                            } catch (ClassNotFoundException | SQLException e) {
+                                e.printStackTrace();
+                            }
+                            
+                        }else if (!p.hasPermission("skyblockwars.stats")) {
+                            
+                            p.sendMessage(perm);
+                        }
+                        return true;
                     }
-                   
+
                     p.sendMessage(prefix + ChatColor.RED + "Unknown command. Use '/sw help' for a list of commands.");
 
                     return true;
@@ -374,7 +413,7 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -402,7 +441,7 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -411,16 +450,16 @@ public class SW implements CommandExecutor {
                         if (p.hasPermission("skyblockwars.join." + args[1]) || p.hasPermission("skyblockwars.join")) {
 
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
-                                if (!gm.isPlayerInGame(p)) {                                    
+
+                                if (!gm.isPlayerInGame(p)) {
 
                                     if (gm.isActive(Integer.parseInt(args[1]))) {
-                                        
-                                        Game game = gm.getGameByID(Integer.parseInt(args[1]));
-                                        
-                                        if (game.getState().equals(ArenaState.WAITING) || game.getState().equals(ArenaState.STARTING)) {                                            
 
-                                            if (game.getPlayers().size() != Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {                                                
+                                        Game game = gm.getGameByID(Integer.parseInt(args[1]));
+
+                                        if (game.getState().equals(ArenaState.WAITING) || game.getState().equals(ArenaState.STARTING)) {
+
+                                            if (game.getPlayers().size() != Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
 
                                                 game.addPlayer(p);
 
@@ -453,7 +492,7 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -461,32 +500,32 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.edit")) {
 
-                            if(!gm.isEditing(p)){
-                            
+                            if (!gm.isEditing(p)) {
+
                                 if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-    
+
                                     gm.addEditor(p, Integer.parseInt(args[1]));
-    
+
                                     gm.getGameByID(Integer.parseInt(args[1])).setState(ArenaState.GETTING_EDITED);
-    
+
                                     p.sendMessage(prefix + ChatColor.GREEN + "Now editing arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
-    
+
                                 } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-    
+
                                     p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                                 }
-                                
-                            }else if(gm.isEditing(p)){
-                                
+
+                            } else if (gm.isEditing(p)) {
+
                                 p.sendMessage(prefix + ChatColor.RED + "You are already editing an arena.");
-                                
-                            }                            
+
+                            }
 
                         } else if (p.hasPermission("skyblockwars.edit")) {
 
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -540,22 +579,22 @@ public class SW implements CommandExecutor {
                                 }
 
                             } else if (!gm.isEditing(p)) {
-                                
-                                p.sendMessage(prefix + ChatColor.RED + "You are not editing an arena.");                                
+
+                                p.sendMessage(prefix + ChatColor.RED + "You are not editing an arena.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.addchest")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
                     else if (args[0].equalsIgnoreCase("enable")) {
 
                         if (p.hasPermission("skyblockwars.enable")) {
-                            
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
 
                                 if (!gm.isEnabled(Integer.parseInt(args[1]))) {
@@ -573,12 +612,12 @@ public class SW implements CommandExecutor {
 
                                 p.sendMessage(prefix + ChatColor.RED + "That is not an arena.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.enable")) {
-                            
-                            p.sendMessage(perm);                            
+
+                            p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -600,22 +639,22 @@ public class SW implements CommandExecutor {
                                             p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been disabled.");
 
                                         } else if (g.getState().equals(ArenaState.GETTING_EDITED)) {
-                                            
+
                                             p.sendMessage(prefix + ChatColor.RED + "Could not disable arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " because it is being edited.");
 
                                         } else if (g.getState().equals(ArenaState.STARTING)) {
-                                            
+
                                             g.endGameStarting();
                                             p.sendMessage(prefix + ChatColor.RED + "Could not disable arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " because it is being edited.");
                                         }
-                                        
+
                                     } else if (!gm.isActive(Integer.parseInt(args[1]))) {
 
                                         gm.disableGame(Integer.parseInt(args[1]));
 
                                         p.sendMessage(prefix + ChatColor.GREEN + "You disabled arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
                                     }
-                                    
+
                                 } else if (!gm.isEnabled(Integer.parseInt(args[1]))) {
 
                                     p.sendMessage(prefix + ChatColor.RED + "Arena is already disabled.");
@@ -625,34 +664,34 @@ public class SW implements CommandExecutor {
 
                                 p.sendMessage(prefix + ChatColor.RED + "That is not an arena.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.disable")) {
-                            
+
                             p.sendMessage(perm);
                         }
                         return true;
                     }
 
                     else if (args[0].equalsIgnoreCase("activate")) {
-                        
+
                         if (p.hasPermission("skyblockwars.activate")) {
-                            
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
+
                                 p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been activated.");
 
                                 gm.activate(Integer.parseInt(args[1]));
 
                             } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
+
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.activate")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -676,27 +715,27 @@ public class SW implements CommandExecutor {
                                     }
 
                                 } else if (!gm.isActive(Integer.parseInt(args[1]))) {
-                                    
+
                                     p.sendMessage(prefix + ChatColor.RED + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " is already deactivated.");
                                 }
-                                
+
                             } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
+
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.deactivate")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
                     else if (args[0].equalsIgnoreCase("save")) {
-                        
+
                         if (p.hasPermission("skyblockwars.save")) {
-                            
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
 
                                 WorldEditUtility.getInstance().resaveArena(Integer.parseInt(args[1]));
@@ -708,12 +747,12 @@ public class SW implements CommandExecutor {
 
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.save")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -729,27 +768,27 @@ public class SW implements CommandExecutor {
                                     p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been loaded.");
 
                                 } else if (!WorldEditUtility.getInstance().loadIslandSchematic(Integer.parseInt(args[1]))) {
-                                    
+
                                     p.sendMessage(prefix + ChatColor.RED + "An error occured while trying to load the schematic for arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + ".");
                                 }
-                                
+
                             } else if (gm.checkGameByID(Integer.parseInt(args[1]))) {
 
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.load")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
                     else if (args[0].equalsIgnoreCase("team")) {
-                        
+
                         if (p.hasPermission("skyblockwars.create")) {
-                            
+
                             if (gm.isPlayerInGame(p)) {
 
                                 Game g = gm.getPlayerGame(p);
@@ -761,7 +800,7 @@ public class SW implements CommandExecutor {
                                         if (g.isRedAvailable()) {
 
                                             if (g.isPlayerInTeam(p)) {
-                                                
+
                                                 g.removeFromTeam(p);
                                             }
 
@@ -769,7 +808,7 @@ public class SW implements CommandExecutor {
                                             p.sendMessage(prefix + ChatColor.GREEN + "Joined team " + ChatColor.RED + "red" + ChatColor.GREEN + ".");
 
                                         } else if (!g.isRedAvailable()) {
-                                            
+
                                             p.sendMessage(prefix + ChatColor.RED + "You can not join red, try joining another team or waiting for the teams to even out.");
                                         }
 
@@ -778,7 +817,7 @@ public class SW implements CommandExecutor {
                                         if (g.isBlueAvailable()) {
 
                                             if (g.isPlayerInTeam(p)) {
-                                                
+
                                                 g.removeFromTeam(p);
                                             }
 
@@ -786,7 +825,7 @@ public class SW implements CommandExecutor {
                                             p.sendMessage(prefix + ChatColor.GREEN + "Joined team " + ChatColor.BLUE + "blue" + ChatColor.GREEN + ".");
 
                                         } else if (!g.isBlueAvailable()) {
-                                            
+
                                             p.sendMessage(prefix + ChatColor.RED + "You can not join" + ChatColor.BLUE + " blue" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
                                         }
 
@@ -795,7 +834,7 @@ public class SW implements CommandExecutor {
                                         if (g.isGreenAvailable()) {
 
                                             if (g.isPlayerInTeam(p)) {
-                                                
+
                                                 g.removeFromTeam(p);
                                             }
 
@@ -803,7 +842,7 @@ public class SW implements CommandExecutor {
                                             p.sendMessage(prefix + ChatColor.GREEN + "Joined team green.");
 
                                         } else if (!g.isGreenAvailable()) {
-                                            
+
                                             p.sendMessage(prefix + ChatColor.RED + "You can not join" + ChatColor.GREEN + " green" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
                                         }
 
@@ -812,34 +851,34 @@ public class SW implements CommandExecutor {
                                         if (g.isYellowAvailable()) {
 
                                             if (g.isPlayerInTeam(p)) {
-                                                
-                                                g.removeFromTeam(p);                                                
+
+                                                g.removeFromTeam(p);
                                             }
 
                                             g.setTeamRed(p);
                                             p.sendMessage(prefix + ChatColor.GREEN + "Joined team " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + ".");
 
                                         } else if (!g.isYellowAvailable()) {
-                                            
+
                                             p.sendMessage(prefix + ChatColor.RED + "You can not join" + ChatColor.YELLOW + " yellow" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
                                         }
                                     }
-                                    
+
                                 } else if (!g.getState().equals(ArenaState.WAITING)) {
-                                    
+
                                     p.sendMessage(prefix + ChatColor.RED + "You can not change team when the game is starting or has already started.");
                                 }
 
                             } else if (!gm.isPlayerInGame(p)) {
-                                
+
                                 p.sendMessage(prefix + ChatColor.RED + "You are not in a game.");
                             }
-                            
+
                         } else if (p.hasPermission("skyblockwars.team")) {
-                            
+
                             p.sendMessage(perm);
                         }
-                        
+
                         return true;
                     }
 
@@ -857,7 +896,7 @@ public class SW implements CommandExecutor {
                                 p.sendMessage(ChatColor.GOLD + "/sw addchest <spawn/side/center> - " + ChatColor.BLUE + "Add the location and type of the arena chests.");
 
                             } else if (!p.hasPermission("skyblockwars.help.builder")) {
-                                
+
                                 p.sendMessage(perm);
                             }
 
@@ -877,40 +916,86 @@ public class SW implements CommandExecutor {
                                 p.sendMessage(ChatColor.GOLD + "/sw reload - " + ChatColor.BLUE + "Reload the configs.");
 
                             } else if (!p.hasPermission("skyblockwars.help.admin")) {
-                                
+
                                 p.sendMessage(perm);
                             }
 
                         }
                         return true;
                     }
-                    
-                    if(args[0].equalsIgnoreCase("prepare")){
-                        
-                        if(p.hasPermission("skyblockwars.prepare")){
-                        
+
+                    if (args[0].equalsIgnoreCase("prepare")) {
+
+                        if (p.hasPermission("skyblockwars.prepare")) {
+
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
-                                if(gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)){
-                                   
+
+                                if (gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)) {
+
                                     p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been prepared.");
 
                                     gm.getGameByID(Integer.parseInt(args[1])).prepareArena(false, false);
-                                    
-                                    
-                                }else if(!gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)){
-                                    
-                                    p.sendMessage(prefix + ChatColor.RED + "Can not do this because arena is " + gm.getGameByID(Integer.parseInt(args[1])).getState().toString().replaceAll("_"," "));
+
+
+                                } else if (!gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING)) {
+
+                                    p.sendMessage(prefix + ChatColor.RED + "Can not do this because arena is " + gm.getGameByID(Integer.parseInt(args[1])).getState().toString().replaceAll("_", " "));
                                 }
-                                
-                            }else  if (!gm.checkGameByID(Integer.parseInt(args[1]))) {
-                                
+
+                            } else if (!gm.checkGameByID(Integer.parseInt(args[1]))) {
+
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
-                            
-                        }else  if(!p.hasPermission("skyblockwars.prepare")){
-                            
+
+                        } else if (!p.hasPermission("skyblockwars.prepare")) {
+
                             p.sendMessage(perm);
+                        }
+                        return true;
+                    }
+
+                    else if (args[0].equalsIgnoreCase("leaderboard") || args[0].equalsIgnoreCase("leader")) {
+
+                        if (p.hasPermission("skyblockwars.leaderboard")) {
+
+                            if (args[1].equalsIgnoreCase("kills") || args[1].equalsIgnoreCase("deaths") || args[1].equalsIgnoreCase("wins") || args[1].equalsIgnoreCase("losses") || args[1].equalsIgnoreCase("played")) {
+
+                                    try {
+                                        Leaderboard.getTopPlayers(p, args[1]);
+                                    } catch (ClassNotFoundException | SQLException e) {
+                                        e.printStackTrace();
+                                    }
+
+                            } else {
+                                p.sendMessage(prefix + ChatColor.RED + "Incorrect variable. Please use Kills, Deaths, Wins, Losses, or Played.");
+                            }
+
+                        } else {
+                            p.sendMessage(perm);
+                        }
+
+                        return true;
+
+                    } else if (args[0].equalsIgnoreCase("stats")) {
+
+                        if (p.hasPermission("skyblockwars.stats")) {
+
+                            if (Bukkit.getPlayer(args[1]) != null) {
+
+                                try {
+                                    PlayerSearch.getPlayerData(p, Bukkit.getPlayer(args[1]).getName());
+                                } catch (ClassNotFoundException | SQLException e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+
+                                try {
+                                    PlayerSearch.getPlayerData(p, args[1]);
+                                } catch (ClassNotFoundException | SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                         return true;
                     }
