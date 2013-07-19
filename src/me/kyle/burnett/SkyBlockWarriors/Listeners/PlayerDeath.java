@@ -6,7 +6,6 @@ import me.kyle.burnett.SkyBlockWarriors.GameManager;
 import me.kyle.burnett.SkyBlockWarriors.Main;
 import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerDeaths;
 import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerKills;
-import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerLosses;
 import net.minecraft.server.v1_6_R2.Packet205ClientCommand;
 
 import org.bukkit.Bukkit;
@@ -57,14 +56,6 @@ public class PlayerDeath implements Listener {
                     try {
 
                         PlayerDeaths.setPlayerDeaths(p, 1);
-
-                    } catch (ClassNotFoundException | SQLException e1) {
-
-                        e1.printStackTrace();
-                    }
-                    try {
-
-                        PlayerLosses.setPlayerLosses(p, 1);
 
                     } catch (ClassNotFoundException | SQLException e1) {
 

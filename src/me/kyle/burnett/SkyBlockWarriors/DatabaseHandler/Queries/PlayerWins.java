@@ -20,7 +20,6 @@ public class PlayerWins implements Listener {
             if (rs.next()) {
                 wins = rs.getInt(1) + value;
                 SQLSelection.getStatement().execute("UPDATE sbw SET wins=" + wins + " WHERE username='" + player.getName() + "';");
-                PlayerPlayed.setPlayerPlayed(player, 1);
             }
         }
     }

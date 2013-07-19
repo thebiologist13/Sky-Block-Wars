@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class Interact implements Listener {
@@ -13,7 +14,9 @@ public class Interact implements Listener {
     public void onInteract(PlayerInteractEvent e) {
 
         Block b = e.getClickedBlock();
-
+        
+        if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        
         if (b.getState() instanceof Sign) {
 
             Sign s = (Sign) b.getState();
