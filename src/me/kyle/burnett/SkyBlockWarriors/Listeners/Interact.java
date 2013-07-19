@@ -14,9 +14,10 @@ public class Interact implements Listener {
     public void onInteract(PlayerInteractEvent e) {
 
         Block b = e.getClickedBlock();
-        
-        if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-        
+
+        if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+            return;
+
         if (b.getState() instanceof Sign) {
 
             Sign s = (Sign) b.getState();
