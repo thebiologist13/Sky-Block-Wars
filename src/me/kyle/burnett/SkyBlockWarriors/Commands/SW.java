@@ -1139,7 +1139,7 @@ public class SW implements CommandExecutor {
 
                     else if (args[0].equalsIgnoreCase("leaderboard") || args[0].equalsIgnoreCase("leader")) {
 
-                        if (p.hasPermission("skyblockwars.leaderboard")) {
+                        if (p.hasPermission("skyblockwars.leader")) {
 
                             if (args[1].equalsIgnoreCase("kills") || args[1].equalsIgnoreCase("deaths") || args[1].equalsIgnoreCase("wins") || args[1].equalsIgnoreCase("losses") || args[1].equalsIgnoreCase("played")) {
 

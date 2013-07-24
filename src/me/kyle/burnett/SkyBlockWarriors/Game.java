@@ -74,7 +74,7 @@ public class Game {
         this.task = gameID;
         this.world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        prepareArena(justCreated, justRestarted);
+        this.prepareArena(justCreated, justRestarted);
 
         this.min = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
         this.max = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxZ"));
@@ -118,9 +118,9 @@ public class Game {
                 }
 
                 if(deactivate){
+
                     this.setState(ArenaState.DEACTIVATED);
                 }
-
 
                 return;
             }
@@ -355,8 +355,11 @@ public class Game {
                     this.checkEnd();
 
                     try {
+
                         PlayerLosses.setPlayerLosses(p, 1);
+
                     } catch (ClassNotFoundException | SQLException e) {
+
                         e.printStackTrace();
                     }
                 }
@@ -383,26 +386,34 @@ public class Game {
     }
 
     public boolean checkEndStart() {
+
         if (this.players.size() < Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
+
             return true;
         }
-        return false;
 
+        return false;
     }
 
     public void endStart() {
+
         Bukkit.getScheduler().cancelTask(this.task);
+
         if (this.players.size() > 0) {
+
             this.broadCastGame(prefix + ChatColor.RED + "Countdown canceled. Not enough players to start.");
         }
+
         this.setState(ArenaState.WAITING);
     }
 
     public List<String> getPlayers() {
+
         return players;
     }
 
     public int getGameID() {
+
         return this.gameID;
     }
 
@@ -432,12 +443,15 @@ public class Game {
     }
 
     public void addVoted(Player p) {
+
         this.voted.add(p.getName());
         checkStart();
     }
 
     public boolean hasVoted(Player p) {
+
         if (this.voted.contains(p.getName())) {
+
             return true;
         }
 
@@ -449,10 +463,12 @@ public class Game {
         Team team = this.team.get(p.getName());
 
         if (team == null) {
+
             return null;
         }
 
         if (team.equals(this.RED)) {
+
             return this.RED;
 
         } else if (team.equals(this.GREEN)) {
@@ -468,6 +484,7 @@ public class Game {
             return this.YELLOW;
 
         } else {
+
             return null;
         }
 
@@ -502,7 +519,9 @@ public class Game {
     }
 
     public void removeFromTeam(Player p) {
+
         if (this.team.containsKey(p.getName())) {
+
             this.team.get(p.getName()).removePlayer(p);
             this.team.remove(p.getName());
         }
@@ -511,19 +530,22 @@ public class Game {
     public boolean isPlayerInTeam(Player p) {
 
         if (this.team.containsKey(p.getName())) {
+
             if (this.team.get(p.getName()) != null) {
+
                 return true;
             }
         }
-
         return false;
     }
 
     public ArenaState getState() {
+
         return this.state;
     }
 
     public void setState(ArenaState state) {
+
         this.state = state;
         this.updateSignState();
     }
@@ -537,7 +559,6 @@ public class Game {
             p.sendMessage(s);
 
         }
-
     }
 
     public void broadCastServer(String s) {
@@ -547,36 +568,6 @@ public class Game {
             p.sendMessage(s);
 
         }
-
-    }
-
-    public ChatColor getTeamColor(Player p) {
-
-        Team team = this.getPlayerTeam(p);
-
-        if (team == null) {
-            return null;
-        }
-
-        if (team.equals(this.RED)) {
-
-            return ChatColor.RED;
-
-        } else if (team.equals(this.GREEN)) {
-
-            return ChatColor.GREEN;
-
-        } else if (team.equals(this.BLUE)) {
-
-            return ChatColor.BLUE;
-
-        }
-        if (team.equals(this.YELLOW)) {
-
-            return ChatColor.YELLOW;
-        }
-
-        return null;
     }
 
     public String getPlayersAsList() {
@@ -594,16 +585,21 @@ public class Game {
                 if (team == null) {
 
                     playersColor.add(ChatColor.GRAY + p.getDisplayName());
+
                 } else if (team.equals(this.RED)) {
+
                     playersColor.add(ChatColor.RED + p.getDisplayName());
 
                 } else if (team.equals(this.GREEN)) {
+
                     playersColor.add(ChatColor.GREEN + p.getDisplayName());
 
                 } else if (team.equals(this.BLUE)) {
+
                     playersColor.add(ChatColor.BLUE + p.getDisplayName());
 
                 } else if (team.equals(this.YELLOW)) {
+
                     playersColor.add(ChatColor.YELLOW + p.getDisplayName());
                 }
             }
@@ -675,7 +671,6 @@ public class Game {
 
     public void removeChest(Location l) {
 
-
             List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn");
             List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side");
             List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center");
@@ -711,16 +706,20 @@ public class Game {
     }
 
     public void addEditor(Player p) {
+
         editors.add(p.getName());
     }
 
     public void removeEditor(Player p) {
+
         if (editors.contains(p.getName())) {
+
             editors.remove(p.getName());
         }
     }
 
     public void addRedSpawn(Player p) {
+
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Red.Z", p.getLocation().getBlockZ());
@@ -731,6 +730,7 @@ public class Game {
     }
 
     public void addBlueSpawn(Player p) {
+
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Blue.Z", p.getLocation().getBlockZ());
@@ -740,6 +740,7 @@ public class Game {
     }
 
     public void addYellowSpawn(Player p) {
+
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.X", p.getLocation().getBlockX());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Y", p.getLocation().getBlockY());
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Yellow.Z", p.getLocation().getBlockZ());
@@ -812,21 +813,30 @@ public class Game {
 
     public void removeRedSpawn(){
 
+        Main.getInstance().Spawns.set("Spawn.Red", null);
+
     }
 
     public void removeBlueSpawn(){
+
+        Main.getInstance().Spawns.set("Spawn.Blue", null);
 
     }
 
     public void removeGreenSpawn(){
 
+        Main.getInstance().Spawns.set("Spawn.Green", null);
+
     }
 
     public void removeYellowSpawn(){
 
+        Main.getInstance().Spawns.set("Spawn.Yellow", null);
+
     }
 
     public List<String> getUnteamed() {
+
         return this.unteamed;
     }
 
@@ -843,19 +853,24 @@ public class Game {
     }
 
     public void checkTeamEliminated() {
+
         if (this.RED.getPlayers().size() <= 0) {
+
             this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.RED + "red " + ChatColor.GREEN + "team has been eliminated.");
         }
 
         if (this.BLUE.getPlayers().size() <= 0) {
+
             this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.BLUE + "blue " + ChatColor.GREEN + "team has been eliminated.");
         }
 
         if (this.YELLOW.getPlayers().size() <= 0) {
+
             this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.YELLOW + "yellow " + ChatColor.GREEN + "team has been eliminated.");
         }
 
         if (this.GREEN.getPlayers().size() <= 0) {
+
             this.broadCastGame(prefix + ChatColor.GREEN + "The " + ChatColor.GREEN + "green " + ChatColor.GREEN + "team has been eliminated.");
         }
     }
@@ -873,27 +888,22 @@ public class Game {
 
             if (red < blue && red < yellow && red < green) {
                 team = this.RED;
-                System.out.println(1);
             }
 
             else if (blue < red && blue < yellow && blue < green) {
                 team = this.BLUE;
-                System.out.println(2);
             }
 
             else if (yellow < blue && yellow < red && yellow < green) {
                 team = this.YELLOW;
-                System.out.println(3);
             }
 
             else if (green < red && green < yellow && green < blue) {
                 team = this.GREEN;
-                System.out.println(4);
             }
 
             else if (red == blue && red == green && red == yellow) {
                 team = chooseTeam();
-                System.out.println(6);
             }
 
             else if (red == blue && red < green && red < yellow) {
@@ -905,7 +915,6 @@ public class Game {
                     team = this.BLUE;
                 }
                 team = this.RED;
-                System.out.println(7);
             }
 
             else if (red == green && red < blue && red < yellow) {
@@ -917,7 +926,6 @@ public class Game {
                     team = this.GREEN;
                 }
                 team = this.RED;
-                System.out.println(8);
             }
 
             else if (red == yellow && red < blue && red < green) {
@@ -929,7 +937,6 @@ public class Game {
                     team = this.YELLOW;
                 }
                 team = this.RED;
-                System.out.println(9);
             }
 
             else if (blue == green && blue < red && blue < yellow) {
@@ -941,7 +948,6 @@ public class Game {
                     team = this.BLUE;
                 }
                 team = this.GREEN;
-                System.out.println(10);
             }
 
             else if (blue == yellow && blue < red && blue < green) {
@@ -953,7 +959,6 @@ public class Game {
                     team = this.BLUE;
                 }
                 team = this.YELLOW;
-                System.out.println(11);
             }
 
             else if (yellow == green && yellow < red && yellow < blue) {
@@ -965,7 +970,6 @@ public class Game {
                     team = this.YELLOW;
                 }
                 team = this.GREEN;
-                System.out.println(12);
             }
 
             else if (blue == green && green == red && red < yellow) {
@@ -980,7 +984,6 @@ public class Game {
                 } else if (x == 2) {
                     team = this.BLUE;
                 }
-                System.out.println(13);
             }
 
             else if (blue == green && green == yellow && yellow < red) {
@@ -995,7 +998,6 @@ public class Game {
                 } else if (x == 2) {
                     team = this.BLUE;
                 }
-                System.out.println(14);
             }
 
             else if (blue == red && red == yellow && yellow < green) {
@@ -1010,7 +1012,6 @@ public class Game {
                 } else if (x == 2) {
                     team = this.BLUE;
                 }
-                System.out.println(15);
             }
 
             else if (green == red && red == yellow && yellow < blue) {
@@ -1025,12 +1026,11 @@ public class Game {
                 } else if (x == 2) {
                     team = this.GREEN;
                 }
-                System.out.println(16);
             }
 
             Player p = Bukkit.getServer().getPlayer(unteamed.get(y));
-            System.out.println(unteamed.get(y));
             team.addPlayer(p);
+
             this.team.put(p.getName(), team);
 
             if(team.equals(this.RED)){
@@ -1279,16 +1279,21 @@ public class Game {
         Location yellow = new Location(world, s.getDouble("Spawn." + this.gameID + ".Yellow.X"), s.getDouble("Spawn." + this.gameID + ".Yellow.Y") + 1, s.getDouble("Spawn." + this.gameID + ".Yellow.Z"));
 
         for (OfflinePlayer p : this.RED.getPlayers()) {
+
             p.getPlayer().teleport(red);
+
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
+
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
             }
+
             p.getPlayer().setGameMode(GameMode.SURVIVAL);
             p.getPlayer().setHealth(20.00);
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+
             try {
                 CreatePlayer.enterNewUser(p.getPlayer());
                 PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
@@ -1298,16 +1303,20 @@ public class Game {
         }
 
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
+
             p.getPlayer().teleport(green);
+
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
             }
+
             p.getPlayer().setGameMode(GameMode.SURVIVAL);
             p.getPlayer().setHealth(20.00);
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+
             try {
                 CreatePlayer.enterNewUser(p.getPlayer());
                 PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
@@ -1317,16 +1326,20 @@ public class Game {
         }
 
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
+
             p.getPlayer().teleport(blue);
+
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
             }
+
             p.getPlayer().setGameMode(GameMode.SURVIVAL);
             p.getPlayer().setHealth(20.00);
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+
             try {
                 CreatePlayer.enterNewUser(p.getPlayer());
                 PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
@@ -1336,16 +1349,20 @@ public class Game {
         }
 
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
+
             p.getPlayer().teleport(yellow);
+
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
             }
+
             p.getPlayer().setGameMode(GameMode.SURVIVAL);
             p.getPlayer().setHealth(20.00);
             p.getPlayer().setFoodLevel(20);
             p.getPlayer().setFireTicks(0);
             p.getPlayer().setSaturation(10);
             p.getPlayer().getActivePotionEffects().clear();
+
             try {
                 CreatePlayer.enterNewUser(p.getPlayer());
                 PlayerPlayed.setPlayerPlayed(p.getPlayer(), 1);
@@ -1410,23 +1427,30 @@ public class Game {
         ItemStack[] items = new ItemStack[27];
 
         int i = 0;
+
         for (String item : chestContents) {
+
             items[i++] = this.itemFromString(item);
         }
 
         for (String locString : chestLocations) {
+
             Block b = world.getBlockAt(this.vecFromString(locString).toLocation(world));
 
             if (b.getType().equals(Material.CHEST)) {
+
                 Chest c = (Chest) b.getState();
                 c.getInventory().setContents(items);
+
             } else {
+
                 Main.getInstance().getLogger().warning("Failed to find chest at " + locString + ", skipping...");
             }
         }
     }
 
     private Vector vecFromString(String string) {
+
         String[] split = string.split(",");
         return new Vector(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
     }
@@ -1474,7 +1498,6 @@ public class Game {
 
             if (b.getState() instanceof Sign) {
 
-                System.out.println(2);
                 Sign s = (Sign) b.getState();
 
                 if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
@@ -1496,8 +1519,6 @@ public class Game {
         for (int x = 0; x < signs.size(); x++) {
 
             Vector v = this.vecFromString(signs.get(x));
-
-            System.out.println(world.getName());
 
             Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 
