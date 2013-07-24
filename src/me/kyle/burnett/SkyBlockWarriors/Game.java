@@ -580,8 +580,7 @@ public class Game {
                 } else if (team.equals(this.BLUE)) {
                     playersColor.add(ChatColor.BLUE + p.getDisplayName());
 
-                }
-                if (team.equals(this.YELLOW)) {
+                } else if (team.equals(this.YELLOW)) {
                     playersColor.add(ChatColor.YELLOW + p.getDisplayName());
                 }
             }

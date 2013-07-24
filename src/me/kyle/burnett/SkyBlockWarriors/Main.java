@@ -171,6 +171,24 @@ public class Main extends JavaPlugin {
         ConfigManager.getInstance().saveYamls();
     }
 
+    public boolean doesLobbyExist(){
+
+        if(this.Config.contains("Lobby")){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean doesWaitingExist(){
+
+        if(this.Config.contains("Waiting")){
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean teleportToLobby(Player p) {
 
         if (!this.Config.contains("Lobby")) {

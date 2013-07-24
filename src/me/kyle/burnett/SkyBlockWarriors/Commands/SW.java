@@ -171,14 +171,26 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.create")) {
 
-                            if (WorldEditUtility.getInstance().doesSelectionExist(p)) {
+                            if(Main.getInstance().doesLobbyExist()){
 
-                                int arena = gm.createGame(p);
-                                p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " created. Once you have edited it use '" + ChatColor.GOLD + "/sw activate arena" + ChatColor.GREEN + "' to allow people to join.");
+                                if(Main.getInstance().doesWaitingExist()){
 
-                            } else if (!WorldEditUtility.getInstance().doesSelectionExist(p)) {
+                                    if (WorldEditUtility.getInstance().doesSelectionExist(p)) {
 
-                                p.sendMessage(prefix + ChatColor.RED + "Please make a selection of the arena first.");
+                                        int arena = gm.createGame(p);
+                                        p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " created. Once you have edited it use '" + ChatColor.GOLD + "/sw activate arena" + ChatColor.GREEN + "' to allow people to join.");
+
+                                    } else if (!WorldEditUtility.getInstance().doesSelectionExist(p)) {
+
+                                        p.sendMessage(prefix + ChatColor.RED + "Please make a selection of the arena first.");
+                                    }
+
+                                }else if(!Main.getInstance().doesWaitingExist()){
+                                    p.sendMessage(prefix + ChatColor.RED + "You need to set a waiting area first.");
+                                }
+
+                            }else  if(!Main.getInstance().doesLobbyExist()){
+                                p.sendMessage(prefix + ChatColor.RED + "You need to set a lobby first.");
                             }
 
                         } else if (!p.hasPermission("skyblockwars.create")) {
@@ -323,6 +335,7 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
+                        return true;
 
                     } else if (args[0].equalsIgnoreCase("leaderboard") || args[0].equalsIgnoreCase("leader")) {
 
@@ -421,20 +434,33 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.create.override")) {
 
-                            if (gm.isInteger(args[1])) {
+                            if(Main.getInstance().doesLobbyExist()){
 
-                                int id = Integer.parseInt(args[1]);
+                                if(Main.getInstance().doesWaitingExist()){
 
-                                if (!(id > gm.getArenaAmount())) {
+                                    if (gm.isInteger(args[1])) {
 
-                                    p.sendMessage(prefix + ChatColor.RED + "You are away to override a previous arena with a new selection. This will overwrite all the arena's previous data but keep the same id. Do '/sw confirm' to confirm this action.");
+                                        int id = Integer.parseInt(args[1]);
 
-                                    gm.getConfirming().put(p.getName(), id);
+                                        if (!(id > gm.getArenaAmount())) {
 
-                                } else if (id > gm.getArenaAmount()) {
+                                            p.sendMessage(prefix + ChatColor.RED + "You are away to override a previous arena with a new selection. This will overwrite all the arena's previous data but keep the same id. Do '/sw confirm' to confirm this action.");
 
-                                    p.sendMessage(prefix + ChatColor.RED + "That number is bigger than your amount of arenas. Use '/sw create' to add arenas.");
+                                            gm.getConfirming().put(p.getName(), id);
+
+                                        } else if (id > gm.getArenaAmount()) {
+
+                                            p.sendMessage(prefix + ChatColor.RED + "That number is bigger than your amount of arenas. Use '/sw create' to add arenas.");
+                                        }
+                                    }
+
+                                }else if(!Main.getInstance().doesWaitingExist()){
+
+                                    p.sendMessage(prefix + ChatColor.RED + "You need to set a waiting area first.");
                                 }
+
+                            }else if(!Main.getInstance().doesLobbyExist()){
+                                p.sendMessage(prefix + ChatColor.RED + "You need to set a lobby first.");
                             }
 
                         } else if (!p.hasPermission("skyblockwars.create.override")) {
@@ -470,7 +496,7 @@ public class SW implements CommandExecutor {
 
                                         } else if (!game.getState().equals(ArenaState.WAITING) || !game.getState().equals(ArenaState.STARTING)) {
 
-                                            p.sendMessage(prefix + ChatColor.RED + "Can not join the because the arena is " + game.getState().toString().toLowerCase() + ".");
+                                            p.sendMessage(prefix + ChatColor.RED + "Can not join the because the arena is " + game.getState().toString().toLowerCase().replaceAll("_", " ") + ".");
                                         }
 
                                     } else if (!gm.isActive(Integer.parseInt(args[1]))) {

@@ -2,6 +2,7 @@ package me.kyle.burnett.SkyBlockWarriors.Listeners;
 
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +32,7 @@ public class PlayerDamageEvent implements Listener {
 
                         Player pd = (Player) ed;
                         Team team = gm.getPlayerGame(p).getPlayerTeam(p);
-                        if (team.getPlayers().contains(pd.getName())) {
+                        if (team.getPlayers().contains(Bukkit.getServer().getOfflinePlayer(pd.getName()))) {
                             e.setCancelled(true);
                         }
                     }

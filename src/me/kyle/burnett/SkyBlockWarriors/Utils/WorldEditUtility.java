@@ -78,7 +78,7 @@ public class WorldEditUtility {
         }
 
         EditSession es = new EditSession(new BukkitWorld(world), cc.getHeight() * cc.getWidth() * cc.getLength() * 4);
-
+        
         Vector v = new Vector(Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginX"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginY"), Main.getInstance().Arena.getDouble("Arena." + arena + ".OriginZ"));
 
         try {
