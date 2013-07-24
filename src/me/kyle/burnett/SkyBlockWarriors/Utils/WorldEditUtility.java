@@ -17,6 +17,8 @@ import com.sk89q.worldedit.schematic.SchematicFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import me.kyle.burnett.SkyBlockWarriors.GameManager;
@@ -33,6 +35,8 @@ import org.bukkit.plugin.Plugin;
 public class WorldEditUtility {
 
     static WorldEditUtility instance = new WorldEditUtility();
+
+    GameManager gm = GameManager.getInstance();
 
     public static WorldEditUtility getInstance() {
         return instance;
@@ -92,7 +96,7 @@ public class WorldEditUtility {
 
     public boolean regenAllIslands() {
 
-        int amount = GameManager.getInstance().getArenaAmount();
+        int amount = gm.getArenaAmount();
 
         for (int x = 0; x < amount; x++) {
 
@@ -354,76 +358,34 @@ public class WorldEditUtility {
 
     }
 
-    /*
-     * public void copyIsland(Player p){
-     *
-     * WorldEdit instance = WorldEdit.getInstance();
-     *
-     * LocalSession session = instance.getSession(p.getName());
-     *
-     * EditSession es = new EditSession(new BukkitWorld(p.getWorld()),
-     * 999999999);
-     *
-     * File file = new File(Main.getInstance().getDataFolder() +
-     * File.separator + "SkyBlockTemplate.schematic");
-     *
-     * SchematicFormat format = SchematicFormat.getFormat(file);
-     *
-     * if (format == null) { System.out.println("Null Schematic."); return; }
-     *
-     * CuboidClipboard cc = null;
-     *
-     * try {
-     *
-     * cc = format.load(file);
-     *
-     * } catch (IOException | DataException e) {
-     *
-     * e.printStackTrace(); } Location loc = p.getLocation(); Vector v = new
-     * Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()); try {
-     * cc.paste(es, v, false); } catch (MaxChangedBlocksException e) {
-     * e.printStackTrace(); }
-     *
-     *
-     * p.sendMessage(ChatColor.GREEN + "Loaded Schematic. Use '" +
-     * ChatColor.GOLD + "/sw undo" + ChatColor.GREEN +
-     * "' if you want to undo. If it needs rotated '" + ChatColor.GOLD +
-     * "/sw undo" + ChatColor.GREEN + "' then use '" + ChatColor.GOLD +
-     * "/sw rotate 90/180/270/360"+ ChatColor.GREEN + "'.");
-     *
-     * return; }
-     *
-     * public void makeLocalSchematic() {
-     *
-     * File file = new File(Main.getInstance().getDataFolder() +
-     * File.separator + "SkyBlockTemplate.schematic");
-     *
-     * if(file.exists()){ return; }
-     *
-     * if(!file.exists()){ try { file.createNewFile();
-     *
-     * } catch (IOException e) { e.printStackTrace(); } }
-     *
-     * InputStream stream =
-     * this.getClass().getClassLoader().getResourceAsStream
-     * ("SkyBlockTemplate.schematic"); OutputStream outputStream = null;
-     *
-     * try { outputStream = new FileOutputStream(file);
-     *
-     * } catch (FileNotFoundException e) {
-     *
-     * e.printStackTrace(); }
-     *
-     * try { IOUtils.copy(stream, outputStream);
-     *
-     * } catch (IOException e) {
-     *
-     * e.printStackTrace(); }
-     *
-     * try { outputStream.close();
-     *
-     * } catch (IOException e) {
-     *
-     * e.printStackTrace(); } }
-     */
+    public boolean isChestAlreadyAdded(Player p){
+
+        List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Spawn");
+        List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Side");
+        List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Center");
+
+        int x =  we.getSelection(p).getMaximumPoint().getBlockX();
+        int y =  we.getSelection(p).getMaximumPoint().getBlockY();
+        int z =  we.getSelection(p).getMaximumPoint().getBlockZ();
+
+        String s = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
+
+        if(spawnChests.contains(s)){
+
+            return true;
+
+        }else if(sideChests.contains(s)){
+
+            return true;
+
+        }else if(centerChests.contains(s)){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class GameManager {
@@ -72,9 +73,7 @@ public class GameManager {
 
         WorldEditUtility.getInstance().overrideSave(p, arena);
 
-        Game g = getGameByID(arena);
-
-        getGames().remove(g);
+        getGames().remove(getGameByID(arena));
 
         games.add(new Game(arena, true, false));
 
@@ -144,10 +143,11 @@ public class GameManager {
         return strings.toString().replace("[", "").replace("]", "");
     }
 
-    public void disableGame(int game) {
+    public void disableGame(int game, boolean instart) {
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", false);
         ConfigManager.getInstance().saveYamls();
-        games.remove(game);
+        getGameByID(game).endGameDisable(instart, false);
+        games.remove(getGameByID(game));
     }
 
     public void enableGame(int game) {
@@ -157,15 +157,17 @@ public class GameManager {
     }
 
     public void activate(int game) {
+        getGameByID(game).setToDeactivate(false);
         Main.getInstance().Arena.set("Arena." + game + ".Active", true);
         ConfigManager.getInstance().saveYamls();
         getGameByID(game).prepareArena(false, false);
 
     }
 
-    public void deactivate(int game) {
+    public void deactivate(int game, boolean instart) {
         Main.getInstance().Arena.set("Arena." + game + ".Active", false);
         ConfigManager.getInstance().saveYamls();
+        getGameByID(game).endGameDisable(instart, false);
     }
 
     public boolean isActive(int game) {
@@ -249,6 +251,15 @@ public class GameManager {
         return false;
     }
 
+    public boolean checkGameByConfig(int id){
+
+        if(Main.getInstance().Arena.contains("Arena." + id)){
+            return true;
+        }
+
+        return false;
+    }
+
     public Game getGameByID(int id) {
 
         for (Game g : getGames()) {
@@ -263,5 +274,31 @@ public class GameManager {
 
     public HashMap<String, Integer> getPlayers() {
         return playerGame;
+    }
+
+    public boolean isBlockInArena(Block b){
+
+        for(Game g : this.games){
+
+            if(g.isBlockInArena(b.getLocation())){
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Game getBlockGame(Block b){
+
+        for(Game g : this.games){
+
+            if(g.isBlockInArena(b.getLocation())){
+
+                return g;
+            }
+        }
+
+        return null;
     }
 }

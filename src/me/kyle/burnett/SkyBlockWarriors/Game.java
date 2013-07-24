@@ -63,6 +63,7 @@ public class Game {
     private Score yellowT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.YELLOW + "Yellow: "));
     private String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]";
     private boolean starting;
+    private boolean deactivate = false;
     private Location min, max;
     private World world;
     GameManager gm = GameManager.getInstance();
@@ -106,12 +107,21 @@ public class Game {
                 this.YELLOW.setDisplayName(ChatColor.RED + "Yellow");
 
                 this.loadChests();
+                this.updateSignPlayers();
+                this.updateSignState();
                 this.setState(ArenaState.WAITING);
-                if (!firstLoad) {
+
+                if (!firstLoad && !deactivate) {
 
                     Game.this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + Game.this.gameID + ChatColor.GREEN + " is ready to join.");
 
                 }
+
+                if(deactivate){
+                    this.setState(ArenaState.DEACTIVATED);
+                }
+
+
                 return;
             }
         }
@@ -125,12 +135,12 @@ public class Game {
 
         this.setState(ArenaState.IN_GAME);
 
+        this.broadCastGame(prefix + ChatColor.GREEN + "GO!");
+        this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " has started.");
+
         this.addPlayersToTeams();
 
         this.unteamed.clear();
-
-        this.broadCastGame(prefix + ChatColor.GREEN + "GO!");
-        this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " has started.");
 
         this.teleportPlayers();
 
@@ -199,7 +209,8 @@ public class Game {
                     Player p = Bukkit.getServer().getPlayer(Game.this.players.get(x));
 
                     if (p != null) {
-                        Game.this.removeFromGame(p, true, false, false);
+
+                        Game.this.removeFromGame(p, true, false, false, false, false);
                     }
                 }
 
@@ -209,24 +220,26 @@ public class Game {
 
     }
 
-    public void endGameDisable() {
+    public void endGameDisable(boolean instart, boolean endgame) {
 
-    }
+        for(String s : this.players){
 
-    public void endGameStarting() {
-        this.setState(ArenaState.DISABLED);
+            Player p = Bukkit.getServer().getPlayer(s);
 
-        Bukkit.getScheduler().cancelTask(this.task);
+            this.removeFromGame(p, false, false, instart, true, true);
 
-        this.broadCastGame(prefix + ChatColor.RED + "Canceling game start. Arena is being disabled.");
-
+        }
+        this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
+        if(!endgame){
+            this.setToDeactivate(true);
+        }
         this.prepareArena(false, false);
 
     }
 
     public void checkEnd() {
-
-        int red, green, yellow, blue;
+        return;
+/*        int red, green, yellow, blue;
         red = this.RED.getPlayers().size();
         green = this.GREEN.getPlayers().size();
         yellow = this.YELLOW.getPlayers().size();
@@ -248,7 +261,7 @@ public class Game {
 
         else if (green <= 0 && yellow <= 0 && blue <= 0 && yellow <= 0) {
             this.endGameNormal(null);
-        }
+        }*/
 
     }
 
@@ -280,12 +293,14 @@ public class Game {
 
     }
 
-    public void removeFromGame(Player p, boolean end, boolean died, boolean instart) {
+    public void removeFromGame(Player p, boolean end, boolean died, boolean instart, boolean disable, boolean endCMD) {
 
         PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
-        this.players.remove(p.getName());
+        if(!disable){
+            this.players.remove(p.getName());
+        }
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
@@ -324,24 +339,32 @@ public class Game {
                 this.saveGM.keySet().remove(p.getName());
             }
 
-            if (!end) {
+            if(!disable){
 
-                if (!died) {
+                if (!end) {
 
-                    this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
+                    if (!died) {
 
-                } else if (died) {
+                        this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
 
-                    this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
+                    } else if (died) {
+
+                        this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
+                    }
+
+                    this.checkEnd();
+
+                    try {
+                        PlayerLosses.setPlayerLosses(p, 1);
+                    } catch (ClassNotFoundException | SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                this.checkEnd();
+            }else if(disable && !endCMD){
 
-                try {
-                    PlayerLosses.setPlayerLosses(p, 1);
-                } catch (ClassNotFoundException | SQLException e) {
-                    e.printStackTrace();
-                }
+                p.sendMessage(prefix + ChatColor.RED + "Leaving game because arena is being disabled.");
+                return;
             }
 
         } else if (instart) {
@@ -650,6 +673,33 @@ public class Game {
 
     }
 
+    public void removeChest(Location l) {
+
+
+            List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn");
+            List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side");
+            List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center");
+
+            int x = l.getBlockX();
+            int y = l.getBlockY();
+            int z = l.getBlockZ();
+
+            String s = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
+
+            if(spawnChests.contains(s)){
+
+                spawnChests.remove(s);
+
+            }else if(sideChests.contains(s)){
+
+                sideChests.remove(s);
+
+            }else if(centerChests.contains(s)){
+
+                centerChests.remove(s);
+            }
+    }
+
     public List<String> getEditors() {
 
         return editors;
@@ -758,6 +808,22 @@ public class Game {
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.PITCH");
 
         return new Location(world, x, y + 1, z, yaw, pitch);
+    }
+
+    public void removeRedSpawn(){
+
+    }
+
+    public void removeBlueSpawn(){
+
+    }
+
+    public void removeGreenSpawn(){
+
+    }
+
+    public void removeYellowSpawn(){
+
     }
 
     public List<String> getUnteamed() {
@@ -966,6 +1032,25 @@ public class Game {
             System.out.println(unteamed.get(y));
             team.addPlayer(p);
             this.team.put(p.getName(), team);
+
+            if(team.equals(this.RED)){
+
+                p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.RED + "red " + ChatColor.GREEN + " team.");
+
+            }else if(team.equals(this.GREEN)){
+
+                p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.DARK_GREEN + "green" + ChatColor.GREEN + " team.");
+
+            }else if(team.equals(this.BLUE)){
+
+                p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.BLUE + "blue " + ChatColor.GREEN + " team.");
+
+            }else if(team.equals(this.YELLOW)){
+
+                p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.YELLOW + "yellow " + ChatColor.GREEN + " team.");
+
+            }
+
             InvManager.getInstance().saveInv(p);
 
             p.setScoreboard(this.board);
@@ -1401,8 +1486,6 @@ public class Game {
 
                 s.update();
             }
-
-
         }
     }
 
@@ -1432,7 +1515,7 @@ public class Game {
 
                     ((Sign) s).setLine(0, "§l§9[Join]");
 
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Starting");
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + "-Starting");
 
                 } else if (this.getState().equals(ArenaState.IN_GAME)) {
 
@@ -1441,7 +1524,7 @@ public class Game {
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
 
                 } else {
-                    ((Sign) s).setLine(0, "§l§4[UnJoinable]");
+                    ((Sign) s).setLine(0, "§l§4UnJoinable");
 
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
                 }
@@ -1450,5 +1533,9 @@ public class Game {
 
             }
         }
+    }
+
+    public void setToDeactivate(boolean bool){
+        this.deactivate = bool;
     }
 }

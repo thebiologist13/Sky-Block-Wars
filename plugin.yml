@@ -24,6 +24,7 @@ permissions:
             skyblockwars.reload: true
             skyblockwars.help.admin: true
             skyblockwars.prepare: true
+            skyblockwars.endgame: true
         default: op
     skyblockwars.builder:
         children:
@@ -101,4 +102,6 @@ permissions:
     skyblockwars.leader:
         default: op
     skyblockwars.stats:
+        default: op
+    skyblockwars.endgame:
         default: op
