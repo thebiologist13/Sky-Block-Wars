@@ -66,6 +66,8 @@ public class GameManager {
         Main.getInstance().Arena.set("Arena" + arena, null);
         Main.getInstance().Chest.set("Chest." + arena, null);
         Main.getInstance().Arena.set("Arena." + arena + ".Enabled", true);
+        Main.getInstance().Arena.set("Arena." + arena + ".Active", false);
+
         ConfigManager.getInstance().saveYamls();
 
         WorldEditUtility.getInstance().overrideSave(p, arena);

@@ -17,21 +17,17 @@ public class SignChange implements Listener {
     @EventHandler
     public void onChange(SignChangeEvent e) {
 
-        e.getPlayer().sendMessage("0");
 
         if (e.getLine(0).contains("[Join]")) {
 
-            e.getPlayer().sendMessage("1");
 
             String[] split = e.getLine(1).split(" ");
 
             if (split[0].contains("SBW")) {
 
-                e.getPlayer().sendMessage("2");
 
                 if (Main.getInstance().Arena.contains("Arena." + Integer.parseInt(split[1].trim()))) {
 
-                    e.getPlayer().sendMessage("3");
 
                     if (e.getPlayer().hasPermission("skyblockwars.sign.join")) {
 
@@ -53,7 +49,7 @@ public class SignChange implements Listener {
                             if (gm.isActive(g.getGameID())) {
 
                                 e.setLine(0, "   §l§9[Join]");
-                                e.setLine(1, "SBW 1 - Lobby");
+                                e.setLine(1, "SBW " + arena + " - Lobby");
                                 e.setLine(2, "0/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
                                 e.setLine(3, "");
                                 e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
