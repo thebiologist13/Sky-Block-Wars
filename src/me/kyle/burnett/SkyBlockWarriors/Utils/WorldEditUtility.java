@@ -57,6 +57,10 @@ public class WorldEditUtility {
 
     public boolean loadIslandSchematic(Integer arena) {
 
+        if(Main.getInstance().debug){
+            Main.getInstance().log.log(Level.INFO, "Loading schematic for arena " + arena);
+        }
+
         File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
 
         World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + arena + ".World"));
@@ -89,6 +93,10 @@ public class WorldEditUtility {
             cc.paste(es, v, false, false);
         } catch (MaxChangedBlocksException e) {
             e.printStackTrace();
+        }
+
+        if(Main.getInstance().debug){
+            Main.getInstance().log.log(Level.INFO, "Schematic loaded for arena " + arena);
         }
 
         return true;

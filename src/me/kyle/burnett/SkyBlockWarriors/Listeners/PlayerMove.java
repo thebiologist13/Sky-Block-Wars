@@ -23,6 +23,7 @@ public class PlayerMove implements Listener {
                 Game g = GameManager.getInstance().getPlayerGame(p);
 
                 if (!g.isBlockInArena(p.getLocation())) {
+
                     e.setTo(e.getFrom());
                 }
             }

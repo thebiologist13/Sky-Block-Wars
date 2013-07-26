@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.kyle.burnett.SkyBlockWarriors.Commands.SW;
@@ -49,6 +50,8 @@ public class Main extends JavaPlugin {
 
     public File signFile;
     public FileConfiguration Signs;
+
+    public boolean debug = false;
 
     public Logger log = Bukkit.getLogger();
 
@@ -98,8 +101,11 @@ public class Main extends JavaPlugin {
 
         getCommand("skyblockw").setExecutor(new SW());
 
-        setUp();
+        if(Config.getBoolean("Debug-Mode")){
+            debug = true;
+        }
 
+        setUp();
 
         try {
             this.checkDatabase();
@@ -120,6 +126,10 @@ public class Main extends JavaPlugin {
             pm.disablePlugin(this);
         }
 
+
+        if(Main.getInstance().debug){
+            Main.getInstance().log.log(Level.INFO, "Sky-Block Wars has been loaded successfully.");
+        }
 
     }
 

@@ -46,7 +46,7 @@ public class PlayerDeath implements Listener {
 
                             p.sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SB" + ChatColor.GOLD + "]" + ChatColor.RED + "You were killed by " + ChatColor.GOLD + e.getEntity().getLastDamageCause() + ChatColor.RED + ".");
 
-                            GameManager.getInstance().getPlayerGame(p).removeFromGame(p, false, true, false, false, false);
+                            GameManager.getInstance().getPlayerGame(p).removeFromGameDied(p);
 
                         }
 
@@ -72,7 +72,6 @@ public class PlayerDeath implements Listener {
                             e1.printStackTrace();
                         }
                     }
-
 
                 } else if (!GameManager.getInstance().hasPlayerGameStarted(p)) {
 

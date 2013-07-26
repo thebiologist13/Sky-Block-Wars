@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.CreatePlayer;
@@ -82,6 +83,10 @@ public class Game {
 
     public void prepareArena(boolean justCreated, boolean firstLoad) {
 
+        if (Main.getInstance().debug) {
+            Main.getInstance().log.log(Level.INFO, "Preparing arena " + this.gameID);
+        }
+
         this.setState(ArenaState.LOADING);
         this.voted.clear();
         this.players.clear();
@@ -115,9 +120,12 @@ public class Game {
 
                     Game.this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + Game.this.gameID + ChatColor.GREEN + " is ready to join.");
 
+                    if (Main.getInstance().debug) {
+                        Main.getInstance().log.log(Level.INFO, "Arena " + this.gameID + " is ready.");
+                    }
                 }
 
-                if(deactivate){
+                if (deactivate) {
 
                     this.setState(ArenaState.DEACTIVATED);
                 }
@@ -210,7 +218,7 @@ public class Game {
 
                     if (p != null) {
 
-                        Game.this.removeFromGame(p, true, false, false, false, false);
+                        Game.this.removeFromGameEnd(p);
                     }
                 }
 
@@ -220,48 +228,83 @@ public class Game {
 
     }
 
-    public void endGameDisable(boolean instart, boolean endgame) {
+    public void endGameDisable(boolean instart) {
 
-        for(String s : this.players){
+        for (String s : this.players) {
 
             Player p = Bukkit.getServer().getPlayer(s);
 
-            this.removeFromGame(p, false, false, instart, true, true);
+            this.removeFromGameDisable(p);
 
         }
+
         this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
-        if(!endgame){
-            this.setToDeactivate(true);
+        this.prepareArena(false, false);
+
+    }
+
+    public void endGameDeactivate(boolean instart) {
+
+        for (String s : this.players) {
+
+            Player p = Bukkit.getServer().getPlayer(s);
+
+            this.removeFromGameCMDEnd(p);
+
         }
+
+        this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
+        this.setToDeactivate(true);
+        this.prepareArena(false, false);
+
+    }
+
+    public void endGame(boolean instart) {
+
+        for (String s : this.players) {
+
+            Player p = Bukkit.getServer().getPlayer(s);
+
+            this.removeFromGameCMDEnd(p);
+
+        }
+
+        this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
         this.prepareArena(false, false);
 
     }
 
     public void checkEnd() {
-        return;
-/*        int red, green, yellow, blue;
+
+        int red, green, yellow, blue;
         red = this.RED.getPlayers().size();
         green = this.GREEN.getPlayers().size();
         yellow = this.YELLOW.getPlayers().size();
         blue = this.BLUE.getPlayers().size();
 
         if (red <= 0 && green <= 0 && yellow <= 0 && blue > 0) {
+
             this.endGameNormal(this.BLUE);
+
         } else if (red <= 0 && green <= 0 && blue <= 0 && yellow > 0) {
+
             this.endGameNormal(this.YELLOW);
         }
 
         else if (red <= 0 && blue <= 0 && yellow <= 0 && green > 0) {
+
             this.endGameNormal(this.GREEN);
         }
 
         else if (green <= 0 && yellow <= 0 && blue <= 0 && red > 0) {
+
             this.endGameNormal(this.RED);
         }
 
         else if (green <= 0 && yellow <= 0 && blue <= 0 && yellow <= 0) {
+
             this.endGameNormal(null);
-        }*/
+        }
 
     }
 
@@ -286,41 +329,202 @@ public class Game {
                 this.broadCastGame(prefix + ChatColor.GREEN + "There are " + ChatColor.GOLD + this.players.size() + "/" + max + ChatColor.GREEN + " players in the game.");
                 Main.getInstance().teleportToWaiting(p);
                 this.updateSignPlayers();
-                this.checkStart();
+
+                if (!this.getState().equals(ArenaState.STARTING)) {
+                    this.checkStart();
+                }
             }
         }
         return;
-
     }
 
-    public void removeFromGame(Player p, boolean end, boolean died, boolean instart, boolean disable, boolean endCMD) {
+    public void removeFromGameDied(Player p) {
 
         PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
-        if(!disable){
-            this.players.remove(p.getName());
-        }
+        this.players.remove(p.getName());
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
         this.updateSignPlayers();
 
-        if (!instart) {
+
+        Scoreboard blankBoard = manager.getNewScoreboard();
+        p.setScoreboard(blankBoard);
+
+        this.updateScoreboard();
+
+        if (this.getPlayerTeam(p).equals(this.RED)) {
+
+            this.redT.setScore(this.RED.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
+
+            this.blueT.setScore(this.BLUE.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
+
+            this.yellowT.setScore(this.YELLOW.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
+
+            this.greenT.setScore(this.GREEN.getPlayers().size());
+        }
+
+        this.removeFromTeam(p);
+
+        InvManager.getInstance().restoreInv(p);
+        Main.getInstance().teleportToLobby(p);
+
+        p.setHealth(20.00);
+        p.setFoodLevel(20);
+        p.setFireTicks(0);
+        p.setSaturation(10);
+
+        if (this.saveGM.containsKey(p.getName())) {
+            p.setGameMode(this.saveGM.get(p.getName()));
+            this.saveGM.keySet().remove(p.getName());
+        }
+
+        this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
+
+        this.checkEnd();
+
+        try {
+
+            PlayerLosses.setPlayerLosses(p, 1);
+
+        } catch (ClassNotFoundException | SQLException e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    public void removeFromGameLeft(Player p) {
+
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        this.players.remove(p.getName());
+        this.unteamed.remove(p.getName());
+        this.voted.remove(p.getName());
+        gm.removePlayer(p);
+        this.updateSignPlayers();
+
+        if (this.getState().equals(ArenaState.IN_GAME)) {
 
             Scoreboard blankBoard = manager.getNewScoreboard();
             p.setScoreboard(blankBoard);
 
+            this.updateScoreboard();
+
             if (this.getPlayerTeam(p).equals(this.RED)) {
+
                 this.redT.setScore(this.RED.getPlayers().size());
 
             } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
+
                 this.blueT.setScore(this.BLUE.getPlayers().size());
 
             } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
+
                 this.yellowT.setScore(this.YELLOW.getPlayers().size());
 
             } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
+
+                this.greenT.setScore(this.GREEN.getPlayers().size());
+            }
+
+            this.removeFromTeam(p);
+
+            InvManager.getInstance().restoreInv(p);
+
+            p.setHealth(20.00);
+            p.setFoodLevel(20);
+            p.setFireTicks(0);
+            p.setSaturation(10);
+
+            try {
+
+                PlayerLosses.setPlayerLosses(p, 1);
+
+            } catch (ClassNotFoundException | SQLException e) {
+
+                e.printStackTrace();
+            }
+
+        }
+
+        Main.getInstance().teleportToLobby(p);
+
+        if (this.saveGM.containsKey(p.getName())) {
+            p.setGameMode(this.saveGM.get(p.getName()));
+            this.saveGM.keySet().remove(p.getName());
+        }
+
+        this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has left.");
+
+        this.checkEnd();
+
+    }
+
+    public void removeFromGameInstart(Player p) {
+
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        this.players.remove(p.getName());
+        this.unteamed.remove(p.getName());
+        this.voted.remove(p.getName());
+        gm.removePlayer(p);
+        this.updateSignPlayers();
+
+        this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
+        Main.getInstance().teleportToLobby(p);
+
+        if (starting) {
+
+            if (checkEndStart()) {
+
+                this.endStart();
+                return;
+            }
+        }
+    }
+
+    public void removeFromGameDisable(Player p) {
+
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        this.unteamed.remove(p.getName());
+        this.voted.remove(p.getName());
+        gm.removePlayer(p);
+        this.updateSignPlayers();
+
+        if (this.getState().equals(ArenaState.IN_GAME)) {
+
+            Scoreboard blankBoard = manager.getNewScoreboard();
+            p.setScoreboard(blankBoard);
+
+            this.updateScoreboard();
+
+            if (this.getPlayerTeam(p).equals(this.RED)) {
+
+                this.redT.setScore(this.RED.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
+
+                this.blueT.setScore(this.BLUE.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
+
+                this.yellowT.setScore(this.YELLOW.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
+
                 this.greenT.setScore(this.GREEN.getPlayers().size());
             }
 
@@ -339,50 +543,115 @@ public class Game {
                 this.saveGM.keySet().remove(p.getName());
             }
 
-            if(!disable){
+        }
 
-                if (!end) {
+        if (starting) {
 
-                    if (!died) {
+            if (checkEndStart()) {
 
-                        this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
-
-                    } else if (died) {
-
-                        this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
-                    }
-
-                    this.checkEnd();
-
-                    try {
-
-                        PlayerLosses.setPlayerLosses(p, 1);
-
-                    } catch (ClassNotFoundException | SQLException e) {
-
-                        e.printStackTrace();
-                    }
-                }
-
-            }else if(disable && !endCMD){
-
-                p.sendMessage(prefix + ChatColor.RED + "Leaving game because arena is being disabled.");
+                this.endStart();
                 return;
             }
-
-        } else if (instart) {
-
-            this.broadCastGame(prefix + ChatColor.GOLD + p.getName() + ChatColor.GREEN + " has left the arena.");
-
-            if (starting) {
-
-                if (checkEndStart()) {
-
-                    this.endStart();
-                    return;
-                }
-            }
         }
+
+    }
+
+    public void removeFromGameEnd(Player p) {
+
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        this.unteamed.remove(p.getName());
+        this.voted.remove(p.getName());
+        gm.removePlayer(p);
+        this.updateSignPlayers();
+
+        Scoreboard blankBoard = manager.getNewScoreboard();
+        p.setScoreboard(blankBoard);
+
+        this.updateScoreboard();
+
+        if (this.getPlayerTeam(p).equals(this.RED)) {
+
+            this.redT.setScore(this.RED.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
+
+            this.blueT.setScore(this.BLUE.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
+
+            this.yellowT.setScore(this.YELLOW.getPlayers().size());
+
+        } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
+
+            this.greenT.setScore(this.GREEN.getPlayers().size());
+        }
+
+        this.removeFromTeam(p);
+
+        InvManager.getInstance().restoreInv(p);
+        Main.getInstance().teleportToLobby(p);
+
+        p.setHealth(20.00);
+        p.setFoodLevel(20);
+        p.setFireTicks(0);
+        p.setSaturation(10);
+
+        if (this.saveGM.containsKey(p.getName())) {
+
+            p.setGameMode(this.saveGM.get(p.getName()));
+            this.saveGM.keySet().remove(p.getName());
+        }
+    }
+
+    public void removeFromGameCMDEnd(Player p) {
+
+        PlayerLeaveArenaEvent event = new PlayerLeaveArenaEvent(p, Game.this, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        this.unteamed.remove(p.getName());
+        this.voted.remove(p.getName());
+        gm.removePlayer(p);
+        this.updateSignPlayers();
+
+        if (this.getState().equals(ArenaState.IN_GAME)) {
+
+            Scoreboard blankBoard = manager.getNewScoreboard();
+            p.setScoreboard(blankBoard);
+
+            this.updateScoreboard();
+
+            if (this.getPlayerTeam(p).equals(this.RED)) {
+
+                this.redT.setScore(this.RED.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
+
+                this.blueT.setScore(this.BLUE.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
+
+                this.yellowT.setScore(this.YELLOW.getPlayers().size());
+
+            } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
+
+                this.greenT.setScore(this.GREEN.getPlayers().size());
+            }
+
+            this.removeFromTeam(p);
+
+            InvManager.getInstance().restoreInv(p);
+
+            p.setHealth(20.00);
+            p.setFoodLevel(20);
+            p.setFireTicks(0);
+            p.setSaturation(10);
+
+        }
+
+        Main.getInstance().teleportToLobby(p);
+
     }
 
     public boolean checkEndStart() {
@@ -404,6 +673,7 @@ public class Game {
             this.broadCastGame(prefix + ChatColor.RED + "Countdown canceled. Not enough players to start.");
         }
 
+        this.starting = false;
         this.setState(ArenaState.WAITING);
     }
 
@@ -671,28 +941,28 @@ public class Game {
 
     public void removeChest(Location l) {
 
-            List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn");
-            List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side");
-            List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center");
+        List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn");
+        List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side");
+        List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center");
 
-            int x = l.getBlockX();
-            int y = l.getBlockY();
-            int z = l.getBlockZ();
+        int x = l.getBlockX();
+        int y = l.getBlockY();
+        int z = l.getBlockZ();
 
-            String s = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
+        String s = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
 
-            if(spawnChests.contains(s)){
+        if (spawnChests.contains(s)) {
 
-                spawnChests.remove(s);
+            spawnChests.remove(s);
 
-            }else if(sideChests.contains(s)){
+        } else if (sideChests.contains(s)) {
 
-                sideChests.remove(s);
+            sideChests.remove(s);
 
-            }else if(centerChests.contains(s)){
+        } else if (centerChests.contains(s)) {
 
-                centerChests.remove(s);
-            }
+            centerChests.remove(s);
+        }
     }
 
     public List<String> getEditors() {
@@ -811,25 +1081,25 @@ public class Game {
         return new Location(world, x, y + 1, z, yaw, pitch);
     }
 
-    public void removeRedSpawn(){
+    public void removeRedSpawn() {
 
         Main.getInstance().Spawns.set("Spawn.Red", null);
 
     }
 
-    public void removeBlueSpawn(){
+    public void removeBlueSpawn() {
 
         Main.getInstance().Spawns.set("Spawn.Blue", null);
 
     }
 
-    public void removeGreenSpawn(){
+    public void removeGreenSpawn() {
 
         Main.getInstance().Spawns.set("Spawn.Green", null);
 
     }
 
-    public void removeYellowSpawn(){
+    public void removeYellowSpawn() {
 
         Main.getInstance().Spawns.set("Spawn.Yellow", null);
 
@@ -1033,19 +1303,19 @@ public class Game {
 
             this.team.put(p.getName(), team);
 
-            if(team.equals(this.RED)){
+            if (team.equals(this.RED)) {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.RED + "red " + ChatColor.GREEN + " team.");
 
-            }else if(team.equals(this.GREEN)){
+            } else if (team.equals(this.GREEN)) {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.DARK_GREEN + "green" + ChatColor.GREEN + " team.");
 
-            }else if(team.equals(this.BLUE)){
+            } else if (team.equals(this.BLUE)) {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.BLUE + "blue " + ChatColor.GREEN + " team.");
 
-            }else if(team.equals(this.YELLOW)){
+            } else if (team.equals(this.YELLOW)) {
 
                 p.sendMessage(prefix + ChatColor.GREEN + "You have joined the " + ChatColor.YELLOW + "yellow " + ChatColor.GREEN + " team.");
 
@@ -1556,7 +1826,15 @@ public class Game {
         }
     }
 
-    public void setToDeactivate(boolean bool){
+    public void setToDeactivate(boolean bool) {
         this.deactivate = bool;
     }
+
+    public void updateScoreboard() {
+
+        for (String s : this.players) {
+            Bukkit.getServer().getPlayer(s).setScoreboard(this.board);
+        }
+    }
 }
+

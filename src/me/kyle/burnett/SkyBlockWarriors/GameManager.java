@@ -1,5 +1,6 @@
 package me.kyle.burnett.SkyBlockWarriors;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,11 +64,13 @@ public class GameManager {
 
     public void overrideArena(Player p, Integer arena) {
 
-
+        File file = new File(Main.getInstance().getDataFolder() + File.separator + "Schematics" + File.separator + arena + ".schematic");
+        file.delete();
         Main.getInstance().Arena.set("Arena" + arena, null);
         Main.getInstance().Chest.set("Chest." + arena, null);
         Main.getInstance().Arena.set("Arena." + arena + ".Enabled", true);
         Main.getInstance().Arena.set("Arena." + arena + ".Active", false);
+        Main.getInstance().Spawns.set("Spawn." + arena, null);
 
         ConfigManager.getInstance().saveYamls();
 
@@ -108,8 +111,12 @@ public class GameManager {
 
     public boolean hasPlayerGameStarted(Player p) {
 
-        if (getPlayerGame(p).getState().equals(ArenaState.IN_GAME)) {
-            return true;
+        if(isPlayerInGame(p)){
+
+            if (getPlayerGame(p).getState().equals(ArenaState.IN_GAME)) {
+
+                return true;
+            }
         }
 
         return false;
@@ -143,10 +150,9 @@ public class GameManager {
         return strings.toString().replace("[", "").replace("]", "");
     }
 
-    public void disableGame(int game, boolean instart) {
+    public void setDisabled(int game) {
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", false);
         ConfigManager.getInstance().saveYamls();
-        getGameByID(game).endGameDisable(instart, false);
         games.remove(getGameByID(game));
     }
 
@@ -164,10 +170,9 @@ public class GameManager {
 
     }
 
-    public void deactivate(int game, boolean instart) {
+    public void setDeactivated(int game) {
         Main.getInstance().Arena.set("Arena." + game + ".Active", false);
         ConfigManager.getInstance().saveYamls();
-        getGameByID(game).endGameDisable(instart, false);
     }
 
     public boolean isActive(int game) {
