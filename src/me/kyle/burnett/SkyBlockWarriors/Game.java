@@ -27,7 +27,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -77,8 +76,8 @@ public class Game {
 
         this.prepareArena(justCreated, justRestarted);
 
-        this.min = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
-        this.max = new Location(Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World")), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxZ"));
+        this.min = new Location(this.world, Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
+        this.max = new Location(this.world, Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MaxZ"));
     }
 
     public void prepareArena(boolean justCreated, boolean firstLoad) {
@@ -1031,20 +1030,16 @@ public class Game {
 
     public Location getSpawnRed() {
 
-        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
-
         double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.X");
         double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Y");
         double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.Z");
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Red.PITCH");
 
-        return new Location(world, x, y + 1, z, yaw, pitch);
+        return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnBlue() {
-
-        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
         double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.X");
         double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.Y");
@@ -1052,12 +1047,10 @@ public class Game {
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Blue.PITCH");
 
-        return new Location(world, x, y + 1, z, yaw, pitch);
+        return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnYellow() {
-
-        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
         double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.X");
         double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.Y");
@@ -1065,12 +1058,10 @@ public class Game {
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Yellow.PITCH");
 
-        return new Location(world, x, y + 1, z, yaw, pitch);
+        return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
 
     public Location getSpawnGreen() {
-
-        World world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
         double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.X");
         double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.Y");
@@ -1078,7 +1069,7 @@ public class Game {
         long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.YAW");
         long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Green.PITCH");
 
-        return new Location(world, x, y + 1, z, yaw, pitch);
+        return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
 
     public void removeRedSpawn() {
@@ -1539,14 +1530,10 @@ public class Game {
 
     public void teleportPlayers() {
 
-        FileConfiguration a = Main.getInstance().Arena;
-        FileConfiguration s = Main.getInstance().Spawns;
-
-        World world = Bukkit.getServer().getWorld(a.getString("Arena." + this.gameID + ".World"));
-        Location red = new Location(world, s.getDouble("Spawn." + this.gameID + ".Red.X"), s.getDouble("Spawn." + this.gameID + ".Red.Y") + 1, s.getDouble("Spawn." + this.gameID + ".Red.Z"));
-        Location green = new Location(world, s.getDouble("Spawn." + this.gameID + ".Green.X"), s.getDouble("Spawn." + this.gameID + ".Green.Y") + 1, s.getDouble("Spawn." + this.gameID + ".Green.Z"));
-        Location blue = new Location(world, s.getDouble("Spawn." + this.gameID + ".Blue.X"), s.getDouble("Spawn." + this.gameID + ".Blue.Y") + 1, s.getDouble("Spawn." + this.gameID + ".Blue.Z"));
-        Location yellow = new Location(world, s.getDouble("Spawn." + this.gameID + ".Yellow.X"), s.getDouble("Spawn." + this.gameID + ".Yellow.Y") + 1, s.getDouble("Spawn." + this.gameID + ".Yellow.Z"));
+        Location red = this.getSpawnRed();
+        Location green = this.getSpawnGreen();
+        Location blue = this.getSpawnBlue();
+        Location yellow = this.getSpawnYellow();
 
         for (OfflinePlayer p : this.RED.getPlayers()) {
 
@@ -1684,13 +1671,9 @@ public class Game {
 
     public void loadChests() {
 
-        String world = Main.getInstance().Arena.getString("Arena." + this.gameID + ".World");
-
-        World w = Bukkit.getServer().getWorld(world);
-
-        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn"), Main.getInstance().Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
-        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side"), Main.getInstance().Config.getStringList("Chests.Side-Chests.ItemID/Amount"));
-        this.fillChests(w, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center"), Main.getInstance().Config.getStringList("Chests.Middle-Chest.ItemID/Amount"));
+        this.fillChests(this.world, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Spawn"), Main.getInstance().Config.getStringList("Chests.Spawn-Chests.ItemID/Amount"));
+        this.fillChests(this.world, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Side"), Main.getInstance().Config.getStringList("Chests.Side-Chests.ItemID/Amount"));
+        this.fillChests(this.world, Main.getInstance().Chest.getStringList("Chest." + this.gameID + ".Center"), Main.getInstance().Config.getStringList("Chests.Middle-Chest.ItemID/Amount"));
     }
 
     public void fillChests(World world, List<String> chestLocations, List<String> chestContents) {
