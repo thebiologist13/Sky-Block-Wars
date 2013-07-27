@@ -9,13 +9,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 public class BlockBreak implements Listener {
 
     @EventHandler
-    public void blockBreak(BlockBreakEvent e){
+    public void blockBreak(BlockBreakEvent e) {
 
-        if(!GameManager.getInstance().isPlayerInGame(e.getPlayer())){
+        if (!GameManager.getInstance().isPlayerInGame(e.getPlayer())) {
 
-            if(!GameManager.getInstance().isEditing(e.getPlayer())){
+            if (!GameManager.getInstance().isEditing(e.getPlayer())) {
 
-                if(GameManager.getInstance().isBlockInArena(e.getBlock())){
+                if (GameManager.getInstance().isBlockInArena(e.getBlock())) {
 
                     e.setCancelled(true);
                 }

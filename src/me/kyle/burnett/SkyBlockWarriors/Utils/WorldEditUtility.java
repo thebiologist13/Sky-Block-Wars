@@ -57,7 +57,7 @@ public class WorldEditUtility {
 
     public boolean loadIslandSchematic(Integer arena) {
 
-        if(Main.getInstance().debug){
+        if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Loading schematic for arena " + arena);
         }
 
@@ -95,7 +95,7 @@ public class WorldEditUtility {
             e.printStackTrace();
         }
 
-        if(Main.getInstance().debug){
+        if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Schematic loaded for arena " + arena);
         }
 
@@ -366,27 +366,27 @@ public class WorldEditUtility {
 
     }
 
-    public boolean isChestAlreadyAdded(Player p){
+    public boolean isChestAlreadyAdded(Player p) {
 
         List<String> spawnChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Spawn");
         List<String> sideChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Side");
         List<String> centerChests = (ArrayList<String>) Main.getInstance().Chest.getStringList("Chest." + gm.getPlayerEditing(p) + ".Center");
 
-        int x =  we.getSelection(p).getMaximumPoint().getBlockX();
-        int y =  we.getSelection(p).getMaximumPoint().getBlockY();
-        int z =  we.getSelection(p).getMaximumPoint().getBlockZ();
+        int x = we.getSelection(p).getMaximumPoint().getBlockX();
+        int y = we.getSelection(p).getMaximumPoint().getBlockY();
+        int z = we.getSelection(p).getMaximumPoint().getBlockZ();
 
         String s = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z);
 
-        if(spawnChests.contains(s)){
+        if (spawnChests.contains(s)) {
 
             return true;
 
-        }else if(sideChests.contains(s)){
+        } else if (sideChests.contains(s)) {
 
             return true;
 
-        }else if(centerChests.contains(s)){
+        } else if (centerChests.contains(s)) {
 
             return true;
 

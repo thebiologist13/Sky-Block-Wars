@@ -167,9 +167,9 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.create")) {
 
-                            if(Main.getInstance().doesLobbyExist()){
+                            if (Main.getInstance().doesLobbyExist()) {
 
-                                if(Main.getInstance().doesWaitingExist()){
+                                if (Main.getInstance().doesWaitingExist()) {
 
                                     if (WorldEditUtility.getInstance().doesSelectionExist(p)) {
 
@@ -181,11 +181,11 @@ public class SW implements CommandExecutor {
                                         p.sendMessage(prefix + ChatColor.RED + "Please make a selection of the arena first.");
                                     }
 
-                                }else if(!Main.getInstance().doesWaitingExist()){
+                                } else if (!Main.getInstance().doesWaitingExist()) {
                                     p.sendMessage(prefix + ChatColor.RED + "You need to set a waiting area first.");
                                 }
 
-                            }else  if(!Main.getInstance().doesLobbyExist()){
+                            } else if (!Main.getInstance().doesLobbyExist()) {
                                 p.sendMessage(prefix + ChatColor.RED + "You need to set a lobby first.");
                             }
 
@@ -483,9 +483,9 @@ public class SW implements CommandExecutor {
 
                         if (p.hasPermission("skyblockwars.create.override")) {
 
-                            if(Main.getInstance().doesLobbyExist()){
+                            if (Main.getInstance().doesLobbyExist()) {
 
-                                if(Main.getInstance().doesWaitingExist()){
+                                if (Main.getInstance().doesWaitingExist()) {
 
                                     if (gm.isInteger(args[1])) {
 
@@ -503,12 +503,12 @@ public class SW implements CommandExecutor {
                                         }
                                     }
 
-                                }else if(!Main.getInstance().doesWaitingExist()){
+                                } else if (!Main.getInstance().doesWaitingExist()) {
 
                                     p.sendMessage(prefix + ChatColor.RED + "You need to set a waiting area first.");
                                 }
 
-                            }else if(!Main.getInstance().doesLobbyExist()){
+                            } else if (!Main.getInstance().doesLobbyExist()) {
                                 p.sendMessage(prefix + ChatColor.RED + "You need to set a lobby first.");
                             }
 
@@ -528,7 +528,7 @@ public class SW implements CommandExecutor {
 
                                 if (!gm.isPlayerInGame(p)) {
 
-                                    if(gm.isEnabled(Integer.parseInt(args[1]))){
+                                    if (gm.isEnabled(Integer.parseInt(args[1]))) {
 
                                         if (gm.isActive(Integer.parseInt(args[1]))) {
 
@@ -556,7 +556,7 @@ public class SW implements CommandExecutor {
                                             p.sendMessage(prefix + ChatColor.RED + "That arena is disabled.");
                                         }
 
-                                    }else if(!gm.isEnabled(Integer.parseInt(args[1]))){
+                                    } else if (!gm.isEnabled(Integer.parseInt(args[1]))) {
                                         p.sendMessage(prefix + ChatColor.RED + "That arena is disabled.");
                                     }
 
@@ -621,7 +621,7 @@ public class SW implements CommandExecutor {
 
                                     if (WorldEditUtility.getInstance().isChest(p)) {
 
-                                        if(!WorldEditUtility.getInstance().isChestAlreadyAdded(p)){
+                                        if (!WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             Location loc = WorldEditUtility.getInstance().getChestLocation(p);
 
@@ -652,7 +652,7 @@ public class SW implements CommandExecutor {
 
                                             }
 
-                                        } else if(WorldEditUtility.getInstance().isChestAlreadyAdded(p)){
+                                        } else if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             p.sendMessage(prefix + ChatColor.RED + "That chest is already added. You can remove it with /sw removechest");
                                         }
@@ -699,11 +699,11 @@ public class SW implements CommandExecutor {
                                             return true;
                                         }
 
-                                        if(WorldEditUtility.getInstance().isChestAlreadyAdded(p)){
+                                        if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             gm.getGameEditing(p).removeChest(WorldEditUtility.getInstance().getChestLocation(p));
 
-                                        } else if(!WorldEditUtility.getInstance().isChestAlreadyAdded(p)){
+                                        } else if (!WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             p.sendMessage(prefix + ChatColor.RED + "That chest is not added,");
                                         }
@@ -853,7 +853,8 @@ public class SW implements CommandExecutor {
                                     if (gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.WAITING) || gm.getGameByID(Integer.parseInt(args[1])).getState().equals(ArenaState.STARTING)) {
 
                                         gm.setDeactivated(Integer.parseInt(args[1]));
-                                        gm.getGameByID(Integer.parseInt(args[1])).endGameDeactivate(true);;
+                                        gm.getGameByID(Integer.parseInt(args[1])).endGameDeactivate(true);
+                                        ;
 
                                         p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been deactivated.");
 
@@ -882,21 +883,21 @@ public class SW implements CommandExecutor {
                         return true;
                     }
 
-                    else if (args[0].equalsIgnoreCase("endgame")){
+                    else if (args[0].equalsIgnoreCase("endgame")) {
 
-                        if(p.hasPermission("skyblockwars.endgame")){
+                        if (p.hasPermission("skyblockwars.endgame")) {
 
                             if (gm.checkGameByID(Integer.parseInt(args[1]))) {
 
                                 Game g = gm.getGameByID(Integer.parseInt(args[1]));
 
-                                if(g.getState().equals(ArenaState.WAITING) || g.getState().equals(ArenaState.STARTING)){
+                                if (g.getState().equals(ArenaState.WAITING) || g.getState().equals(ArenaState.STARTING)) {
 
                                     p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been forcefully ended.");
 
                                     gm.getGameByID(Integer.parseInt(args[1])).endGame(true);
 
-                                }else if(g.getState().equals(ArenaState.IN_GAME)){
+                                } else if (g.getState().equals(ArenaState.IN_GAME)) {
 
                                     p.sendMessage(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " has been forcefully ended.");
 
@@ -909,7 +910,7 @@ public class SW implements CommandExecutor {
                                 p.sendMessage(prefix + ChatColor.RED + "That arena does not exist.");
                             }
 
-                        }else if(!p.hasPermission("skyblockwars.endgame")){
+                        } else if (!p.hasPermission("skyblockwars.endgame")) {
 
                             p.sendMessage(perm);
                         }

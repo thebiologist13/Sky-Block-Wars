@@ -111,7 +111,7 @@ public class GameManager {
 
     public boolean hasPlayerGameStarted(Player p) {
 
-        if(isPlayerInGame(p)){
+        if (isPlayerInGame(p)) {
 
             if (getPlayerGame(p).getState().equals(ArenaState.IN_GAME)) {
 
@@ -256,9 +256,9 @@ public class GameManager {
         return false;
     }
 
-    public boolean checkGameByConfig(int id){
+    public boolean checkGameByConfig(int id) {
 
-        if(Main.getInstance().Arena.contains("Arena." + id)){
+        if (Main.getInstance().Arena.contains("Arena." + id)) {
             return true;
         }
 
@@ -281,11 +281,11 @@ public class GameManager {
         return playerGame;
     }
 
-    public boolean isBlockInArena(Block b){
+    public boolean isBlockInArena(Block b) {
 
-        for(Game g : this.games){
+        for (Game g : this.games) {
 
-            if(g.isBlockInArena(b.getLocation())){
+            if (g.isBlockInArena(b.getLocation())) {
 
                 return true;
             }
@@ -294,11 +294,11 @@ public class GameManager {
         return false;
     }
 
-    public Game getBlockGame(Block b){
+    public Game getBlockGame(Block b) {
 
-        for(Game g : this.games){
+        for (Game g : this.games) {
 
-            if(g.isBlockInArena(b.getLocation())){
+            if (g.isBlockInArena(b.getLocation())) {
 
                 return g;
             }

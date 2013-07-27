@@ -101,7 +101,7 @@ public class Main extends JavaPlugin {
 
         getCommand("skyblockw").setExecutor(new SW());
 
-        if(Config.getBoolean("Debug-Mode")){
+        if (Config.getBoolean("Debug-Mode")) {
             debug = true;
         }
 
@@ -127,7 +127,7 @@ public class Main extends JavaPlugin {
         }
 
 
-        if(Main.getInstance().debug){
+        if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Sky-Block Wars has been loaded successfully.");
         }
 
@@ -183,18 +183,18 @@ public class Main extends JavaPlugin {
         ConfigManager.getInstance().saveYamls();
     }
 
-    public boolean doesLobbyExist(){
+    public boolean doesLobbyExist() {
 
-        if(this.Config.contains("Lobby")){
+        if (this.Config.contains("Lobby")) {
             return true;
         }
 
         return false;
     }
 
-    public boolean doesWaitingExist(){
+    public boolean doesWaitingExist() {
 
-        if(this.Config.contains("Waiting")){
+        if (this.Config.contains("Waiting")) {
             return true;
         }
 
