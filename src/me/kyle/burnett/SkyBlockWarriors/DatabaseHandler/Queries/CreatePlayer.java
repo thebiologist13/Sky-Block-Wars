@@ -17,7 +17,7 @@ public class CreatePlayer {
 
         if (rs.getInt(1) == 0) {
 
-            SQLSelection.getStatement().execute("INSERT INTO sbw (username, kills, deaths, wins, losses, played) VALUES('" + player.getName() + "', 0, 0, 0, 0, 0);");
+            SQLSelection.getStatement().execute("INSERT INTO sbw (username, kills, deaths, wins, losses, played) VALUES('" + player.getName() + "', 0, 0, 0, 0, 0, 0);");
             SQLSelection.getConnection().close();
         }
     }
