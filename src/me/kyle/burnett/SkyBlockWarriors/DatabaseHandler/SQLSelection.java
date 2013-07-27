@@ -21,33 +21,33 @@ public class SQLSelection {
 
         String prefix = "[Sky-Block Wars] ";
     	if(Main.getInstance().Config.getBoolean("MySQL.Enable"))
-		{
-			try
-			{
+	{
+	     try
+	     {
         
-				Class.forName("com.mysql.jdbc.Driver");
+	          Class.forName("com.mysql.jdbc.Driver");
                 
-				if(con != null && con.isClosed() == false){}
+	          if(con != null && con.isClosed() == false){}
 			
-                else
+                  else
 				
-                {
+                  {
                     
-					con = DriverManager.getConnection("jdbc:mysql://" + address + ":" + port + "/" + database, username, password);
+		       con = DriverManager.getConnection("jdbc:mysql://" + address + ":" + port + "/" + database, username, password);
 			
-                }
+                  }
 			
-            } catch(SQLException | ClassNotFoundException e) {
+              } catch(SQLException | ClassNotFoundException e) {
 				
-                System.out.println(prefix + "MySQL connection failed. Switching to SQLite.");
+                   System.out.println(prefix + "MySQL connection failed. Switching to SQLite.");
 				
-                Main.getInstance().Config.set("MySQL.Enable", false);
+                   Main.getInstance().Config.set("MySQL.Enable", false);
 				
-                con = getConnection();
+                   con = getConnection();
 			
-            }
+              }
 			
-            System.out.println(prefix + "MySQL connection was successful.");
+              System.out.println(prefix + "MySQL connection was successful.");
 		
         }
 		
