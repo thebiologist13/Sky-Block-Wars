@@ -14,7 +14,8 @@ public class PlayerSearch {
     public static void getPlayerData(Player player, String target) throws SQLException, ClassNotFoundException {
         String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]";
         String username = null;
-        int kills = 0, deaths = 0, wins = 0, losses = 0, played = 0;
+        int played = 0;
+        double kills = 0, deaths = 0, wins = 0, losses = 0;
         ResultSet rs = SQLSelection.getStatement().executeQuery("SELECT COUNT(*) FROM sbw WHERE username LIKE '%" + target + "';");
         rs.next();
         if (rs.getInt(1) != 0) {
@@ -43,20 +44,26 @@ public class PlayerSearch {
                 played = rs.getInt(1);
             }
             player.sendMessage(prefix + "Stats for " + username + ":");
-            player.sendMessage(ChatColor.BLUE + "Kills: " + ChatColor.GRAY + kills);
-            player.sendMessage(ChatColor.BLUE + "Deaths: " + ChatColor.GRAY + deaths);
+            player.sendMessage(ChatColor.BLUE + "Kills: " + ChatColor.GRAY + (int)kills);
+            player.sendMessage(ChatColor.BLUE + "Deaths: " + ChatColor.GRAY + (int)deaths);
 
-            if(kills > 0 && deaths > 0){
+            if(deaths != 0){
 
-                player.sendMessage(ChatColor.BLUE + "K/D: " + ChatColor.GRAY + kills / deaths);
+                double kd = kills/deaths;
+                double kdd = (double) Math.round(kd * 100) / 100;
+
+                player.sendMessage(ChatColor.BLUE + "K/D: " + ChatColor.GRAY + kdd);
             }
 
-            player.sendMessage(ChatColor.BLUE + "Wins: " + ChatColor.GRAY + wins);
-            player.sendMessage(ChatColor.BLUE + "Losses: " + ChatColor.GRAY + losses);
+            player.sendMessage(ChatColor.BLUE + "Wins: " + ChatColor.GRAY + (int)wins);
+            player.sendMessage(ChatColor.BLUE + "Losses: " + ChatColor.GRAY + (int)losses);
 
-            if(wins > 0 && losses > 0){
+            if(losses != 0){
 
-                player.sendMessage(ChatColor.BLUE + "W/L: " + ChatColor.GRAY + wins / losses);
+                double wl = wins/losses;
+                double wld = (double) Math.round(wl * 100) / 100;
+
+                player.sendMessage(ChatColor.BLUE + "W/L: " + ChatColor.GRAY + wld);
             }
 
             player.sendMessage(ChatColor.BLUE + "Played: " + ChatColor.GRAY + played);
