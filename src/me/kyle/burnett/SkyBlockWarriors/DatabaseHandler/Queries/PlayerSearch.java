@@ -44,23 +44,23 @@ public class PlayerSearch {
                 played = rs.getInt(1);
             }
             player.sendMessage(prefix + "Stats for " + username + ":");
-            player.sendMessage(ChatColor.BLUE + "Kills: " + ChatColor.GRAY + (int)kills);
-            player.sendMessage(ChatColor.BLUE + "Deaths: " + ChatColor.GRAY + (int)deaths);
+            player.sendMessage(ChatColor.BLUE + "Kills: " + ChatColor.GRAY + (int) kills);
+            player.sendMessage(ChatColor.BLUE + "Deaths: " + ChatColor.GRAY + (int) deaths);
 
-            if(deaths != 0){
+            if (deaths != 0) {
 
-                double kd = kills/deaths;
+                double kd = kills / deaths;
                 double kdd = (double) Math.round(kd * 100) / 100;
 
                 player.sendMessage(ChatColor.BLUE + "K/D: " + ChatColor.GRAY + kdd);
             }
 
-            player.sendMessage(ChatColor.BLUE + "Wins: " + ChatColor.GRAY + (int)wins);
-            player.sendMessage(ChatColor.BLUE + "Losses: " + ChatColor.GRAY + (int)losses);
+            player.sendMessage(ChatColor.BLUE + "Wins: " + ChatColor.GRAY + (int) wins);
+            player.sendMessage(ChatColor.BLUE + "Losses: " + ChatColor.GRAY + (int) losses);
 
-            if(losses != 0){
+            if (losses != 0) {
 
-                double wl = wins/losses;
+                double wl = wins / losses;
                 double wld = (double) Math.round(wl * 100) / 100;
 
                 player.sendMessage(ChatColor.BLUE + "W/L: " + ChatColor.GRAY + wld);
