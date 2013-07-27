@@ -106,13 +106,9 @@ public class SW implements CommandExecutor {
 
                                 Game game = gm.getPlayerGame(p);
 
-                                if (gm.hasPlayerGameStarted(p)) {
+                                p.sendMessage(prefix + ChatColor.GREEN + "You have left the arena.");
 
-                                    p.sendMessage(prefix + ChatColor.GREEN + "You have left the arena.");
-
-                                    game.removeFromGameLeft(p);
-
-                                }
+                                game.removeFromGameLeft(p);
 
                             } else if (!gm.isPlayerInGame(p)) {
 
@@ -363,6 +359,57 @@ public class SW implements CommandExecutor {
 
                             p.sendMessage(perm);
                         }
+                        return true;
+                    }
+
+                    else if (args[0].equalsIgnoreCase("removechest")) {
+
+                        if (p.hasPermission("skyblockwars.addchest")) {
+
+                            if (gm.isEditing(p)) {
+
+                                if (WorldEditUtility.getInstance().doesSelectionExist(p)) {
+
+                                    if (WorldEditUtility.getInstance().isChest(p)) {
+
+                                        Location loc = WorldEditUtility.getInstance().getChestLocation(p);
+
+                                        if (loc.equals(null)) {
+
+                                            p.sendMessage(prefix + ChatColor.RED + "An error occured. Please try again.");
+
+                                            return true;
+                                        }
+
+                                        if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
+
+                                            gm.getGameEditing(p).removeChest(WorldEditUtility.getInstance().getChestLocation(p));
+
+                                        } else if (!WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
+
+                                            p.sendMessage(prefix + ChatColor.RED + "That chest is not added,");
+                                        }
+
+                                    } else if (!WorldEditUtility.getInstance().isChest(p)) {
+
+                                        p.sendMessage(prefix + ChatColor.RED + "Your selection is either more than one block or is not a chest.");
+                                    }
+
+                                } else if (!WorldEditUtility.getInstance().doesSelectionExist(p)) {
+
+                                    p.sendMessage(prefix + ChatColor.RED + "You do not have a selection of a chest.");
+                                }
+
+                            } else if (!gm.isEditing(p)) {
+
+                                p.sendMessage(prefix + ChatColor.RED + "You are not editing an arena.");
+                            }
+
+                        } else if (p.hasPermission("skyblockwars.addchest")) {
+
+                            p.sendMessage(perm);
+                        }
+
                         return true;
                     }
 
@@ -655,57 +702,6 @@ public class SW implements CommandExecutor {
                                         } else if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             p.sendMessage(prefix + ChatColor.RED + "That chest is already added. You can remove it with /sw removechest");
-                                        }
-
-                                    } else if (!WorldEditUtility.getInstance().isChest(p)) {
-
-                                        p.sendMessage(prefix + ChatColor.RED + "Your selection is either more than one block or is not a chest.");
-                                    }
-
-                                } else if (!WorldEditUtility.getInstance().doesSelectionExist(p)) {
-
-                                    p.sendMessage(prefix + ChatColor.RED + "You do not have a selection of a chest.");
-                                }
-
-                            } else if (!gm.isEditing(p)) {
-
-                                p.sendMessage(prefix + ChatColor.RED + "You are not editing an arena.");
-                            }
-
-                        } else if (p.hasPermission("skyblockwars.addchest")) {
-
-                            p.sendMessage(perm);
-                        }
-
-                        return true;
-                    }
-
-                    else if (args[0].equalsIgnoreCase("removechest")) {
-
-                        if (p.hasPermission("skyblockwars.addchest")) {
-
-                            if (gm.isEditing(p)) {
-
-                                if (WorldEditUtility.getInstance().doesSelectionExist(p)) {
-
-                                    if (WorldEditUtility.getInstance().isChest(p)) {
-
-                                        Location loc = WorldEditUtility.getInstance().getChestLocation(p);
-
-                                        if (loc.equals(null)) {
-
-                                            p.sendMessage(prefix + ChatColor.RED + "An error occured. Please try again.");
-
-                                            return true;
-                                        }
-
-                                        if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
-
-                                            gm.getGameEditing(p).removeChest(WorldEditUtility.getInstance().getChestLocation(p));
-
-                                        } else if (!WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
-
-                                            p.sendMessage(prefix + ChatColor.RED + "That chest is not added,");
                                         }
 
                                     } else if (!WorldEditUtility.getInstance().isChest(p)) {

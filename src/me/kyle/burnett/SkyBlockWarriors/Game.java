@@ -352,8 +352,6 @@ public class Game {
         Scoreboard blankBoard = manager.getNewScoreboard();
         p.setScoreboard(blankBoard);
 
-        this.updateScoreboard();
-
         if (this.getPlayerTeam(p).equals(this.RED)) {
 
             this.redT.setScore(this.RED.getPlayers().size());
@@ -410,30 +408,27 @@ public class Game {
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
-        this.updateSignPlayers();
 
         if (this.getState().equals(ArenaState.IN_GAME)) {
 
             Scoreboard blankBoard = manager.getNewScoreboard();
             p.setScoreboard(blankBoard);
 
-            this.updateScoreboard();
-
             if (this.getPlayerTeam(p).equals(this.RED)) {
 
-                this.redT.setScore(this.RED.getPlayers().size());
+                this.redT.setScore(this.RED.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
 
-                this.blueT.setScore(this.BLUE.getPlayers().size());
+                this.blueT.setScore(this.BLUE.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
 
-                this.yellowT.setScore(this.YELLOW.getPlayers().size());
+                this.yellowT.setScore(this.YELLOW.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
 
-                this.greenT.setScore(this.GREEN.getPlayers().size());
+                this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
             }
 
             this.removeFromTeam(p);
@@ -455,6 +450,8 @@ public class Game {
             }
 
         }
+
+        this.updateSignPlayers();
 
         Main.getInstance().teleportToLobby(p);
 
@@ -508,23 +505,21 @@ public class Game {
             Scoreboard blankBoard = manager.getNewScoreboard();
             p.setScoreboard(blankBoard);
 
-            this.updateScoreboard();
-
             if (this.getPlayerTeam(p).equals(this.RED)) {
 
-                this.redT.setScore(this.RED.getPlayers().size());
+                this.redT.setScore(this.RED.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
 
-                this.blueT.setScore(this.BLUE.getPlayers().size());
+                this.blueT.setScore(this.BLUE.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
 
-                this.yellowT.setScore(this.YELLOW.getPlayers().size());
+                this.yellowT.setScore(this.YELLOW.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
 
-                this.greenT.setScore(this.GREEN.getPlayers().size());
+                this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
             }
 
             this.removeFromTeam(p);
@@ -568,23 +563,21 @@ public class Game {
         Scoreboard blankBoard = manager.getNewScoreboard();
         p.setScoreboard(blankBoard);
 
-        this.updateScoreboard();
-
         if (this.getPlayerTeam(p).equals(this.RED)) {
 
-            this.redT.setScore(this.RED.getPlayers().size());
+            this.redT.setScore(this.RED.getPlayers().size() - 1);
 
         } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
 
-            this.blueT.setScore(this.BLUE.getPlayers().size());
+            this.blueT.setScore(this.BLUE.getPlayers().size() - 1);
 
         } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
 
-            this.yellowT.setScore(this.YELLOW.getPlayers().size());
+            this.yellowT.setScore(this.YELLOW.getPlayers().size() - 1);
 
         } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
 
-            this.greenT.setScore(this.GREEN.getPlayers().size());
+            this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
         }
 
         this.removeFromTeam(p);
@@ -619,23 +612,21 @@ public class Game {
             Scoreboard blankBoard = manager.getNewScoreboard();
             p.setScoreboard(blankBoard);
 
-            this.updateScoreboard();
-
             if (this.getPlayerTeam(p).equals(this.RED)) {
 
-                this.redT.setScore(this.RED.getPlayers().size());
+                this.redT.setScore(this.RED.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.BLUE)) {
 
-                this.blueT.setScore(this.BLUE.getPlayers().size());
+                this.blueT.setScore(this.BLUE.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.YELLOW)) {
 
-                this.yellowT.setScore(this.YELLOW.getPlayers().size());
+                this.yellowT.setScore(this.YELLOW.getPlayers().size() - 1);
 
             } else if (this.getPlayerTeam(p).equals(this.GREEN)) {
 
-                this.greenT.setScore(this.GREEN.getPlayers().size());
+                this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
             }
 
             this.removeFromTeam(p);
@@ -1813,10 +1804,4 @@ public class Game {
         this.deactivate = bool;
     }
 
-    public void updateScoreboard() {
-
-        for (String s : this.players) {
-            Bukkit.getServer().getPlayer(s).setScoreboard(this.board);
-        }
-    }
 }

@@ -45,10 +45,20 @@ public class PlayerSearch {
             player.sendMessage(prefix + "Stats for " + username + ":");
             player.sendMessage(ChatColor.BLUE + "Kills: " + ChatColor.GRAY + kills);
             player.sendMessage(ChatColor.BLUE + "Deaths: " + ChatColor.GRAY + deaths);
-            player.sendMessage(ChatColor.BLUE + "K/D: " + ChatColor.GRAY + kills / deaths);
+
+            if(kills > 0 && deaths > 0){
+
+                player.sendMessage(ChatColor.BLUE + "K/D: " + ChatColor.GRAY + kills / deaths);
+            }
+
             player.sendMessage(ChatColor.BLUE + "Wins: " + ChatColor.GRAY + wins);
             player.sendMessage(ChatColor.BLUE + "Losses: " + ChatColor.GRAY + losses);
-            player.sendMessage(ChatColor.BLUE + "W/L: " + ChatColor.GRAY + wins / losses);
+
+            if(wins > 0 && losses > 0){
+
+                player.sendMessage(ChatColor.BLUE + "W/L: " + ChatColor.GRAY + wins / losses);
+            }
+
             player.sendMessage(ChatColor.BLUE + "Played: " + ChatColor.GRAY + played);
         } else {
             player.sendMessage(prefix + ChatColor.RED + "The player you are looking for could not be found.");
