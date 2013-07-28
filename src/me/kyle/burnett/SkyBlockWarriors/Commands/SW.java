@@ -264,9 +264,8 @@ public class SW implements CommandExecutor {
                                             if (!gm.getPlayerGame(p).hasVoted(p)) {
 
                                                 p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
-                                                gm.getPlayerGame(p).addVoted(p);
                                                 gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
-
+                                                gm.getPlayerGame(p).addVoted(p);
                                             } else if (gm.getPlayerGame(p).hasVoted(p)) {
 
                                                 p.sendMessage(prefix + ChatColor.RED + "You have already voted.");

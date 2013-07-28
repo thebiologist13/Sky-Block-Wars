@@ -74,6 +74,10 @@ public class Game {
         this.task = gameID;
         this.world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
+        if(!Main.getInstance().Arena.getBoolean("Arena." + this.gameID + ".Active")){
+            this.deactivate = true;
+        }
+
         this.prepareArena(justCreated, justRestarted);
 
         this.min = new Location(this.world, Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinX"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinY"), Main.getInstance().Arena.getDouble("Arena." + this.gameID + ".MinZ"));
@@ -211,6 +215,7 @@ public class Game {
                         e.printStackTrace();
                     }
                 }
+
                 for (int x = 0; x < Game.this.players.size(); x++) {
 
                     Player p = Bukkit.getServer().getPlayer(Game.this.players.get(x));
@@ -223,6 +228,7 @@ public class Game {
 
                 Game.this.prepareArena(false, false);
             }
+
         }, 2L);
 
     }
@@ -386,8 +392,6 @@ public class Game {
 
         this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has died.");
 
-        this.checkEnd();
-
         try {
 
             PlayerLosses.setPlayerLosses(p, 1);
@@ -396,6 +400,8 @@ public class Game {
 
             e.printStackTrace();
         }
+
+        this.checkEnd();
 
     }
 
@@ -587,7 +593,6 @@ public class Game {
             this.saveGM.keySet().remove(p.getName());
         }
 
-        this.checkEnd();
     }
 
     public void removeFromGameCMDEnd(Player p) {
