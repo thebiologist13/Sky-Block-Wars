@@ -74,7 +74,7 @@ public class Game {
         this.task = gameID;
         this.world = Bukkit.getServer().getWorld(Main.getInstance().Arena.getString("Arena." + this.gameID + ".World"));
 
-        if(!Main.getInstance().Arena.getBoolean("Arena." + this.gameID + ".Active")){
+        if (!Main.getInstance().Arena.getBoolean("Arena." + this.gameID + ".Active")) {
             this.deactivate = true;
         }
 
