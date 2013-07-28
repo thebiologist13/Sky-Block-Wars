@@ -24,17 +24,23 @@ public class Interact implements Listener {
 
             if (s.getLine(0).contains("§l§9[Join]")) {
 
+                e.setCancelled(true);
+
                 String[] split = s.getLine(1).split(" ");
 
                 Bukkit.getServer().dispatchCommand(e.getPlayer(), "sw join " + split[1]);
 
             } else if (s.getLine(0).contains("§l§4[NotJoinable]")) {
 
+                e.setCancelled(true);
+
                 String[] split = s.getLine(1).split(" ");
 
                 Bukkit.getServer().dispatchCommand(e.getPlayer(), "sw join " + split[1]);
 
             } else if (s.getLine(0).contains("§l§9[Leave]")) {
+
+                e.setCancelled(true);
 
                 Bukkit.getServer().dispatchCommand(e.getPlayer(), "sw leave");
             }

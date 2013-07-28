@@ -185,51 +185,43 @@ public class Game {
 
         this.setState(ArenaState.RESETING);
 
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
+        if (team != null) {
 
-            @Override
-            public void run() {
+            if (team.equals(Game.this.RED)) {
 
-                if (team != null) {
+                Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
 
-                    if (team.equals(Game.this.RED)) {
+            } else if (team.equals(Game.this.GREEN)) {
 
-                        Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
+                Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
 
-                    } else if (team.equals(Game.this.GREEN)) {
+            } else if (team.equals(Game.this.BLUE)) {
 
-                        Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
+                Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
 
-                    } else if (team.equals(Game.this.BLUE)) {
+            } else if (team.equals(Game.this.YELLOW)) {
 
-                        Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
-
-                    } else if (team.equals(Game.this.YELLOW)) {
-
-                        Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
-                    }
-
-                    try {
-                        PlayerWins.setPlayerWins(players, 1);
-                    } catch (ClassNotFoundException | SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                for (int x = 0; x < Game.this.players.size(); x++) {
-
-                    Player p = Bukkit.getServer().getPlayer(Game.this.players.get(x));
-
-                    if (p != null) {
-
-                        Game.this.removeFromGameEnd(p);
-                    }
-                }
-
-                Game.this.prepareArena(false, false);
+                Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
             }
 
-        }, 2L);
+            try {
+                PlayerWins.setPlayerWins(players, 1);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int x = 0; x < Game.this.players.size(); x++) {
+
+            Player p = Bukkit.getServer().getPlayer(Game.this.players.get(x));
+
+            if (p != null) {
+
+                Game.this.removeFromGameEnd(p);
+            }
+        }
+
+        Game.this.prepareArena(false, false);
 
     }
 
@@ -455,6 +447,7 @@ public class Game {
                 e.printStackTrace();
             }
 
+            this.checkEnd();
         }
 
         this.updateSignPlayers();
@@ -468,7 +461,12 @@ public class Game {
 
         this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has left.");
 
-        this.checkEnd();
+
+        if(starting){
+            if(this.checkEndStart()){
+                this.endStart();
+            }
+        }
 
     }
 
@@ -560,6 +558,7 @@ public class Game {
         Scoreboard blankBoard = manager.getNewScoreboard();
         p.setScoreboard(blankBoard);
 
+
         if (this.getPlayerTeam(p).equals(this.RED)) {
 
             this.redT.setScore(this.RED.getPlayers().size() - 1);
@@ -576,6 +575,8 @@ public class Game {
 
             this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
         }
+
+
 
         this.removeFromTeam(p);
 
