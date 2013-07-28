@@ -19,34 +19,67 @@ public class SQLSelection {
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
 
-        if (Main.getInstance().Config.getBoolean("MySQL.Enable")) {
-
-            Class.forName("com.mysql.jdbc.Driver");
-
-            if (con != null && con.isClosed() == false) {
-
-                return con;
-
-            } else {
-
-                con = DriverManager.getConnection("jdbc:mysql://" + address + ":" + port + "/" + database, username, password);
-                return con;
-            }
-
-        } else {
-
-            Class.forName("org.sqlite.JDBC");
-
-            if (con != null && con.isClosed() == false) {
-
-                return con;
-
-            } else {
-
-                con = DriverManager.getConnection("jdbc:sqlite:plugins/Sky-Block Wars/Data.sql");
-                return con;
-            }
+        String prefix = "[Sky-Block Wars] ";
+    	if(Main.getInstance().Config.getBoolean("MySQL.Enable"))
+	{
+	     try
+	     {
+        
+	          Class.forName("com.mysql.jdbc.Driver");
+                
+	          if(con != null && con.isClosed() == false){}
+			
+                  else
+				
+                  {
+                    
+		       con = DriverManager.getConnection("jdbc:mysql://" + address + ":" + port + "/" + database, username, password);
+			
+                  }
+			
+              } catch(SQLException | ClassNotFoundException e) {
+				
+                   System.out.println(prefix + "MySQL connection failed. Switching to SQLite.");
+				
+                   Main.getInstance().Config.set("MySQL.Enable", false);
+				
+                   con = getConnection();
+			
+              }
+			
+              System.out.println(prefix + "MySQL connection was successful.");
+		
         }
+		
+        else
+		
+        {
+			
+            try{
+				
+                Class.forName("org.sqlite.JDBC");
+				
+                if(con != null && con.isClosed() == false){}
+                
+				else
+				
+                {
+				
+                    con = DriverManager.getConnection("jdbc:sqlite:plugins/Sky-Block Wars/Data.sql");
+				
+                }
+			
+            } catch(SQLException | ClassNotFoundException e) {
+				
+                e.printStackTrace();
+			
+            }
+			
+            System.out.println(prefix + "SQLite connection was successful.");
+		
+        }
+		
+        return con;
     }
 
     public static Statement getStatement() throws SQLException, ClassNotFoundException {
