@@ -943,13 +943,20 @@ public class Game {
 
             spawnChests.remove(s);
 
+            Main.getInstance().Chest.set("Chest." + this.gameID + ".Spawn", spawnChests);
+
         } else if (sideChests.contains(s)) {
 
             sideChests.remove(s);
 
+            Main.getInstance().Chest.set("Chest." + this.gameID + ".Side", sideChests);
+
         } else if (centerChests.contains(s)) {
 
             centerChests.remove(s);
+
+            Main.getInstance().Chest.set("Chest." + this.gameID + ".Center", centerChests);
+
         }
     }
 
@@ -1787,6 +1794,7 @@ public class Game {
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
 
                 } else {
+
                     ((Sign) s).setLine(0, "§l§4UnJoinable");
 
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");

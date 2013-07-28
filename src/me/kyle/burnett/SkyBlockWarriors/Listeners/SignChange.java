@@ -49,11 +49,11 @@ public class SignChange implements Listener {
                             if (gm.isActive(g.getGameID())) {
 
                                 e.setLine(0, "   §l§9[Join]");
-                                e.setLine(1, "SBW " + arena + " - Lobby");
+                                e.setLine(1, "SBW " + arena + " - Waiting");
                                 e.setLine(2, "0/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
                                 e.setLine(3, "");
                                 e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
-
+                                g.updateSignState();
                             }
                         }
 

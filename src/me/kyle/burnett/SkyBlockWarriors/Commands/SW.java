@@ -266,6 +266,7 @@ public class SW implements CommandExecutor {
                                                 p.sendMessage(prefix + ChatColor.GREEN + "Voted!");
                                                 gm.getPlayerGame(p).broadCastGame(prefix + p.getDisplayName() + ChatColor.GREEN + " has voted to start.");
                                                 gm.getPlayerGame(p).addVoted(p);
+
                                             } else if (gm.getPlayerGame(p).hasVoted(p)) {
 
                                                 p.sendMessage(prefix + ChatColor.RED + "You have already voted.");
@@ -305,6 +306,16 @@ public class SW implements CommandExecutor {
 
                             ConfigManager.getInstance().loadYamls();
                             ConfigManager.getInstance().saveYamls();
+
+                            try {
+
+                                ConfigManager.getInstance().firstRun();
+
+                            } catch (Exception e) {
+
+                                e.printStackTrace();
+                            }
+
                             p.sendMessage(prefix + ChatColor.GREEN + "Config's reloaded.");
 
                         } else if (!p.hasPermission("skyblockwars.reload")) {
@@ -383,6 +394,8 @@ public class SW implements CommandExecutor {
                                         if (WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
                                             gm.getGameEditing(p).removeChest(WorldEditUtility.getInstance().getChestLocation(p));
+
+                                            p.sendMessage(prefix + ChatColor.GREEN + "Chest removed.");
 
                                         } else if (!WorldEditUtility.getInstance().isChestAlreadyAdded(p)) {
 
