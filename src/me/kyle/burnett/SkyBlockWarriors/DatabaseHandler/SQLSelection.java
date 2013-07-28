@@ -46,8 +46,6 @@ public class SQLSelection {
 
             }
 
-            System.out.println(prefix + "MySQL connection was successful.");
-
         }
 
         else {
