@@ -72,8 +72,6 @@ public class SQLSelection {
 
             }
 
-            System.out.println(prefix + "SQLite connection was successful.");
-
         }
 
         return con;
