@@ -539,15 +539,6 @@ public class Game {
 
         }
 
-        if (starting) {
-
-            if (checkEndStart()) {
-
-                this.endStart();
-                return;
-            }
-        }
-
     }
 
     public void removeFromGameEnd(Player p) {
@@ -595,6 +586,8 @@ public class Game {
             p.setGameMode(this.saveGM.get(p.getName()));
             this.saveGM.keySet().remove(p.getName());
         }
+
+        this.checkEnd();
     }
 
     public void removeFromGameCMDEnd(Player p) {
