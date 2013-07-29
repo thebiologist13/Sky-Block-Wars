@@ -12,6 +12,7 @@ import me.kyle.burnett.SkyBlockWarriors.Configs.ConfigManager;
 import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.SQLSelection;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.BlockBreak;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.BlockPlace;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.Command;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.Interact;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDamageEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
@@ -100,6 +101,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new Interact(), this);
         pm.registerEvents(new BlockBreak(), this);
         pm.registerEvents(new BlockPlace(), this);
+        pm.registerEvents(new Command(), this);
 
         getCommand("skyblockw").setExecutor(new SW());
 

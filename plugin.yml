@@ -36,6 +36,7 @@ permissions:
             skyblockwars.addchest: true
             skyblockwars.user: true
             skyblockwars.help.builder: true
+            skyblockwars.sign.create: true
         default: op
     skyblockwars.user:
         children:
@@ -98,6 +99,8 @@ permissions:
     skyblockwars.sign.join:
         default: op
     skyblockwars.sign.leave:
+        default: op
+    skyblockwars.sign.create:
         default: op
     skyblockwars.leader:
         default: op

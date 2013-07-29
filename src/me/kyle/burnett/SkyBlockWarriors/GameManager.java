@@ -151,18 +151,21 @@ public class GameManager {
     }
 
     public void setDisabled(int game) {
+
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", false);
         ConfigManager.getInstance().saveYamls();
         games.remove(getGameByID(game));
     }
 
     public void enableGame(int game) {
+
         Main.getInstance().Arena.set("Arena." + game + ".Enabled", true);
         ConfigManager.getInstance().saveYamls();
         games.add(new Game(game, false, false));
     }
 
     public void activate(int game) {
+
         getGameByID(game).setToDeactivate(false);
         Main.getInstance().Arena.set("Arena." + game + ".Active", true);
         ConfigManager.getInstance().saveYamls();
@@ -171,11 +174,13 @@ public class GameManager {
     }
 
     public void setDeactivated(int game) {
+
         Main.getInstance().Arena.set("Arena." + game + ".Active", false);
         ConfigManager.getInstance().saveYamls();
     }
 
     public boolean isActive(int game) {
+
         if (Main.getInstance().Arena.getBoolean("Arena." + game + ".Active")) {
             return true;
         }

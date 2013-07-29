@@ -20,16 +20,13 @@ public class SignChange implements Listener {
 
         if (e.getLine(0).contains("[Join]")) {
 
-
             String[] split = e.getLine(1).split(" ");
 
             if (split[0].contains("SBW")) {
 
-
                 if (Main.getInstance().Arena.contains("Arena." + Integer.parseInt(split[1].trim()))) {
 
-
-                    if (e.getPlayer().hasPermission("skyblockwars.sign.join")) {
+                    if (e.getPlayer().hasPermission("skyblockwars.sign.create")) {
 
                         int arena = Integer.parseInt(split[1].trim());
 
@@ -44,24 +41,23 @@ public class SignChange implements Listener {
                         if (GameManager.getInstance().checkGameByID(arena)) {
 
                             Game g = GameManager.getInstance().getGameByID(arena);
-                            GameManager gm = GameManager.getInstance();
 
-                            if (gm.isActive(g.getGameID())) {
+                            e.setLine(0, "   §l§9[Join]");
+                            e.setLine(1, "SBW " + arena + " - Waiting");
+                            e.setLine(2, "0/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
+                            e.setLine(3, "");
+                            e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
+                            g.updateSignState();
 
-                                e.setLine(0, "   §l§9[Join]");
-                                e.setLine(1, "SBW " + arena + " - Waiting");
-                                e.setLine(2, "0/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
-                                e.setLine(3, "");
-                                e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
-                                g.updateSignState();
-                            }
                         }
 
                     } else if (!e.getPlayer().hasPermission("skyblockwars.sign.join")) {
 
                         e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.RED + "You do not have permission to do this.");
                     }
+
                 } else if (!Main.getInstance().Arena.contains("Arena." + Integer.parseInt(split[1].trim()))) {
+
                     e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.RED + "That arena does not exist.");
                 }
             }
@@ -71,7 +67,7 @@ public class SignChange implements Listener {
 
             if (e.getLine(1).contains("SBW")) {
 
-                if (e.getPlayer().hasPermission("skyblockwars.sign.leave")) {
+                if (e.getPlayer().hasPermission("skyblockwars.sign.create")) {
 
                     e.setLine(0, "§l§9[Leave]");
                     e.setLine(1, "");

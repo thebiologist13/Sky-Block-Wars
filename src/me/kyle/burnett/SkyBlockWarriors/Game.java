@@ -114,9 +114,6 @@ public class Game {
                 this.BLUE.setDisplayName(ChatColor.RED + "Blue");
                 this.YELLOW.setDisplayName(ChatColor.RED + "Yellow");
 
-                this.loadChests();
-                this.updateSignPlayers();
-                this.updateSignState();
                 this.setState(ArenaState.WAITING);
 
                 if (!firstLoad && !deactivate) {
@@ -133,16 +130,24 @@ public class Game {
                     this.setState(ArenaState.DEACTIVATED);
                 }
 
+                this.updateSignPlayers();
+                this.updateSignState();
+
                 return;
             }
         }
 
         this.setState(ArenaState.IN_SETUP);
+
+        this.updateSignPlayers();
+        this.updateSignState();
     }
 
     public void start() {
 
         Bukkit.getServer().getScheduler().cancelTask(Game.this.task);
+
+        this.loadChests();
 
         this.setState(ArenaState.IN_GAME);
 
@@ -235,6 +240,8 @@ public class Game {
 
         }
 
+        this.updateSignPlayers();
+
         this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
         this.prepareArena(false, false);
 
@@ -265,6 +272,8 @@ public class Game {
             this.removeFromGameCMDEnd(p);
 
         }
+
+        this.updateSignPlayers();
 
         this.broadCastGame(prefix + ChatColor.RED + "Leaving game because it has been forcefully ended by a player.");
         this.prepareArena(false, false);
@@ -502,7 +511,6 @@ public class Game {
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
-        this.updateSignPlayers();
 
         if (this.getState().equals(ArenaState.IN_GAME)) {
 
@@ -604,7 +612,6 @@ public class Game {
         this.unteamed.remove(p.getName());
         this.voted.remove(p.getName());
         gm.removePlayer(p);
-        this.updateSignPlayers();
 
         if (this.getState().equals(ArenaState.IN_GAME)) {
 
@@ -1809,6 +1816,13 @@ public class Game {
 
     public void setToDeactivate(boolean bool) {
         this.deactivate = bool;
+    }
+
+    public void updateScoreboard(){
+
+        for(int x = 0; x < players.size(); x++){
+
+        }
     }
 
 }

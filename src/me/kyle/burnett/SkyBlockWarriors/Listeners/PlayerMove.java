@@ -24,6 +24,8 @@ public class PlayerMove implements Listener {
 
                 if (!g.isBlockInArena(p.getLocation())) {
 
+                    e.setCancelled(true);
+
                     e.setTo(e.getFrom());
                 }
             }
