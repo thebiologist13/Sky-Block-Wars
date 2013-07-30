@@ -459,7 +459,7 @@ public class SW implements CommandExecutor {
 
                                     g.addGreenSpawn(p);
 
-                                    p.sendMessage(prefix + ChatColor.GREEN + "Green team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
+                                    p.sendMessage(prefix + ChatColor.DARK_GREEN + "Green team spawn set for arena " + ChatColor.GOLD + g.getGameID() + ChatColor.GREEN + ".");
 
                                 } else if (args[1].equalsIgnoreCase("yellow")) {
 
@@ -1032,11 +1032,11 @@ public class SW implements CommandExecutor {
                                             }
 
                                             g.setTeamRed(p);
-                                            p.sendMessage(prefix + ChatColor.GREEN + "Joined team green.");
+                                            p.sendMessage(prefix + ChatColor.GREEN + "Joined team " + ChatColor.DARK_GREEN + "green.");
 
                                         } else if (!g.isGreenAvailable()) {
 
-                                            p.sendMessage(prefix + ChatColor.RED + "You can not join" + ChatColor.GREEN + " green" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
+                                            p.sendMessage(prefix + ChatColor.RED + "You can not join" + ChatColor.DARK_GREEN + " green" + ChatColor.RED + ", try joining another team or waiting for the teams to even out.");
                                         }
 
                                     } else if (args[1].equalsIgnoreCase("yellow")) {

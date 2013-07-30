@@ -177,7 +177,7 @@ public class Game {
 
             this.countdown();
 
-        } else if (this.voted.size() * 100 / this.players.size() > 50) {
+        } else if (this.voted.size() * 100 / this.players.size() > Main.getInstance().Config.getDouble("Percent-Of-Votes-Needed-To-Start")) {
 
             this.countdown();
             this.broadCastServer(prefix + ChatColor.GREEN + "Arena " + ChatColor.GOLD + this.gameID + ChatColor.GREEN + " will be starting soon.");

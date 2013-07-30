@@ -4,6 +4,7 @@ Block-Commands: false
 Auto-Start-Players: 4
 Auto-Start-Time: 60
 Minimum-Players-To-Start: 2
+Percent-Of-Votes-Needed-To-Start: 66
 Leaderboard-Print-Limit: 5
 Debug-Mode: false
 MySQL:
