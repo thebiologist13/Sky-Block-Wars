@@ -1793,7 +1793,7 @@ public class Game {
 
                     ((Sign) s).setLine(0, "§l§9[Join]");
 
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + "-Starting");
+                    ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
 
                 } else if (this.getState().equals(ArenaState.IN_GAME)) {
 
