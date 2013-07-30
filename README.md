@@ -9,3 +9,4 @@ To Do List (Order of priority):
     - Make players have wool on head.
     - Convert to per arena items.
     - Convert to per arena settings.
+	- Move files to resource folder. Dont know how to in new update.
