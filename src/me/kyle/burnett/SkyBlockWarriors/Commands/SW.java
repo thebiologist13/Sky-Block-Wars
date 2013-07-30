@@ -234,7 +234,6 @@ public class SW implements CommandExecutor {
                             if (gm.isEditing(p)) {
 
                                 p.sendMessage(prefix + ChatColor.GREEN + "Finished editing arena " + ChatColor.GOLD + gm.getEditing().get(p.getName()) + ChatColor.GREEN + ".");
-                                WorldEditUtility.getInstance().resaveArena(gm.getPlayerEditing(p));
                                 gm.removeEditor(p);
 
                             } else if (!gm.isEditing(p)) {
