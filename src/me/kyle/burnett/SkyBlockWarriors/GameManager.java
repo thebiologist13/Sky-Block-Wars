@@ -19,6 +19,7 @@ public class GameManager {
     private HashMap<String, Integer> playerGame = new HashMap<String, Integer>();
     private HashMap<String, Integer> confirm = new HashMap<String, Integer>();
     private HashMap<String, Integer> editing = new HashMap<String, Integer>();
+    private HashMap<String, Integer> spectators = new HashMap<String, Integer>();
 
     public static GameManager getInstance() {
 
@@ -120,6 +121,25 @@ public class GameManager {
         }
 
         return false;
+    }
+    
+    public int isPlayerSpectating(Player p) {
+        
+    	if(spectators.containsKey(p.getName())) {
+    		
+    		return spectators.get(p.getName());
+    	}
+    	return -1;
+    }
+    
+    public void setPlayerSpectating(Player p, int g) {
+        
+    	spectators.put(p.getName(), g);
+    }
+    
+    public void removePlayerSpectating(Player p) {
+    	
+    	spectators.remove(p.getName());
     }
 
     public void setPlayerGame(Player p, Integer g) {
