@@ -1542,6 +1542,9 @@ public class Game {
         for (OfflinePlayer p : this.RED.getPlayers()) {
 
             p.getPlayer().teleport(red);
+            
+            Wool wool = new Wool(DyeColor.RED);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
 
@@ -1566,6 +1569,9 @@ public class Game {
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
 
             p.getPlayer().teleport(green);
+            
+            Wool wool = new Wool(DyeColor.GREEN);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
@@ -1589,6 +1595,9 @@ public class Game {
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
 
             p.getPlayer().teleport(blue);
+            
+            Wool wool = new Wool(DyeColor.BLUE);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
@@ -1612,6 +1621,9 @@ public class Game {
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
 
             p.getPlayer().teleport(yellow);
+            
+            Wool wool = new Wool(DyeColor.YELLOW);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
