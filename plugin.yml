@@ -50,6 +50,7 @@ permissions:
             skyblockwars.leader: true
             skyblockwars.stats: true
             skyblockwars.spectate: true
+    skyblockwars.info:
         default: op
     skyblockwars.join:
         default: op
@@ -110,4 +111,6 @@ permissions:
     skyblockwars.endgame:
         default: op
     skyblockwars.spectate:
+        default: op
+    skyblockwars.info:
         default: op

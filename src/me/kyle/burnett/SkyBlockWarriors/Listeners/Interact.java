@@ -44,15 +44,13 @@ public class Interact implements Listener {
 
                 Bukkit.getServer().dispatchCommand(e.getPlayer(), "sw leave");
             } else if (s.getLine(0).contains("§l§9[Spectate]")) {
-                
+
             	e.setCancelled(true);
-            	
+
             	String[] split = s.getLine(1).split(" ");
-            	
-            	e.getPlayer().sendMessage(split[1]);
-            	
+
             	Bukkit.getServer().dispatchCommand(e.getPlayer(), "sw spectate " + split[1]);
-            	
+
             }
 
         }

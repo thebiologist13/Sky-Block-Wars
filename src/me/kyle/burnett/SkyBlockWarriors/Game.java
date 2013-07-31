@@ -56,18 +56,16 @@ public class Game {
     private List<String> editors = new ArrayList<String>();
     private HashMap<String, Team> team = new HashMap<String, Team>();
     private HashMap<String, GameMode> saveGM = new HashMap<String, GameMode>();
-    private HashMap<Integer, List<String>> spectators = new HashMap<Integer, List<String>>();
+    private List<String> spectators = new ArrayList<String>();
     private int gameID;
     private int count;
     private int task;
-    private int limit;
-    private int gameTime;
     private int announcer;
     private Score redT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.RED + "Red: "));
     private Score greenT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Green:"));
     private Score blueT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue: "));
     private Score yellowT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.YELLOW + "Yellow: "));
-    private String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]";
+    private String prefix = ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "] ";
     private boolean starting;
     private boolean deactivate = false;
     private Location min, max;
@@ -91,8 +89,6 @@ public class Game {
     }
 
     public void prepareArena(boolean justCreated, boolean firstLoad) {
-
-        Bukkit.getServer().getScheduler().cancelTask(this.limit);
 
         if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Preparing arena " + this.gameID);
@@ -177,6 +173,8 @@ public class Game {
 
         this.checkEnd();
 
+        this.startGameTimer();
+
     }
 
     public void checkStart() {
@@ -198,30 +196,32 @@ public class Game {
 
         this.setState(ArenaState.RESETING);
 
+        Bukkit.getServer().getScheduler().cancelTask(this.announcer);
+
         if (team != null) {
 
             if (team.equals(Game.this.RED)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
-                
+
                 this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.RED + "red" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.GREEN)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
-                
+
                 this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.BLUE)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
-                
+
                 this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.YELLOW)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
-                
+
                 this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team has won.");
             }
 
@@ -241,7 +241,7 @@ public class Game {
                 Game.this.removeFromGameEnd(p);
             }
         }
-        
+
         if (!spectators.get(gameID).isEmpty()) {
             this.removeSpectators();
         }
@@ -250,7 +250,9 @@ public class Game {
 
     }
 
-    public void endGameTime(){
+    public void endGameTime() {
+
+        Bukkit.getServer().getScheduler().cancelTask(this.announcer);
 
         for (String s : this.players) {
 
@@ -269,6 +271,9 @@ public class Game {
 
     public void endGameDisable(boolean instart) {
 
+        Bukkit.getServer().getScheduler().cancelTask(this.announcer);
+
+
         for (String s : this.players) {
 
             Player p = Bukkit.getServer().getPlayer(s);
@@ -286,6 +291,8 @@ public class Game {
 
     public void endGameDeactivate(boolean instart) {
 
+        Bukkit.getServer().getScheduler().cancelTask(this.announcer);
+
         for (String s : this.players) {
 
             Player p = Bukkit.getServer().getPlayer(s);
@@ -301,6 +308,8 @@ public class Game {
     }
 
     public void endGame(boolean instart) {
+
+        Bukkit.getServer().getScheduler().cancelTask(this.announcer);
 
         for (String s : this.players) {
 
@@ -319,7 +328,7 @@ public class Game {
 
     public void checkEnd() {
 
-        int red, green, yellow, blue;
+/*        int red, green, yellow, blue;
         red = this.RED.getPlayers().size();
         green = this.GREEN.getPlayers().size();
         yellow = this.YELLOW.getPlayers().size();
@@ -347,7 +356,7 @@ public class Game {
         else if (green <= 0 && yellow <= 0 && blue <= 0 && yellow <= 0) {
 
             this.endGameNormal(null);
-        }
+        }*/
 
     }
 
@@ -508,8 +517,8 @@ public class Game {
         this.broadCastGame(prefix + ChatColor.GOLD + "Player " + p.getDisplayName() + ChatColor.GOLD + " has left.");
 
 
-        if(starting){
-            if(this.checkEndStart()){
+        if (starting) {
+            if (this.checkEndStart()) {
                 this.endStart();
             }
         }
@@ -620,7 +629,6 @@ public class Game {
 
             this.greenT.setScore(this.GREEN.getPlayers().size() - 1);
         }
-
 
 
         this.removeFromTeam(p);
@@ -1068,15 +1076,15 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.PITCH", p.getLocation().getPitch());
         ConfigManager.getInstance().saveYamls();
     }
-    
+
     public void addSpectatorSpawn(Player p) {
+
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.X", p.getLocation().getBlockX());
-    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Y", p.getLocation().getBlockY());
-    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Z", p.getLocation().getBlockZ());
-    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.YAW", p.getLocation().getYaw());
-    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.PITCH", p.getLocation().getPitch());
-    	initializeMap();
-    	ConfigManager.getInstance().saveYamls();
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Y", p.getLocation().getBlockY());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Z", p.getLocation().getBlockZ());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.YAW", p.getLocation().getYaw());
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.PITCH", p.getLocation().getPitch());
+        ConfigManager.getInstance().saveYamls();
     }
 
     public Location getSpawnRed() {
@@ -1122,15 +1130,16 @@ public class Game {
 
         return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
-    
+
     public Location getSpawnSpectator() {
+
         double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.X");
-    	double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Y");
-    	double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Z");
-    	long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.YAW");
-    	long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.PITCH");
-    	
-    	return new Location(this.world, x, y + 1, z, yaw, pitch);
+        double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Y");
+        double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Z");
+        long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.YAW");
+        long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.PITCH");
+
+        return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
 
     public void removeRedSpawn() {
@@ -1156,10 +1165,10 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn.Yellow", null);
 
     }
-    
+
     public void removeSpectatorSpawn() {
-        
-    	Main.getInstance().Spawns.set("Spawn.Spectator", null);
+
+        Main.getInstance().Spawns.set("Spawn.Spectator", null);
     }
 
     public List<String> getUnteamed() {
@@ -1601,11 +1610,13 @@ public class Game {
         Location blue = this.getSpawnBlue();
         Location yellow = this.getSpawnYellow();
 
+        Wool wool = new Wool(DyeColor.RED);
+
         for (OfflinePlayer p : this.RED.getPlayers()) {
 
             p.getPlayer().teleport(red);
-            
-            Wool wool = new Wool(DyeColor.RED);
+
+
             p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
@@ -1631,8 +1642,7 @@ public class Game {
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
 
             p.getPlayer().teleport(green);
-            
-            Wool wool = new Wool(DyeColor.GREEN);
+
             p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
@@ -1657,8 +1667,7 @@ public class Game {
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
 
             p.getPlayer().teleport(blue);
-            
-            Wool wool = new Wool(DyeColor.BLUE);
+
             p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
@@ -1683,8 +1692,7 @@ public class Game {
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
 
             p.getPlayer().teleport(yellow);
-            
-            Wool wool = new Wool(DyeColor.YELLOW);
+
             p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
@@ -1706,66 +1714,64 @@ public class Game {
             }
         }
     }
-    
-        public void teleportSpectator(Player p) {
-        
-    	if(Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator"))
-    	{
-    		p.teleport(this.getSpawnSpectator());
-    		spectators.get(gameID).add(p.getName());
-    		gm.setPlayerSpectating(p, gameID);
-    		p.sendMessage(prefix + "You are now spectating arena " + gameID + ".");
-    	}
-    	else
-    	{
-    		p.sendMessage(prefix + "This arena does not have a spectator spawn set.");
-    	}
+
+    public void teleportSpectator(Player p) {
+
+        if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {
+
+            p.teleport(this.getSpawnSpectator());
+            spectators.add(p.getName());
+            gm.setPlayerSpectating(p, gameID);
+            p.sendMessage(prefix + "You are now spectating arena " + gameID + ".");
+
+        } else {
+            p.sendMessage(prefix + "This arena does not have a spectator spawn set.");
+        }
     }
-    
+
     public void removeSpectators(Player p) {
-    	
-    	if(spectators.get(gameID).contains(p.getName())) {
-    		
-    		Main.getInstance().teleportToLobby(p);
-    		spectators.get(gameID).remove(p.getName());
-    		gm.removePlayerSpectating(p);
-    		p.sendMessage(prefix + "You are no longer spectating.");
-    	} else {
-    		
-    		p.sendMessage(prefix + "You are not currently spectating a game.");
-    	}
+
+        if (spectators.contains(p.getName())) {
+
+            Main.getInstance().teleportToLobby(p);
+            spectators.remove(p.getName());
+            gm.removePlayerSpectating(p);
+            p.sendMessage(prefix + "You are no longer spectating.");
+        } else {
+
+            p.sendMessage(prefix + "You are not currently spectating a game.");
+        }
     }
-    
+
     public void removeSpectators() {
-    	
-    	for(int i = 0; i < spectators.get(gameID).size(); i ++) {
-    		Player p = Bukkit.getPlayer(spectators.get(gameID).get(i));
-    		if(spectators.get(gameID).contains(p.getName())) {
-        		
-        		Main.getInstance().teleportToLobby(p);
-        		spectators.get(gameID).remove(p.getName());
-        		gm.removePlayerSpectating(p);
-        		p.sendMessage(prefix + "You are no longer spectating.");
-        	} else {
-        		
-        		p.sendMessage(prefix + "You are not currently spectating a game.");
-        	}
-    	}
+
+        for (int i = 0; i < this.spectators.size(); i++) {
+
+            Player p = Bukkit.getPlayer(spectators.get(i));
+            if (spectators.get(gameID).contains(p.getName())) {
+
+                Main.getInstance().teleportToLobby(p);
+                spectators.remove(p.getName());
+                gm.removePlayerSpectating(p);
+                p.sendMessage(prefix + ChatColor.GREEN + "You are no longer spectating.");
+
+            } else {
+
+                p.sendMessage(prefix + ChatColor.GREEN + "You are not currently spectating a game.");
+            }
+        }
     }
-    
+
     public void notifySpectators(String message) {
-    	
-    	if(!spectators.isEmpty()) {
-    		for(int i = 0; i < spectators.get(gameID).size(); i++) {
-    			Player p = Bukkit.getPlayer(spectators.get(gameID).get(i));
-    			p.sendMessage(message);
-    		}
-    	}
-    }
-    
-    public void initializeMap() {
-    	List<String> spectator = new ArrayList<String>();
-    	spectators.put(gameID, spectator);
+
+        if (!spectators.isEmpty()) {
+
+            for (int i = 0; i < spectators.size(); i++) {
+
+                Player p = Bukkit.getPlayer(spectators.get(i));
+                p.sendMessage(message);
+            }
+        }
     }
 
     public void countdown() {
@@ -1827,7 +1833,6 @@ public class Game {
         for (String locString : chestLocations) {
 
             Block b = world.getBlockAt(this.vecFromString(locString).toLocation(world));
-
 
 
             if (b.getType().equals(Material.CHEST)) {
@@ -1927,7 +1932,7 @@ public class Game {
 
                 } else if (this.getState().equals(ArenaState.STARTING)) {
 
-                    if(this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4){
+                    if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
 
                         ((Sign) s).setLine(0, "§4§l[Full]");
 
@@ -1942,19 +1947,19 @@ public class Game {
 
                 } else if (this.getState().equals(ArenaState.IN_GAME)) {
 
-                    if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {    
-                    	
-                		((Sign) s).setLine(0, "§l§9[Spectate]");
-                    	
-                    	((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
-                    	
-                	} else {
-                		
-                		((Sign) s).setLine(0, "§l§9[InGame]");
-                		
-                		((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
-                		
-                	}
+                    if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {
+
+                        ((Sign) s).setLine(0, "§l§9[Spectate]");
+
+                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+
+                    } else {
+
+                        ((Sign) s).setLine(0, "§l§9[InGame]");
+
+                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+
+                    }
 
                 } else {
 
@@ -1973,9 +1978,9 @@ public class Game {
         this.deactivate = bool;
     }
 
-    public void updateScoreboard(){
+    public void updateScoreboard() {
 
-        for(int x = 0; x < players.size(); x++){
+        for (int x = 0; x < players.size(); x++) {
 
             Bukkit.getServer().getPlayer(players.get(x));
 
@@ -1984,49 +1989,57 @@ public class Game {
 
     public void startGameTimer() {
 
-        this.limit = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
-
-            @Override
-            public void run() {
-
-                Game.this.endGameTime();
-
-            }
-
-        }, Main.getInstance().Config.getInt("Time-Limit-Seconds"));
-
         this.announcer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
 
+            int x = Main.getInstance().Config.getInt("Time-Limit-Seconds");
+
+
             @Override
             public void run() {
 
-                if (Game.this.players.size() < Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
+                if (x % 60 == 0) {
 
-                    Game.this.endStart();
 
-                } else if (Game.this.count > 0) {
+                    if(x != 0){
 
-                    if (Game.this.count % 10 == 0) {
+                        if(x != 60){
 
-                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
+                            Game.this.broadCastGame(Game.this.prefix + ChatColor.GOLD + x / 60 + ChatColor.GREEN + " minutes remaining until the game ends.");
+                        }
+
+                        if(x == 60){
+                            Game.this.broadCastGame(Game.this.prefix + ChatColor.GOLD + x / 60 + ChatColor.GREEN + " minute remaining until the game ends.");
+                        }
                     }
 
-                    if (Game.this.count < 6) {
-
-                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
-                        Game.this.playerSoundGame();
-                    }
-
-                    Game.this.count -= 1;
-
-                } else {
-
-                    Game.this.start();
                 }
+
+                if (x/60 < 1) {
+
+                    if(x == 30){
+
+                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GOLD + x + ChatColor.GREEN + " seconds remaining until the game ends.");
+
+                    }
+
+                    if(x <= 10){
+                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GOLD + x + ChatColor.GREEN + " seconds remaining until the game ends.");
+
+                    }
+
+                    if(x <= 0){
+                        Game.this.endGameTime();
+                    }
+
+
+                }
+
+                x -= 1;
+
 
             }
 
-        }, 0L, 1200L);
+        }, 0L, 20L);
 
     }
 

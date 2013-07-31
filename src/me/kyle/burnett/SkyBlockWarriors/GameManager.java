@@ -122,23 +122,28 @@ public class GameManager {
 
         return false;
     }
-    
-    public int isPlayerSpectating(Player p) {
-        
+
+    public boolean isPlayerSpectating(Player p) {
+
     	if(spectators.containsKey(p.getName())) {
-    		
-    		return spectators.get(p.getName());
+
+    		return true;
     	}
-    	return -1;
+    	return false;
     }
-    
+
     public void setPlayerSpectating(Player p, int g) {
-        
+
     	spectators.put(p.getName(), g);
     }
-    
+
+    public Game getPlayerSpectating(Player p) {
+
+        return getGameByID(spectators.get(p.getName()));
+    }
+
     public void removePlayerSpectating(Player p) {
-    	
+
     	spectators.remove(p.getName());
     }
 
