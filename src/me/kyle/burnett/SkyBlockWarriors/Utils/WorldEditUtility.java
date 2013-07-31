@@ -53,6 +53,7 @@ public class WorldEditUtility {
         }
 
         return (WorldEditPlugin) plugin;
+
     }
 
     public boolean loadIslandSchematic(Integer arena) {

@@ -57,6 +57,9 @@ public class Game {
     private int gameID;
     private int count;
     private int task;
+    private int limit;
+    private int gameTime;
+    private int announcer;
     private Score redT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.RED + "Red: "));
     private Score greenT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Green:"));
     private Score blueT = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue: "));
@@ -85,6 +88,8 @@ public class Game {
     }
 
     public void prepareArena(boolean justCreated, boolean firstLoad) {
+
+        Bukkit.getServer().getScheduler().cancelTask(this.limit);
 
         if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Preparing arena " + this.gameID);
@@ -227,6 +232,23 @@ public class Game {
         }
 
         Game.this.prepareArena(false, false);
+
+    }
+
+    public void endGameTime(){
+
+        for (String s : this.players) {
+
+            Player p = Bukkit.getServer().getPlayer(s);
+
+            this.removeFromGameEnd(p);
+
+        }
+
+        this.updateSignPlayers();
+
+        this.broadCastGame(prefix + ChatColor.RED + "The game has ended because the time limit has been reached.");
+        this.prepareArena(false, false);
 
     }
 
@@ -1640,7 +1662,6 @@ public class Game {
         if (this.state == ArenaState.WAITING) {
 
             this.setState(ArenaState.STARTING);
-            this.updateSignState();
 
             this.starting = true;
 
@@ -1693,6 +1714,8 @@ public class Game {
         for (String locString : chestLocations) {
 
             Block b = world.getBlockAt(this.vecFromString(locString).toLocation(world));
+
+
 
             if (b.getType().equals(Material.CHEST)) {
 
@@ -1791,6 +1814,15 @@ public class Game {
 
                 } else if (this.getState().equals(ArenaState.STARTING)) {
 
+                    if(this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4){
+
+                        ((Sign) s).setLine(0, "§4§l[Full]");
+
+                        ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
+
+                        return;
+                    }
+
                     ((Sign) s).setLine(0, "§l§9[Join]");
 
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
@@ -1822,7 +1854,57 @@ public class Game {
 
         for(int x = 0; x < players.size(); x++){
 
+            Bukkit.getServer().getPlayer(players.get(x));
+
         }
+    }
+
+    public void startGameTimer() {
+
+        this.limit = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
+
+            @Override
+            public void run() {
+
+                Game.this.endGameTime();
+
+            }
+
+        }, Main.getInstance().Config.getInt("Time-Limit-Seconds"));
+
+        this.announcer = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable() {
+
+            @Override
+            public void run() {
+
+                if (Game.this.players.size() < Main.getInstance().Config.getInt("Minimum-Players-To-Start")) {
+
+                    Game.this.endStart();
+
+                } else if (Game.this.count > 0) {
+
+                    if (Game.this.count % 10 == 0) {
+
+                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
+                    }
+
+                    if (Game.this.count < 6) {
+
+                        Game.this.broadCastGame(Game.this.prefix + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
+                        Game.this.playerSoundGame();
+                    }
+
+                    Game.this.count -= 1;
+
+                } else {
+
+                    Game.this.start();
+                }
+
+            }
+
+        }, 0L, 1200L);
+
     }
 
 }
