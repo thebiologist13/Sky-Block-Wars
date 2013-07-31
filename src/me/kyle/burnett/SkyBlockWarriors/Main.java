@@ -14,6 +14,7 @@ import me.kyle.burnett.SkyBlockWarriors.Listeners.BlockBreak;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.BlockPlace;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.Command;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.Interact;
+import me.kyle.burnett.SkyBlockWarriors.Listeners.InventoryEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDamageEvent;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerDeath;
 import me.kyle.burnett.SkyBlockWarriors.Listeners.PlayerLeave;
@@ -101,6 +102,7 @@ public class Main extends JavaPlugin {
         pm.registerEvents(new Interact(), this);
         pm.registerEvents(new BlockBreak(), this);
         pm.registerEvents(new BlockPlace(), this);
+        pm.reigsterEvents(new InventoryEvent(), this);
         pm.registerEvents(new Command(), this);
 
         getCommand("skyblockw").setExecutor(new SW());
@@ -134,6 +136,8 @@ public class Main extends JavaPlugin {
         if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Sky-Block Wars has been loaded successfully.");
         }
+        
+        this.setUpMaps();
 
     }
 
@@ -243,6 +247,19 @@ public class Main extends JavaPlugin {
         p.teleport(location);
 
         return true;
+    }
+    
+    public void setUpMaps() {
+        int i = 1;
+    	int arenas = 1;
+    	while(arenas <= this.Arena.getInt("Amount")) {
+    		if(GameManager.getInstance().checkGameByConfig(i)) {
+    			Game game = GameManager.getInstance().getGameByID(i);
+    			game.initializeMap();
+    			arenas++;
+    		}
+    		i++;
+    	}
     }
 
     public void checkDatabase() throws SQLException, ClassNotFoundException {

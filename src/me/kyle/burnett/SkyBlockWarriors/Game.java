@@ -19,6 +19,7 @@ import net.minecraft.server.v1_6_R2.Packet54PlayNoteBlock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,6 +31,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -54,6 +56,7 @@ public class Game {
     private List<String> editors = new ArrayList<String>();
     private HashMap<String, Team> team = new HashMap<String, Team>();
     private HashMap<String, GameMode> saveGM = new HashMap<String, GameMode>();
+    private HashMap<Integer, List<String>> spectators = new HashMap<Integer, List<String>>();
     private int gameID;
     private int count;
     private int task;
@@ -200,18 +203,26 @@ public class Game {
             if (team.equals(Game.this.RED)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.RED + "red" + ChatColor.GREEN + " team you won.");
+                
+                this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.RED + "red" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.GREEN)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team you won.");
+                
+                this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.GREEN + "green" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.BLUE)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team you won.");
+                
+                this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.BLUE + "blue" + ChatColor.GREEN + " team has won.");
 
             } else if (team.equals(Game.this.YELLOW)) {
 
                 Game.this.broadCastGame(prefix + ChatColor.GREEN + "Well done " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team you won.");
+                
+                this.notifySpectators(prefix + ChatColor.GREEN + "The " + ChatColor.YELLOW + "yellow" + ChatColor.GREEN + " team has won.");
             }
 
             try {
@@ -229,6 +240,10 @@ public class Game {
 
                 Game.this.removeFromGameEnd(p);
             }
+        }
+        
+        if (!spectators.get(gameID).isEmpty()) {
+            this.removeSpectators();
         }
 
         Game.this.prepareArena(false, false);
@@ -1053,6 +1068,16 @@ public class Game {
         Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Green.PITCH", p.getLocation().getPitch());
         ConfigManager.getInstance().saveYamls();
     }
+    
+    public void addSpectatorSpawn(Player p) {
+        Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.X", p.getLocation().getBlockX());
+    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Y", p.getLocation().getBlockY());
+    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.Z", p.getLocation().getBlockZ());
+    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.YAW", p.getLocation().getYaw());
+    	Main.getInstance().Spawns.set("Spawn." + this.gameID + ".Spectator.PITCH", p.getLocation().getPitch());
+    	initializeMap();
+    	ConfigManager.getInstance().saveYamls();
+    }
 
     public Location getSpawnRed() {
 
@@ -1097,6 +1122,16 @@ public class Game {
 
         return new Location(this.world, x, y + 1, z, yaw, pitch);
     }
+    
+    public Location getSpawnSpectator() {
+        double x = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.X");
+    	double y = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Y");
+    	double z = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.Z");
+    	long yaw = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.YAW");
+    	long pitch = Main.getInstance().Spawns.getInt("Spawn." + this.gameID + ".Spectator.PITCH");
+    	
+    	return new Location(this.world, x, y + 1, z, yaw, pitch);
+    }
 
     public void removeRedSpawn() {
 
@@ -1120,6 +1155,11 @@ public class Game {
 
         Main.getInstance().Spawns.set("Spawn.Yellow", null);
 
+    }
+    
+    public void removeSpectatorSpawn() {
+        
+    	Main.getInstance().Spawns.set("Spawn.Spectator", null);
     }
 
     public List<String> getUnteamed() {
@@ -1564,6 +1604,9 @@ public class Game {
         for (OfflinePlayer p : this.RED.getPlayers()) {
 
             p.getPlayer().teleport(red);
+            
+            Wool wool = new Wool(DyeColor.RED);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
 
@@ -1588,6 +1631,9 @@ public class Game {
         for (OfflinePlayer p : this.GREEN.getPlayers()) {
 
             p.getPlayer().teleport(green);
+            
+            Wool wool = new Wool(DyeColor.GREEN);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
@@ -1611,6 +1657,9 @@ public class Game {
         for (OfflinePlayer p : this.BLUE.getPlayers()) {
 
             p.getPlayer().teleport(blue);
+            
+            Wool wool = new Wool(DyeColor.BLUE);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
@@ -1634,6 +1683,9 @@ public class Game {
         for (OfflinePlayer p : this.YELLOW.getPlayers()) {
 
             p.getPlayer().teleport(yellow);
+            
+            Wool wool = new Wool(DyeColor.YELLOW);
+            p.getPlayer().getInventory().setHelmet(wool.toItemStack(1));
 
             if (!p.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
                 this.saveGM.put(p.getName(), p.getPlayer().getGameMode());
@@ -1653,6 +1705,67 @@ public class Game {
                 e.printStackTrace();
             }
         }
+    }
+    
+        public void teleportSpectator(Player p) {
+        
+    	if(Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator"))
+    	{
+    		p.teleport(this.getSpawnSpectator());
+    		spectators.get(gameID).add(p.getName());
+    		gm.setPlayerSpectating(p, gameID);
+    		p.sendMessage(prefix + "You are now spectating arena " + gameID + ".");
+    	}
+    	else
+    	{
+    		p.sendMessage(prefix + "This arena does not have a spectator spawn set.");
+    	}
+    }
+    
+    public void removeSpectators(Player p) {
+    	
+    	if(spectators.get(gameID).contains(p.getName())) {
+    		
+    		Main.getInstance().teleportToLobby(p);
+    		spectators.get(gameID).remove(p.getName());
+    		gm.removePlayerSpectating(p);
+    		p.sendMessage(prefix + "You are no longer spectating.");
+    	} else {
+    		
+    		p.sendMessage(prefix + "You are not currently spectating a game.");
+    	}
+    }
+    
+    public void removeSpectators() {
+    	
+    	for(int i = 0; i < spectators.get(gameID).size(); i ++) {
+    		Player p = Bukkit.getPlayer(spectators.get(gameID).get(i));
+    		if(spectators.get(gameID).contains(p.getName())) {
+        		
+        		Main.getInstance().teleportToLobby(p);
+        		spectators.get(gameID).remove(p.getName());
+        		gm.removePlayerSpectating(p);
+        		p.sendMessage(prefix + "You are no longer spectating.");
+        	} else {
+        		
+        		p.sendMessage(prefix + "You are not currently spectating a game.");
+        	}
+    	}
+    }
+    
+    public void notifySpectators(String message) {
+    	
+    	if(!spectators.isEmpty()) {
+    		for(int i = 0; i < spectators.get(gameID).size(); i++) {
+    			Player p = Bukkit.getPlayer(spectators.get(gameID).get(i));
+    			p.sendMessage(message);
+    		}
+    	}
+    }
+    
+    public void initializeMap() {
+    	List<String> spectator = new ArrayList<String>();
+    	spectators.put(gameID, spectator);
     }
 
     public void countdown() {
@@ -1829,9 +1942,19 @@ public class Game {
 
                 } else if (this.getState().equals(ArenaState.IN_GAME)) {
 
-                    ((Sign) s).setLine(0, "§l§9[Spectate]");
-
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+                    if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {    
+                    	
+                		((Sign) s).setLine(0, "§l§9[Spectate]");
+                    	
+                    	((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+                    	
+                	} else {
+                		
+                		((Sign) s).setLine(0, "§l§9[InGame]");
+                		
+                		((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+                		
+                	}
 
                 } else {
 

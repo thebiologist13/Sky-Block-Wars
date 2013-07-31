@@ -43,6 +43,12 @@ public class PlayerLeave implements Listener {
                 gm.getPlayerGame(p).removeFromGameLeft(p);
 
             }
+        } else {
+            
+        	GameManager gm = GameManager.getInstance();
+        	if (gm.isPlayerSpectating(p) != -1) {
+        		gm.removePlayerSpectating(p);
+        	}
         }
 
     }
