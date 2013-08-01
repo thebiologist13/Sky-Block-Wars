@@ -328,7 +328,7 @@ public class Game {
 
     public void checkEnd() {
 
-/*        int red, green, yellow, blue;
+        int red, green, yellow, blue;
         red = this.RED.getPlayers().size();
         green = this.GREEN.getPlayers().size();
         yellow = this.YELLOW.getPlayers().size();
@@ -356,7 +356,7 @@ public class Game {
         else if (green <= 0 && yellow <= 0 && blue <= 0 && yellow <= 0) {
 
             this.endGameNormal(null);
-        }*/
+        }
 
     }
 
@@ -1894,18 +1894,21 @@ public class Game {
 
             Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 
-            if (b.getState() instanceof Sign) {
+            if(b != null){
 
-                Sign s = (Sign) b.getState();
+                if (b.getState() instanceof Sign) {
 
-                if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+                    Sign s = (Sign) b.getState();
 
-                    s.setLine(0, "§4§l[Full]");
+                    if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+
+                        s.setLine(0, "§4§l[Full]");
+                    }
+
+                    s.setLine(2, this.players.size() + "/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
+
+                    s.update(true);
                 }
-
-                s.setLine(2, this.players.size() + "/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
-
-                s.update(true);
             }
         }
     }
@@ -1920,58 +1923,61 @@ public class Game {
 
             Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 
-            if (b.getState() instanceof Sign) {
+            if(b != null){
 
-                Sign s = (Sign) b.getState();
+                if (b.getState() instanceof Sign) {
 
-                if (this.getState().equals(ArenaState.WAITING)) {
+                    Sign s = (Sign) b.getState();
 
-                    ((Sign) s).setLine(0, "§l§9[Join]");
+                    if (this.getState().equals(ArenaState.WAITING)) {
 
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Waiting");
+                        ((Sign) s).setLine(0, "§l§9[Join]");
 
-                } else if (this.getState().equals(ArenaState.STARTING)) {
+                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - Waiting");
 
-                    if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+                    } else if (this.getState().equals(ArenaState.STARTING)) {
 
-                        ((Sign) s).setLine(0, "§4§l[Full]");
+                        if (this.players.size() >= Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4) {
+
+                            ((Sign) s).setLine(0, "§4§l[Full]");
+
+                            ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
+
+                            s.update();
+
+                            return;
+                        }
+
+                        ((Sign) s).setLine(0, "§l§9[Join]");
 
                         ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
 
-                        s.update();
+                    } else if (this.getState().equals(ArenaState.IN_GAME)) {
 
-                        return;
-                    }
+                        if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {
 
-                    ((Sign) s).setLine(0, "§l§9[Join]");
+                            ((Sign) s).setLine(0, "§l§9[Spectate]");
 
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
+                            ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
 
-                } else if (this.getState().equals(ArenaState.IN_GAME)) {
+                        } else {
 
-                    if (Main.getInstance().Spawns.contains("Spawn." + gameID + ".Spectator")) {
+                            ((Sign) s).setLine(0, "§l§9[InGame]");
 
-                        ((Sign) s).setLine(0, "§l§9[Spectate]");
+                            ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
 
-                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
+                        }
 
                     } else {
 
-                        ((Sign) s).setLine(0, "§l§9[InGame]");
+                        ((Sign) s).setLine(0, "§l§4UnJoinable");
 
-                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - InGame");
-
+                        ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
                     }
 
-                } else {
+                    s.update(true);
 
-                    ((Sign) s).setLine(0, "§l§4UnJoinable");
-
-                    ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
                 }
-
-                s.update(true);
-
             }
         }
     }

@@ -46,14 +46,14 @@ public class SignChange implements Listener {
                             e.setLine(1, "SBW " + arena + " - Waiting");
                             e.setLine(2, "0/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
                             e.setLine(3, "");
-                            e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
+                            e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "] " + ChatColor.GREEN + "Sign for arena " + ChatColor.GOLD + arena + ChatColor.GREEN + " has been made.");
                             g.updateSignState();
 
                         }
 
                     } else if (!e.getPlayer().hasPermission("skyblockwars.sign.join")) {
 
-                        e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "]" + ChatColor.RED + "You do not have permission to do this.");
+                        e.getPlayer().sendMessage(ChatColor.GOLD + "[" + ChatColor.BLUE + "SBW" + ChatColor.GOLD + "] " + ChatColor.RED + "You do not have permission to do this.");
                     }
 
                 } else if (!Main.getInstance().Arena.contains("Arena." + Integer.parseInt(split[1].trim()))) {

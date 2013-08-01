@@ -342,6 +342,7 @@ public class SW implements CommandExecutor {
                             p.sendMessage(perm);
                         }
 
+                        return true;
                     }
 
                     else if (args[0].equalsIgnoreCase("reload")) {
