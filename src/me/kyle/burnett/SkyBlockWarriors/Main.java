@@ -122,17 +122,6 @@ public class Main extends JavaPlugin {
             this.Config.set("MySQL.Enable", false);
         }
 
-        try {
-            this.checkDatabase();
-
-        } catch (ClassNotFoundException | SQLException e) {
-
-            e.printStackTrace();
-            log.severe("An error has occured. Shutting down sky block wars.");
-            pm.disablePlugin(this);
-        }
-
-
         if (Main.getInstance().debug) {
             Main.getInstance().log.log(Level.INFO, "Sky-Block Wars has been loaded successfully.");
         }
