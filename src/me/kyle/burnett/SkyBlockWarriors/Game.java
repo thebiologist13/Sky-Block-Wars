@@ -1905,7 +1905,7 @@ public class Game {
 
                 s.setLine(2, this.players.size() + "/" + Main.getInstance().Config.getInt("Max-People-In-A-Team") * 4);
 
-                s.update();
+                s.update(true);
             }
         }
     }
@@ -1938,6 +1938,8 @@ public class Game {
 
                         ((Sign) s).setLine(1, "SBW " + this.gameID + " -Starting");
 
+                        s.update();
+
                         return;
                     }
 
@@ -1968,7 +1970,7 @@ public class Game {
                     ((Sign) s).setLine(1, "SBW " + this.gameID + " - Other");
                 }
 
-                s.update();
+                s.update(true);
 
             }
         }

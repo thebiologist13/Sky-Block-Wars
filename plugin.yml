@@ -25,6 +25,7 @@ permissions:
             skyblockwars.help.admin: true
             skyblockwars.prepare: true
             skyblockwars.endgame: true
+            skyblockwars.updatesigns: true
         default: op
     skyblockwars.builder:
         children:
@@ -113,4 +114,6 @@ permissions:
     skyblockwars.spectate:
         default: op
     skyblockwars.info:
+        default: op
+    skyblockwars.updatesigns:
         default: op

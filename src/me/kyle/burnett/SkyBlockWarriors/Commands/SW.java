@@ -324,6 +324,26 @@ public class SW implements CommandExecutor {
                         return true;
                     }
 
+                    else if (args[0].equalsIgnoreCase("updatesigns")){
+
+                        if(p.hasPermission("skyblockwars.updatesigns")){
+
+                            for(Game g : gm.getGames()){
+                                g.updateSignPlayers();
+                                g.updateSignState();
+                            }
+
+                            p.sendMessage(prefix + ChatColor.GREEN + "All signs have been reloaded.");
+
+
+
+                        } else {
+
+                            p.sendMessage(perm);
+                        }
+
+                    }
+
                     else if (args[0].equalsIgnoreCase("reload")) {
 
                         if (p.hasPermission("skyblockwars.reload")) {
