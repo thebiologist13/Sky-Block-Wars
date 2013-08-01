@@ -105,6 +105,7 @@ public class Game {
         this.blueT.setScore(0);
         this.yellowT.setScore(0);
         this.greenT.setScore(0);
+        this.removeEntities();
 
 
         if (Main.getInstance().Arena.getBoolean("Arena." + this.gameID + ".Active")) {
@@ -2043,6 +2044,24 @@ public class Game {
 
         }, 0L, 20L);
 
+    }
+    
+    public void removeEntities() {
+        
+    	Location l1 = new Location(Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + gameID + ".World")), Main.getInstance().Arena.getInt("Arena." + gameID + ".MinX"), 0, Main.getInstance().Arena.getInt("Arena." + gameID + ".MinZ"));
+        Location l2 = new Location(Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + gameID + ".World")), Main.getInstance().Arena.getInt("Arena." + gameID + ".MaxX"), 0, Main.getInstance().Arena.getInt("Arena." + gameID + ".MaxZ"));
+    	
+    	double x = 0;
+    	double z = 0;
+    	
+    	for(Entity e : world.getEntities()) {
+    		x = e.getLocation().getX();
+    		z = e.getLocation().getZ();
+    		if(x > l1.getX() && z > l1.getZ() && x < l2.getX() && z < l2.getZ() && !(e instanceof Player)) {
+		
+    			e.remove();
+    		}
+    	}
     }
 
 }
