@@ -15,8 +15,6 @@ import me.kyle.burnett.SkyBlockWarriors.DatabaseHandler.Queries.PlayerWins;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerJoinArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Events.PlayerLeaveArenaEvent;
 import me.kyle.burnett.SkyBlockWarriors.Utils.WorldEditUtility;
-import net.minecraft.server.v1_6_R2.Packet54PlayNoteBlock;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -28,7 +26,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -1178,18 +1176,6 @@ public class Game {
         return this.unteamed;
     }
 
-    public void playerSoundGame() {
-
-        Packet54PlayNoteBlock packet = new Packet54PlayNoteBlock(1, 1, 1, 1, 1, 1);
-
-        for (int x = 0; x < this.players.size(); x++) {
-
-            Player p = Bukkit.getServer().getPlayer(this.players.get(x));
-
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-        }
-    }
-
     public void checkTeamEliminated() {
 
         if (this.RED.getPlayers().size() <= 0) {
@@ -1801,7 +1787,6 @@ public class Game {
                         }
                         if (Game.this.count < 6) {
                             Game.this.broadCastGame(Game.this.prefix + ChatColor.GREEN + "Starting in " + ChatColor.GOLD + count + ChatColor.GREEN + ".");
-                            Game.this.playerSoundGame();
                         }
 
                         Game.this.count -= 1;
@@ -2052,20 +2037,20 @@ public class Game {
         }, 0L, 20L);
 
     }
-    
+
     public void removeEntities() {
-        
+
     	Location l1 = new Location(Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + gameID + ".World")), Main.getInstance().Arena.getInt("Arena." + gameID + ".MinX"), 0, Main.getInstance().Arena.getInt("Arena." + gameID + ".MinZ"));
         Location l2 = new Location(Bukkit.getWorld(Main.getInstance().Arena.getString("Arena." + gameID + ".World")), Main.getInstance().Arena.getInt("Arena." + gameID + ".MaxX"), 0, Main.getInstance().Arena.getInt("Arena." + gameID + ".MaxZ"));
-    	
+
     	double x = 0;
     	double z = 0;
-    	
+
     	for(Entity e : world.getEntities()) {
     		x = e.getLocation().getX();
     		z = e.getLocation().getZ();
     		if(x > l1.getX() && z > l1.getZ() && x < l2.getX() && z < l2.getZ() && !(e instanceof Player)) {
-		
+
     			e.remove();
     		}
     	}
