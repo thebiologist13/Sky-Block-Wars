@@ -2,8 +2,7 @@ name: Sky-Block Wars
 main: me.kyle.burnett.SkyBlockWarriors.Main
 version: 1.0.0
 author: Burnett
-description: >
-             Sky block warrior plugin.
+description: Sky block warrior plugin.
 commands:
     skyblockw:
         description: Main command.
